@@ -63,7 +63,7 @@ def plot(filepath='', outfile_name='', name='Experiment',\
     :param list plots: list of plot descriptions, defaults to empty list
     '''
 
-    print '[NICESSA] Preparing %s: ' % outfile_name ,
+    print '[Nicessa] Preparing %s: ' % outfile_name ,
 
     # make sure tmp dir exists and is empty
     if not os.path.exists(tmp_dir):
@@ -108,7 +108,7 @@ def plot(filepath='', outfile_name='', name='Experiment',\
             print "[Nicessa] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
             print
             return
-        print '[NICESSA] Using custom script at %s' % custom_script
+        print '[Nicessa] Using custom script at %s' % custom_script
         Popen('cp %s %s/plot.gnu' % (custom_script, tmp_dir), shell=True).wait()
     else:
         e = ''
@@ -163,7 +163,7 @@ def plot(filepath='', outfile_name='', name='Experiment',\
         gnuf.close()
 
     # generate PDF and maybe show it
-    print '[NICESSA] Plotting %s' % outfile_name
+    print '[Nicessa] Plotting %s' % outfile_name
     Popen('cd %s; gnuplot plot.gnu; epstopdf %s.eps; cd ..' % (tmp_dir, name), shell=True).wait()
     Popen('cp %s/%s.pdf %s' % (tmp_dir, name, outfile_name), shell=True).wait()
     print

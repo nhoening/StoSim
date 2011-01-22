@@ -17,10 +17,74 @@ We can turn on remote mode in the main configuration (``experiment.conf``) like 
 
 An example session
 ------------------
-See the session below for a quick visualisation how you could work with it: 
-It shows how I run the example remotely, check if they're finished, get results and plot them. 
+See the session below for a quick visualisation how you could work with it.
+I configured two servers in the remote.conf file, one at work, and a server I pay for myself. 
+The session  shows how I run the example (starting it on the remote hosts), then check if 
+they're finished and once all their CPUs are done, get results and plot them:: 
+
+    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --run
+    ********************************************************************************
+    Running experiment Subexperiment Example
+    ********************************************************************************
+
+    [Nicessa] Running code on ssh.cwi.nl
+    [Nicessa] Running code on nicolashoening.de
+    [Nicessa] deployed experiment on 2 host(s)
+    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
+    [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
+    [Nicessa] Finished cpus:
+     ssh.cwi.nl  :  []
+     nicolashoening.de:     []
+    [Nicessa] Still running cpus:
+     ssh.cwi.nl  :  [1, 2]
+     nicolashoening.de:     [1]
+    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
+    [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
+    [Nicessa] Finished cpus:
+     ssh.cwi.nl  :  [1, 2]
+     nicolashoening.de:     []
+    [Nicessa] Still running cpus:
+     ssh.cwi.nl  :  []
+     nicolashoening.de:     [1]
+    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
+    [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
+    [Nicessa] Finished cpus:
+     ssh.cwi.nl  :  [1, 2]
+     nicolashoening.de:     [1]
+    [Nicessa] Still running cpus:
+     ssh.cwi.nl  :  []
+     nicolashoening.de:     []
+    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --results --plots
+    ********************************************************************************
+    [Nicessa] getting results ... 
+    [Nicessa] This may take a while, depending on your experiment. I'll tell you when I got everything from a host.
+    [Nicessa] copying data from ssh.cwi.nl ...  done.
+    [Nicessa] copying data from nicolashoening.de ...  done.
+    _ [Nicessa] Got all results.
+    ********************************************************************************
 
 
+    ********************************************************************************
+    [Nicessa] creating plots ...
+    ********************************************************************************
+
+    [Nicessa] Preparing ./plots/experiment1_cooperative.pdf:  learners-minority  learners-majority  learners_all 
+    [Nicessa] Plotting ./plots/experiment1_cooperative.pdf
+
+    [Nicessa] Preparing ./plots/experiment1_non-cooperative.pdf:  learners-minority  learners-majority  learners-all 
+    [Nicessa] Plotting ./plots/experiment1_non-cooperative.pdf
+
+    [Nicessa] Preparing ./plots/experiment1_payoff.pdf:  non-learners_in_coop  learners_in_coop  non-learners_in_non-coop  learners_in_non-coop 
+    [Nicessa] Plotting ./plots/experiment1_payoff.pdf
+
+    [Nicessa] Preparing ./plots/experiment2_cooperative.pdf:  learners-minority  learners-majority  learners_all 
+    [Nicessa] Plotting ./plots/experiment2_cooperative.pdf
+
+    [Nicessa] Preparing ./plots/experiment2_non-cooperative.pdf:  learners-minority  learners-majority  learners-all 
+    [Nicessa] Plotting ./plots/experiment2_non-cooperative.pdf
+
+    [Nicessa] Preparing ./plots/experiment2_payoff.pdf:  non-learners_in_coop  learners_in_coop  non-learners_in_non-coop  learners_in_non-coop 
+    [Nicessa] Plotting ./plots/experiment2_payoff.pdf
 
 
 The servers.conf file
