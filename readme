@@ -1,0 +1,31 @@
+What is this?
+--------------------
+Nicessa is an experiment runner.
+You write the actual experiment, but nicessa relieves you of:
+- arranging runs for all combinations of your dependent variables
+- distributing workload on different machines
+- generating nice paper-ready plots from the results
+
+There is an example experiment in the "example" folder.
+
+
+Dependencies
+--------------------
+You need Bash* and Python (I mostly test on 2.6 but lower versions, say 2.3+, should also work)
+You need the python-paramiko library for remote server support.
+For plotting, you need gnuplot and epstopdf (some tips: for debian-linux, epstopdf 
+is currently in the "texlive-extra-utils" package. On OSX, install gwTex via i-installer
+
+* yes, Unix only for now. Contact Nic if you want to help.
+
+
+Running a simulation
+--------------------
+Place an experimentconf and your simulation code in a folder of your choice (see basic example).
+Call ./experiment.py <path-to-your-experiment-folder>
+The results will be put in the "data" directory, in your folder 
+(but if you like the plotting capabilities of nicessa you might never look there).
+
+There is more documentation in the "doc" directory that should have come with Nicessa.
+
+Enjoy.

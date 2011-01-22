@@ -1,0 +1,4 @@
+#!/bin/bash
+# run a cmd in a background screen
+screen -d -m -S $1
+screen -S $1 -p 0 -X stuff "$2"
