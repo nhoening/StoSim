@@ -6,19 +6,21 @@ Using subexperiments
 Summary
 -------
 In this example, we use sub-experiments and plot different parts of
-the data set against each other
+the data set against each other.
 
 
 Describing Subexperiments
 -------------------------
-To use subexperiments means that you have experiments of the same simulation that require some variables to be different
-from the others. There are often situations where this is a good approach.
+To use subexperiments means that you have experiments of the same simulation 
+that require some variables to be different from the others. 
+There are often situations where this is a good approach.
 Sometimes just because it structures your process, sometimes for technical
 reasons. We use a good example for a technical reason here: Two experiments
 that use different implementations of the `Prisoners Dilemma
 <http://en.wikipedia.org/Prisoner's_Dilemma>`_. Such a dilemma is described by
-four variable settings and here, we do not want all of their combinations (4*4=16),
-only the combinations we designed for (2).
+four variable settings and here, we do not want all of the possible combinations 
+between the two dilemmas (4*4=16). We want only two combinations - 
+the two dilemmas.
 
 To describe subexperiments, you can have some more ``.conf`` files next to ``experiment.conf``, one for each experiment.
 In those, you can specify variable settings that only hold in those experiments (subexperiments inherit
@@ -38,8 +40,13 @@ settings there. The *subexp* example mentions its subexperiments in
           exactly. Basically, we are interested in the likelihood to
           cooperate which the learning agents will arrive at (they start
           at around 0.5).
+          The second dilemma (in exp2.conf) is technically not a Prisoners Dilemma.
+          I just played with the numbers to see how the very very simple 
+          learning algorithm I used behaves when in the dilemma temptation
+          and reward (as well as penalty and suckers' payoff) are the same. 
 
-In this case, we need to provide the configuraton files
+
+In this case, we need to provide the configuration files
 `exp1.conf <../../../examples/subexp/exp1.conf>`_ and 
 `exp2.conf <../../../examples/subexp/exp2.conf>`_. Note that we left out the
 ``.conf``-extension when we mentioned them.
@@ -47,6 +54,8 @@ In this case, we need to provide the configuraton files
 In the subexperiments, we define a unique subset of settings in their own ``[vars]`` - section.
 This is where we describe the different outcomes of interactions (payoff-wise) 
 in our two versions of the Prisoner's Dilemma.
+
+
 We can also give each experiment an own name and name a new maintainer for each
 subexperiment.
 
@@ -174,12 +183,15 @@ And the payoffs the agents got:
     :align: center
     :scale: 75
 
-Again, the example is here to show you functionality rather than to convey
-scientific value :) However, we can see that cooperation
-goes down among learners, no matter if they started in a cooperative or 
-non-cooperative environment, or if learners were in the majority or not - 
-and they are not able to extract higher profits
-overall. This holds in both Prisoners Dilemma settings, though the profits
-are a bit higher in cooperative environments.
-
+.. note:: Again, the example is here to show you functionality rather than to convey
+        scientific value :) However, we can see in experiment 1 that - using our
+        simple learning behaviour - cooperation decreases heavily among learners, 
+        no matter if they started in a cooperative or non-cooperative environment, 
+        or if learners were in the majority or not - 
+        and they are not able to extract higher profits
+        overall. 
+        This is different when the dilemma is not really a Prisoners Dilemma,
+        but reward and temptation are the same. Cooperation started arounf 0.5
+        and basically stays the same. However, there is an interesting bump
+        at the beginning of the simulation ...
 
