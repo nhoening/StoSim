@@ -51,7 +51,7 @@ and standard deviations can be calculated.
 
 The result is finally *analysed* graphically with Gnuplot or statistically 
 with the Gnu R package. Out of the box, Nicessa supports line plots with error bars and scatter plots (several analysis 
-workflows can be conducted that each result in one plot on the same figure), T-Tests and F-Tests. 
+workflows can be conducted that each result in one plot on the same figure) and F-Tests. 
 You can configure as many analyses as you need and it is possible to write custom gnuplot 
 and R scripts and link them into the workflow.
 
