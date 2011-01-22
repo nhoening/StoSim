@@ -11,10 +11,11 @@ There is an example experiment in the "example" folder.
 
 Dependencies
 --------------------
-You need Bash* and Python (I mostly test on 2.6 but lower versions, say 2.3+, should also work)
+You need Python (I mostly test on 2.6 but lower versions, say 2.3+, should also work)
 You need the python-paramiko library for remote server support.
 For plotting, you need gnuplot and epstopdf (some tips: for debian-linux, epstopdf 
-is currently in the "texlive-extra-utils" package. On OSX, install gwTex via i-installer
+is currently in the "texlive-extra-utils" package. On OSX, install gwTex via i-installer).
+For T-Tests, you need Gnu R installed.
 
 * yes, Unix only for now. Contact Nic if you want to help.
 
