@@ -31,7 +31,7 @@ Narrative contents
 
 .. image:: img/nicessa-workflows.png
     :align: center
-    :scale: 45%
+    :scale: 40%
 
 
 ************************
