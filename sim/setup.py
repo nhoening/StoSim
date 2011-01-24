@@ -181,22 +181,23 @@ def create(conf, expfolder, limit_to={}, more=False):
         cpuloads = dict.fromkeys(xrange(1, my_cpus+1), load / my_cpus)
         excess = load % my_cpus
         if excess > 0:
-            cpu = 0
+            cpu = 1
             while excess > 0:
                 cpuloads[cpu] += 1
                 cpu = incrTo(cpu, my_cpus)
                 excess -= 1
         for cpu in xrange(1, my_cpus+1):
-            # open a main conf
-            prefix_dir = make_dir(host, cpu)
-            main_conf_name = '%s/main.conf' % prefix_dir
-            main_conf = open(main_conf_name, 'w')
+            if cpuloads[cpu] > 0:
+                # open a main conf
+                prefix_dir = make_dir(host, cpu)
+                main_conf_name = '%s/main.conf' % prefix_dir
+                main_conf = open(main_conf_name, 'w')
 
-            if conf.has_section('seeds'):
-                main_conf.write('\n[seeds]\n')
-                num_seeds = len(conf.items('seeds'))
-                for dat in [(str(opt), isint, 'seeds') for (opt, isint) in zip(range(1, num_seeds+1), [1 for _ in range(num_seeds)])]:
-                    writeopt(dat, tosub=False)
+                if conf.has_section('seeds'):
+                    main_conf.write('\n[seeds]\n')
+                    num_seeds = len(conf.items('seeds'))
+                    for dat in [(str(opt), isint, 'seeds') for (opt, isint) in zip(range(1, num_seeds+1), [1 for _ in range(num_seeds)])]:
+                        writeopt(dat, tosub=False)
 
             # write as many confs as cpuloads prescribes for this cpu
             for job in range(cpuloads[cpu]):
