@@ -66,7 +66,7 @@ plots (from the tutorial :ref:`sub_example`):
 
 Custom tests
 --------------
-It is also possible to link custim Gnu R scripts into the analysis
+It is also possible to link custom Gnu R scripts into the analysis
 workflow. It works exactly like in the plotting case above.
 You add a ``custom-script`` setting to your test-description. Like so::
 

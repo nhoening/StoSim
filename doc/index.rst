@@ -5,9 +5,15 @@
 
 Welcome to Nicessa's documentation!
 ==================================
-These pages will hopefully be of help to learn about Nicessa.
-However, this is still ongoing work. 
-If you find something missing or unclear, please contact the maintainer of this project.
+When running stochastic agent-based simulations, there is a recurring set of technical 
+tasks: Variable settings need to be recombined, log files need to be managed, and the results need to be
+analysed graphically and statistically. In addition, the computational workload should be distributed over
+several computers.
+
+NICESSA is a light-weight, general-purpose simulation framework, which relieves the researcher of generalisable technical tasks in the execution and analysis workflows, while being non-intrusive with respect to the individual implementation of the simulation model. 
+It is suited for stochastic and complex computational simulations in general and as such not exclusive to agent-based research - however, agent researchers who do stochastic simulations are the major target group.
+
+NICESSA is developed at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R.
 
 
 ******************
@@ -31,7 +37,7 @@ Narrative contents
 
 .. image:: img/nicessa-workflows.png
     :align: center
-    :scale: 40%
+    :scale: 90%
 
 
 ************************

@@ -140,8 +140,8 @@ def select_min_y(filep, cols):
 
 def matches(string, search):
     ''':returns: True if string contains all key/value pairs in search s, False otherwise
-       :params string string: string to search in
-       :params dict search: key-values in this dict are the search
+       :param string string: string to search in
+       :param dict search: key-values in this dict are the search
     '''
     for k, v in search:
         if string.rfind('%s%s' % (k, v)) < 0:
