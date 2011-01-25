@@ -24,7 +24,7 @@ the two dilemmas.
 
 To describe subexperiments, you can have some more ``.conf`` files next to ``experiment.conf``, one for each experiment.
 In those, you can specify variable settings that only hold in those experiments (subexperiments inherit
-settings from the main configuration `experiment.conf <../../../examples/subexp/experiment.conf>`_ and their settings overwrite
+settings from the main configuration `experiment.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/experiment.conf>`_ and their settings overwrite
 settings there. The *subexp* example mentions its subexperiments in
 ``experiment.conf`` in a section called ``[experiments]``, like so:
 
@@ -36,7 +36,7 @@ settings there. The *subexp* example mentions its subexperiments in
           ``mean_coop`` is the mean likelihood to cooperate of the
           (non-learning) agents.
           Have a look in `the executable for this experiment
-          <../../../examples/subexp/main.py>`_ to see what the experiment is doing
+          <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/main.py>`_ to see what the experiment is doing
           exactly. Basically, we are interested in the likelihood to
           cooperate which the learning agents will arrive at (they start
           at around 0.5).
@@ -47,8 +47,8 @@ settings there. The *subexp* example mentions its subexperiments in
 
 
 In this case, we need to provide the configuration files
-`exp1.conf <../../../examples/subexp/exp1.conf>`_ and 
-`exp2.conf <../../../examples/subexp/exp2.conf>`_. Note that we left out the
+`exp1.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/exp1.conf>`_ and 
+`exp2.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/exp2.conf>`_. Note that we left out the
 ``.conf``-extension when we mentioned them.
 
 In the subexperiments, we define a unique subset of settings in their own ``[vars]`` - section.

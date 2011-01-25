@@ -51,6 +51,7 @@ This section is optional.
 :<i>:
     The seed for run number <i>
 
+.. _plot_reference:
 
 plots
 ^^^^^^

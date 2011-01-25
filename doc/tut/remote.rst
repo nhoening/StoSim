@@ -91,7 +91,7 @@ The servers.conf file
 ---------------------
 If you have set ``local: 0``, you'll need to extend the configuration with 
 some server credentials in a separate file. 
-Nicessa will look for a file called `remote.conf <../../../examples/subexp/remote.conf>`_ with server credentials
+Nicessa will look for a file called `remote.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/remote.conf>`_ with server credentials
 and some other things. Here is an example (go to :ref:`remote_reference` for a full reference on the settings):
 
 .. literalinclude:: ../../examples/subexp/remote.conf

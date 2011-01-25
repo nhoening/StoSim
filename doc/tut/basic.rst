@@ -12,8 +12,8 @@ nicessa - I made comments in the code files when appropriate, especially for
 this ``basic`` example.
 
 The two important things to look at are the 
-`configuration file <../../../examples/basic/experiment.conf>`_ and the 
-`simulation executable <../../../examples/basic/main.py>`_.
+`configuration file <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/experiment.conf>`_ and the 
+`simulation executable <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/main.py>`_.
 
 Ah, what the heck. I'll explain the most important steps here :)
 The basic example is a really simple experiment. We only want to simulate a random walk,
@@ -58,18 +58,20 @@ we only specify how long our experiment should run: 500 timesteps.
 .. literalinclude:: ../../examples/basic/experiment.conf
     :lines: 21-25
 
-.. _plot_settings:
 
+.. _plot_settings:
 
 [plot-settings] and [figure<i>]
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The rest of the configuration is spent with setting up a plot.
 You can specify several figures with each one or more plots
 (look out for the numbering).
-We return to this below in :ref:`using_plotting` and show the 
-relevant bits there.
 
-.. warning:: TODO: link to complete reference on plotting.
+We return to this below in :ref:`using_plotting` and show the 
+configuration relevant to our example there.
+
+There is also a complete reference on settings for :ref:`plot_reference`.
+
 
 
 The Executable
@@ -102,7 +104,8 @@ nice graphs! Nicessa organizes all its log files in the ``data`` folder. For eac
 contains all variable settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
 ``_steps500``, containing five log files (Why five? We told Nicessa to run each setting five times in the configuration).
 
-.. note:: Note that currently, Nicessa overwrites the data directory when it runs. You should backup big chunks of data when rerunning would be expensive
+.. note:: Note that currently, Nicessa overwrites the data directory when it runs. You should backup big chunks of data when rerunning would be expensive.
+          You can also use the ``--more`` command to add to your current data collection (see the example :ref:`stochastic_example`).
 
 
 
