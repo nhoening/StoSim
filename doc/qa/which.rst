@@ -6,20 +6,26 @@ Which kind of experiments would I run with Nicessa?
 Four short points
 ------------------
 
-Basically, almost any simulation can be run with Nicessa. Let me explain the workings of Nicessa by making 4 short points:
+Basically, almost any simulation can be run with Nicessa. Let me explain the workings of Nicessa by making four short points:
 
-  * You need to **have an executable**. By this, I mean any program or script that can be executed to run your simulation.
+  * You need to **have an executable**.
+        By this, I mean any program or script that can be executed to run your simulation.
+        Nicessa is non-intrusive, in the sense that your executable will run totally independent - Nicessa will only hand it 
+        settings and the name of a log file.
         Basically, you could have an executable (e.g. a JAVA - script) be run by Nicessa 
-        and care for nothing else, but of course it makes more sense with the next options.
-  * You should **write log files** (but who doesn't?). Nicessa hands your executable the filename of an (empty) log file. Write values in it, then you 
-        can make use of Nicessa' analysis tools, e.g. automated plotting (see below)!
-  * You can **use different variable settings**. It's easy to set different values for variables in the conf files.
+        and care for nothing else, but of course it makes more sense if you mae use of the features below, as well.
+  * You should **write log files** (but who doesn't?).
+        Nicessa hands your executable the filename of an (empty) log file. 
+        Write values in it, then you can make use of Nicessa' analysis tools, e.g. automated plotting (see below)!
+  * You can **use different variable settings**.
+        It's easy to set different values for variables in the conf files.
         Your executable will get the filename of a prepared configuration file. The cool thing: If you want to try out three different values for
         a variable, just write ``my_variable: val_1,val_2,val_3``. Nicessa internally makes three different configuration files
         out of this and calls your code three times, once with each setting. Nowhere else in your code do you need to care
         that you are trying out different settings (If you also have ``my_other_variable: val_a,val_b,val_c``, then you'll
         have 9 combinations and your code gets called 9 times).
-  * You can **analyse**. Everyone wants to do something with the data their simulation accumulated. And everyone has their custom
+  * You can **analyse**.
+        Everyone wants to do something with the data their simulation accumulated. And everyone has their custom
         scripts for that that need to be adapted every time. Nicessa wants to be
         an analysis tool and do a good job for most of the use cases. It supports plotting and T-testing
         (see :ref:`tutorials` for more).
