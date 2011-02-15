@@ -5,6 +5,9 @@
 
 Welcome to Nicessa's documentation!
 ==================================
+
+`Nicessa`stands for "**N**on-**i**ntrusive **c**ombinatorial **e**xecution of **s**tochastic **s**imulations and their **A**nalysis".
+
 When running stochastic agent-based simulations, there is a recurring set of technical 
 tasks: Variable settings need to be recombined, log files need to be managed, and the results need to be
 analysed graphically and statistically. In addition, the computational workload should be distributed over
