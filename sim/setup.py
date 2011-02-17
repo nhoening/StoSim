@@ -5,7 +5,7 @@ setup
 =====
 
 This module sets up the stage - with it, you can make a configuration file
-for each mix of variable settings that needs to be run.
+for each mix of parameter settings that needs to be run.
 
 It also distributes them among the available hosts and cpus:
 Each of them gets a directory, in which a main.conf file lists the other configs.
@@ -49,16 +49,16 @@ def create(conf, expfolder, limit_to={}, more=False):
         return res
 
 
-    def get_options_values(exp_vars, limit_to):
+    def get_options_values(exp_params, limit_to):
         '''
-        :param dict exp_vars: dict of configuration for one experiment
+        :param dict exp_params: dict of configuration for one experiment
         :param dict limit_to: dict of configuration settings we should limit to
         :returns: a list of option names and lists of values to use in every possible combination in one experiment.
         '''
-        comb_options = [] # all my var names
-        comb_values = [] # all my var values
+        comb_options = [] # all my param names
+        comb_values = [] # all my param values
 
-        for k, v in exp_vars.iteritems():
+        for k, v in exp_params.iteritems():
             comb_options.append(k)
             comb_values.append(v)
         comb_values = combiner(comb_values)
@@ -105,24 +105,24 @@ def create(conf, expfolder, limit_to={}, more=False):
 
 
     # ---------------------------------------------------------------------------------------------
-    # get variables from subexperiments: combine them into our normal vars
-    default_vars = {}
-    for var in conf.options('vars'):
-        default_vars[var] = [v.strip() for v in conf.get('vars', var).split(',')]
-    experiments = {'': default_vars}
+    # get parameters from subexperiments: combine them into our normal params
+    default_params = {}
+    for param in conf.options('params'):
+        default_params[param] = [v.strip() for v in conf.get('params', param).split(',')]
+    experiments = {'': default_params}
     if 'experiments' in conf.sections() and conf.get('experiments', 'configs') != '':
         experiments = {}
         for ex in conf.get('experiments', 'configs').split(','):
             ex = ex.strip()
-            experiments[ex] = default_vars.copy()
+            experiments[ex] = default_params.copy()
             exp_conf = ConfigParser()
             exp_conf_name = "%s/%s.conf" % (expfolder, ex)
             if not os.path.exists(exp_conf_name):
                 print "[Nicessa] Error: Can't find %s !" % exp_conf_name
                 sys.exit()
             exp_conf.read(exp_conf_name)
-            for var in exp_conf.options('vars'):
-                experiments[ex][var] = [v.strip() for v in exp_conf.get('vars', var).split(',')]
+            for param in exp_conf.options('params'):
+                experiments[ex][param] = [v.strip() for v in exp_conf.get('params', param).split(',')]
 
     # ---------------------------------------------------------------------------------------------
     # find out how many confs each host should do for each experiment
@@ -136,8 +136,8 @@ def create(conf, expfolder, limit_to={}, more=False):
     unfulfilled = dict.fromkeys(range(hosts), 0)
 
     # these hold all parameter names and the different value configurations, per experiment
-    comb_options = {} # var names
-    comb_values = {} # var values
+    comb_options = {} # param names
+    comb_values = {} # param values
 
     for expname in experiments.keys():
         nums = num_per_hosts[experiments.keys().index(expname)]
@@ -227,7 +227,7 @@ def create(conf, expfolder, limit_to={}, more=False):
                     sub_conf.write('start_run:%d\n' % (utils.runs_in_folder(expfolder, sub_name) + 1))
                 sub_conf.write('\n')
 
-                sub_conf.write('[vars]\n')
+                sub_conf.write('[params]\n')
                 for i in range(len(act_comb_values)):
                     sub_conf.write('%s:%s\n' % (comb_options[expname][i], act_comb_values[i]))
 

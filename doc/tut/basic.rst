@@ -48,10 +48,10 @@ We run 5 times and are only doing it locally (we mention remote support in
     :lines: 12-19
 
 
-[vars]
+[params]
 ^^^^^^
-Then, we can add variables specific to our experimenti. That is, we mention 
-variables that will be used by the executable and tell Nicessa to pass them 
+Then, we can add parameters specific to our experiment. That is, we mention 
+parameters that will be used by the executable and tell Nicessa to pass them 
 on. This is simple in this case, 
 we only specify how long our experiment should run: 500 timesteps. 
 
@@ -101,7 +101,7 @@ Using the data - Making Plots
 
 So we have now an experiment and it gets run by nicessa and it writes to log files. What do we do with them? Let's make
 nice graphs! Nicessa organizes all its log files in the ``data`` folder. For each configuration, log files are put into a subfolder whose name
-contains all variable settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
+contains all parameter settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
 ``_steps500``, containing five log files (Why five? We told Nicessa to run each setting five times in the configuration).
 
 .. note:: Note that currently, Nicessa overwrites the data directory when it runs. You should backup big chunks of data when rerunning would be expensive.
@@ -150,11 +150,11 @@ Now pay attention to the plots descriptions. They have two types of possible set
 Settings to narrow down data
 """""""""""""""""""""""""""""
 
-For each plot, you can specify name-value pairs (where the names refer to variable names from the
-``vars`` section (see above). With this, you narrow down the dataset used for making the plot and this is also why Nicessa puts all variable settings 
+For each plot, you can specify name-value pairs (where the names refer to parameter names from the
+``params`` section (see above). With this, you narrow down the dataset used for making the plot and this is also why Nicessa puts all parameter settings 
 in the data folder names containing the log files, so it can easily pick the ones it needs to collect data from we'll use that feature in the next example. 
 
-Here, we have only one variable setting - we could add ``runs:5`` to the plot descriptions but that would still 
+Here, we have only one parameter setting - we could add ``runs:5`` to the plot descriptions but that would still 
 select all five files and thus change nothing. Thus, we do not use this feature in this example - 
 we plot data from all five files we generated.
 The next example (see :ref:`sub_example`) is a little bit more sophisticated in this regard.
@@ -164,7 +164,7 @@ Nicessa-specific settings
 """"""""""""""""""""""""
 
 In addition to that, there are nicessa-specific settings per plot (to set them
-apart from variables, they all start with an underscore). 
+apart from parameters, they all start with an underscore). 
 
   * ``_name`` (Required) Each plot needs a name to identify it on the figure.
   * ``_type`` (Required) Nicessa currently supports two plot types - line and scatter. We'll
@@ -209,8 +209,8 @@ This is what I see on the terminal:
     :align: center
 
 You should now find a folder called ``data/_steps500``. There, all the log files
-have been written. The folder name ``_steps500`` indicates the variable settings
-used in those runs (and in this simple example, we only have variable with one
+have been written. The folder name ``_steps500`` indicates the parameter settings
+used in those runs (and in this simple example, we only have parameter with one
 setting).
 
 Here is the plot which should be found in the ``examples/basic/plots`` directory when everything went well:

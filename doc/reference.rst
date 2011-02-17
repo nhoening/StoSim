@@ -38,10 +38,10 @@ control
     If local is 1, we run on localhost, otherwise provide a server.conf file (see 'remote' example) (**M**)
 
 
-vars
+params
 ^^^^^
-Dependent variables of your experiment (whichever you need)
-if you want more than one setting for a variable, give a comma-separated list
+Parameters of your simulation (whichever you need)
+if you want more than one setting for a parameter, give a comma-separated list
 
 
 seeds
@@ -116,7 +116,7 @@ describe data to plot (start counting j at 1)
     One out of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y']
 
 In addition, you can narrow down your data set for this plot by giving some
-settings for your dependent variables.
+settings for your parameters.
 
 
 tests
@@ -146,8 +146,7 @@ You pass it a comma-separated list of settings (setting:value):
     Use this to select certain values from the y-column.
     One out of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y'] (**M**)
 
-In addition, you can narrow down your data set for this test by giving some
-settings for your dependent variables.
+In addition, you can narrow down your data set for this test by specifying some parameter settings.
 
 
 .. _remote_reference:

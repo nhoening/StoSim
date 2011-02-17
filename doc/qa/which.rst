@@ -17,12 +17,12 @@ Basically, almost any simulation can be run with Nicessa. Let me explain the wor
   * You should **write log files** (but who doesn't?).
         Nicessa hands your executable the filename of an (empty) log file. 
         Write values in it, then you can make use of Nicessa' analysis tools, e.g. automated plotting (see below)!
-  * You can **use different variable settings**.
-        It's easy to set different values for variables in the conf files.
+  * You can **use different parameter settings**.
+        It's easy to set different values for parameters in the conf files.
         Your executable will get the filename of a prepared configuration file. The cool thing: If you want to try out three different values for
-        a variable, just write ``my_variable: val_1,val_2,val_3``. Nicessa internally makes three different configuration files
+        a parameter, just write ``my_parameter: val_1,val_2,val_3``. Nicessa internally makes three different configuration files
         out of this and calls your code three times, once with each setting. Nowhere else in your code do you need to care
-        that you are trying out different settings (If you also have ``my_other_variable: val_a,val_b,val_c``, then you'll
+        that you are trying out different settings (If you also have ``my_other_parameter: val_a,val_b,val_c``, then you'll
         have 9 combinations and your code gets called 9 times).
   * You can **analyse**.
         Everyone wants to do something with the data their simulation accumulated. And everyone has their custom

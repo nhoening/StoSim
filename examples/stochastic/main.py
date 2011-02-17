@@ -46,22 +46,22 @@ class World(object):
     '''
 
     def __init__(self, log, nicessa_conf):
-        # the two vars passed by nicessa
+        # the two params passed by nicessa
         self.log = log
         nicessa_conf = nicessa_conf
 
-        # Now I read vars from the conf for this run
-        self.n = nicessa_conf.getint('vars','n')
-        self.epochs = nicessa_conf.getint('vars','epochs')
-        ratio_learning = nicessa_conf.getfloat('vars', 'ratio_learning')
-        mean_coop = nicessa_conf.getfloat('vars', 'mean_coop')
+        # Now I read params from the conf for this run
+        self.n = nicessa_conf.getint('params','n')
+        self.epochs = nicessa_conf.getint('params','epochs')
+        ratio_learning = nicessa_conf.getfloat('params', 'ratio_learning')
+        mean_coop = nicessa_conf.getfloat('params', 'mean_coop')
 
         # get Prisoners Dilemma config
         # t=temptation,r=reward,p=punishment,s=suckers payoff
-        self.t = nicessa_conf.getint('vars','pd_t')
-        self.r = nicessa_conf.getint('vars','pd_r')
-        self.p = nicessa_conf.getint('vars','pd_p')
-        self.s = nicessa_conf.getint('vars','pd_s')
+        self.t = nicessa_conf.getint('params','pd_t')
+        self.r = nicessa_conf.getint('params','pd_r')
+        self.p = nicessa_conf.getint('params','pd_p')
+        self.s = nicessa_conf.getint('params','pd_s')
 
         # make agents:
         # non-learners' probability to cooperate are roughly fixed,

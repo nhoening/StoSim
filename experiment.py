@@ -67,35 +67,35 @@ def run_more(expfolder):
     from sim import utils
     expfolder = expfolder.strip('/')
     conf = utils.get_main_conf(expfolder)
-    
+
     print "[Nicessa] Let's make %d more runs! Please tell me on which configurations.\n" % conf.getint('control', 'runs') \
           + "Enter any parameter values you want to narrow down to, nothing otherwise."
-   
-    sel_vars = {}
-    for o in conf.options('vars'):
+
+    sel_params = {}
+    for o in conf.options('params'):
         selected = False
-        vars = [v.strip() for v in conf.get('vars', o).split(',')]
-        if len(vars) <= 1:
+        params = [p.strip() for p in conf.get('params', o).split(',')]
+        if len(params) <= 1:
             continue # no need to narrow down
         while not selected:
-            print "%s ? (out of [%s])" % (o, conf.get('vars', o))
+            print "%s ? (out of [%s])" % (o, conf.get('params', o))
             choice = []
             for selection in raw_input().split(','):
                 selected = True
                 if selection == "":
                     pass
-                elif selection in vars:
+                elif selection in params:
                     choice.append(selection)
                 else:
                     print "Sorry, %s is not a valid value." % selection
                     selected = False
         if len(choice) > 0:
-            sel_vars[o] = choice
+            sel_params[o] = choice
         else:
             print "No restriction chosen."
-    print "You selected: %s. Do this? [Y|n]\n(Remember that configuration and code should still be the same!)" % str(sel_vars)
+    print "You selected: %s. Do this? [Y|n]\n(Remember that configuration and code should still be the same!)" % str(sel_params)
     if raw_input().lower() in ["", "y"]:
-        _prepare(expfolder, limit_to=sel_vars, more=True)
+        _prepare(expfolder, limit_to=sel_params, more=True)
         run_experiment(expfolder)
 
 
@@ -233,7 +233,7 @@ def list_data(expfolder):
     print "[Nicessa] The configurations and number of runs made so far:\n"
     for exp in utils.get_experiment_names(utils.get_main_conf(expfolder)):
         print "%s" % exp
-        # get a list w/ relevant vars
+        # get a list w/ relevant params
         cp = ConfigParser()
         expdirs = [d for d in os.listdir("%s/data" % expfolder) if d.startswith(exp)]
         if len(expdirs) == 0:
@@ -241,11 +241,11 @@ def list_data(expfolder):
             continue
         onedir = "%s/data/%s" % (expfolder, expdirs[0])
         cp.read("%s/%s" % (onedir, [f for f in os.listdir(onedir) if f.endswith('.conf')][0]))
-        vars = cp.options('vars')
-        charlen = 1 + sum([len(v) + 6 for v in vars]) + 9
+        params = cp.options('params')
+        charlen = 1 + sum([len(p) + 6 for p in params]) + 9
         print '-' * charlen
         print "|",
-        for v in vars:
+        for p in params:
             print "  %s  |" % v ,
         print "| runs |"
         print '-' * charlen
@@ -256,9 +256,9 @@ def list_data(expfolder):
             path2dir = "%s/data/%s" % (expfolder, dir)
             cp.read("%s/%s" % (path2dir, [f for f in os.listdir(path2dir) if f.endswith('.conf')][0]))
             print "|",
-            this_vars = cp.options('vars')
-            for v in vars:
-                print "  %s|" % cp.get('vars', v).ljust(len(v) + 2) ,
+            this_params = cp.options('params')
+            for p in params:
+                print "  %s|" % cp.get('params', p).ljust(len(p) + 2) ,
             print "| %s |" % str(utils.runs_in_folder(expfolder, dir)).rjust(4)
             print '-' * charlen
 
@@ -267,7 +267,7 @@ def list_data(expfolder):
 
 def _prepare(expfolder, limit_to={}, more=False):
     """ clean data, fill config directory with all subconfigs we want
-        limit_to can contain variable settings we want to limit ourselves to (this is in case we add more data)
+        limit_to can contain parameter settings we want to limit ourselves to (this is in case we add more data)
 
         :param string expfolder: relative path to expfolder
         :param dict limit_to: key-value pairs that narrow down the dataset, when empty (default) all possible configs are run

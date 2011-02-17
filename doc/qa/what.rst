@@ -15,7 +15,7 @@ In short:
 Nicessa runs your simulation experiment for you. 
 You write the actual simulation, but nicessa relieves you of:
 
-  * arranging runs for all combinations of your dependent variables
+  * arranging runs for all combinations of your parameters
   * distributing workload on different machines
   * generating nice paper-ready plots from the results
   * running T-tests
@@ -23,11 +23,11 @@ You write the actual simulation, but nicessa relieves you of:
 From you Nicessa only needs:
     
   * An executable to perform a typical run of your simulation
-  * A configuration file, so Nicessa knows about your experiment: where the code is, which variable settings you want to use
+  * A configuration file, so Nicessa knows about your experiment: where the code is, which parameter settings you want to use
     and what of the result data you want to plot or test statistically.
 
 It is in particular targeting the class of simulations which are *stochastic* (in that the research 
-problem has a probabilistic nature) and *combinatorial* (in that complexity makes the analysis of many variable settings necessary to answer research questions).
+problem has a probabilistic nature) and *combinatorial* (in that complexity makes the analysis of many parameter settings necessary to answer research questions).
 
 Nicessa has been developed at the Vrije Universiteit Amsterdam and the CWI Amsterdam, where it has been 
 used for several publications and extended with feedback. It is open-source and extensively documented. 

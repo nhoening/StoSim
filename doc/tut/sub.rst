@@ -12,25 +12,25 @@ the data set against each other.
 Describing Subexperiments
 -------------------------
 To use subexperiments means that you have experiments of the same simulation 
-that require some variables to be different from the others. 
+that require some parameters to be different from the others. 
 There are often situations where this is a good approach.
 Sometimes just because it structures your process, sometimes for technical
 reasons. We use a good example for a technical reason here: Two experiments
 that use different implementations of the `Prisoners Dilemma
 <http://en.wikipedia.org/Prisoner's_Dilemma>`_. Such a dilemma is described by
-four variable settings and here, we do not want all of the possible combinations 
+four parameter settings and here, we do not want all of the possible combinations 
 between the two dilemmas (4*4=16). We want only two combinations - 
 the two dilemmas.
 
 To describe subexperiments, you can have some more ``.conf`` files next to ``experiment.conf``, one for each experiment.
-In those, you can specify variable settings that only hold in those experiments (subexperiments inherit
+In those, you can specify parameter settings that only hold in those experiments (subexperiments inherit
 settings from the main configuration `experiment.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/experiment.conf>`_ and their settings overwrite
 settings there. The *subexp* example mentions its subexperiments in
 ``experiment.conf`` in a section called ``[experiments]``, like so:
 
 .. literalinclude:: ../../examples/subexp/experiment.conf
 
-.. note:: We als have some more variable settings than in the basic example.
+.. note:: We als have some more parameter settings than in the basic example.
           ``n`` is the number of agents, ``ratio_learning`` indicates how many agents
           will change their likelihood to cooperate based on their experiences and
           ``mean_coop`` is the mean likelihood to cooperate of the
@@ -51,7 +51,7 @@ In this case, we need to provide the configuration files
 `exp2.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/exp2.conf>`_. Note that we left out the
 ``.conf``-extension when we mentioned them.
 
-In the subexperiments, we define a unique subset of settings in their own ``[vars]`` - section.
+In the subexperiments, we define a unique subset of settings in their own ``[params]`` - section.
 This is where we describe the different outcomes of interactions (payoff-wise) 
 in our two versions of the Prisoner's Dilemma.
 
@@ -69,10 +69,10 @@ And here is exp2.conf:
 .. literalinclude:: ../../examples/subexp/exp2.conf
     :lines: 1-9
 
-To make it clear: It does not appear any different to your executable if a variable setting is defined in one configuration file 
+To make it clear: It does not appear any different to your executable if a parameter setting is defined in one configuration file 
 or the other. If you specified a comma-separated list of options in experiment.conf or in a subexperiment config, 
-your executable code will get one config-file with all variables available in
-the ``vars`` section (the configuration file for each setting is also put into the subfolder in the ``data`` dir). 
+your executable code will get one config-file with all parameters available in
+the ``params`` section (the configuration file for each setting is also put into the subfolder in the ``data`` dir). 
 You only need to know that settings in the experiment configuration files overwrite
 the general settings in the main configuration file.
 
@@ -148,7 +148,7 @@ Plotting with reduced data-sets
 --------------------------------
 
 With all the data we have, we also should make some figures to look at - 
-we'll use our variable settings to plot different data sets, such that we can 
+we'll use our parameter settings to plot different data sets, such that we can 
 meaningfully compare the outcomes of different settings.
 
 Figure 1 shows likelihood to cooperate of learners when the non-learners form a

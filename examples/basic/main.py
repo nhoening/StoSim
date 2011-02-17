@@ -36,8 +36,8 @@ if __name__ == '__main__':
     conf = ConfigParser()
     conf.read(sys.argv[2])
 
-    # The variables from the conf for this run can be accessed like this
-    max_step = conf.getint('vars', 'steps')
+    # The parameters from the conf for this run can be accessed like this
+    max_step = conf.getint('params', 'steps')
 
     val = 0
     random.seed()
