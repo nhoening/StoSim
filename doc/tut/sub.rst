@@ -25,11 +25,11 @@ the two dilemmas.
 
 To describe subsimulations, you can have some more ``.conf`` files next to ``nicessa.conf``, one for each simulation.
 In those, you can specify parameter settings that only hold in those simulations (subsimulations inherit
-settings from the main configuration `nicessa.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/nicessa.conf>`_ and their settings overwrite
-settings there. The *subexp* example mentions its subsimulations in
+settings from the main configuration `nicessa.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/nicessa.conf>`_ and their settings overwrite
+settings there. The *subsim* example mentions its subsimulations in
 ``nicessa.conf`` in a section called ``[simulations]``, like so:
 
-.. literalinclude:: ../../examples/subexp/nicessa.conf
+.. literalinclude:: ../../examples/subsim/nicessa.conf
 
 .. note:: We als have some more parameter settings than in the basic example.
           ``n`` is the number of agents, ``ratio_learning`` indicates how many agents
@@ -37,7 +37,7 @@ settings there. The *subexp* example mentions its subsimulations in
           ``mean_coop`` is the mean likelihood to cooperate of the
           (non-learning) agents.
           Have a look in `the executable for this simulation
-          <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/main.py>`_ to see what the simulation is doing
+          <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/main.py>`_ to see what the simulation is doing
           exactly. Basically, we are interested in the likelihood to
           cooperate which the learning agents will arrive at (they start
           at around 0.5).
@@ -48,8 +48,8 @@ settings there. The *subexp* example mentions its subsimulations in
 
 
 In this case, we need to provide the configuration files
-`sim1.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/sim1.conf>`_ and 
-`sim2.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/sim2.conf>`_. Note that we left out the
+`sim1.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/sim1.conf>`_ and 
+`sim2.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/sim2.conf>`_. Note that we left out the
 ``.conf``-extension when we mentioned them.
 
 In the subsimulations, we define a unique subset of settings in their own ``[params]`` - section.
@@ -62,12 +62,12 @@ subsimulation.
 
 Here is the configuration (figures left out for now) in sim1.conf:
 
-.. literalinclude:: ../../examples/subexp/sim1.conf
+.. literalinclude:: ../../examples/subsim/sim1.conf
     :lines: 1-8
 
 And here is sim2.conf:
 
-.. literalinclude:: ../../examples/subexp/sim2.conf
+.. literalinclude:: ../../examples/subsim/sim2.conf
     :lines: 1-9
 
 To make it clear: It does not appear any different to your executable if a parameter setting is defined in one configuration file 
@@ -85,7 +85,7 @@ Running
 
 Let's run this thing. This is the output I get::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/subexp$ nicessa . --run
+    nic@fidel:/media/data/projects/nicessa/trunk/examples/subsim$ nicessa . --run
     ********************************************************************************
     Running simulation Subsimulation Example
     ********************************************************************************
@@ -133,10 +133,10 @@ Let's run this thing. This is the output I get::
 
 You will have noticed that the name of each configuration is outputted and for every run on it there is a dot.
 
-Afterwards, you'll find that the subfolders of the ``examples/subexp/data`` directory will now also carry the simulation name.
+Afterwards, you'll find that the subfolders of the ``examples/subsim/data`` directory will now also carry the simulation name.
 This is the listing of that directory after the simulation is run::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/subexp$ ls data
+    nic@fidel:/media/data/projects/nicessa/trunk/examples/subsim$ ls data
     sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3  sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5
     sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3  sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5
     sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3     sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5
@@ -162,25 +162,25 @@ This should help to keep bigger projects a bit structured (just start numbering 
 
 This is from sim1.conf: 
 
-.. literalinclude:: ../../examples/subexp/sim1.conf
+.. literalinclude:: ../../examples/subsim/sim1.conf
     :lines: 10-
 
 This is from sim2.conf: 
 
-.. literalinclude:: ../../examples/subexp/sim2.conf
+.. literalinclude:: ../../examples/subsim/sim2.conf
     :lines: 11-
 
 
 Here are the plots we get - Since we use only line plots, all data was averaged.
 First the probability to cooperate:
 
-.. image:: ../img/subexp_cooperation.png
+.. image:: ../img/subsim_cooperation.png
     :align: center
     :scale: 75
 
 And the payoffs the agents got:
 
-.. image:: ../img/subexp_payoffs.png
+.. image:: ../img/subsim_payoffs.png
     :align: center
     :scale: 75
 

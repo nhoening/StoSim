@@ -12,10 +12,10 @@ In :ref:`basic_example`, we see how to tell Nicessa about your simulation and
 generate a nice plot. This tutorial is documented with the most care to get you
 started.
 
-Subexperiments
----------------
+Sub-simulations
+-----------------
 
-In :ref:`sub_example`, we use sub-experiments and plot different parts of
+In :ref:`sub_example`, we use sub-simulations and plot different parts of
 the data set against each other
 
 Stochastic

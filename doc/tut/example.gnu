@@ -1,5 +1,5 @@
 set terminal postscript  eps color dashed lw 6 rounded 22;
-set output 'experiment2_payoff.eps';
+set output 'simulation2_payoff.eps';
 set yrange [0:7];
 set xlabel 'iteration';
 set ylabel 'payoff';

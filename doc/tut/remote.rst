@@ -22,7 +22,7 @@ I configured two servers in the remote.conf file, one at work, and a server I pa
 The session  shows how I run the example (starting it on the remote hosts), then check if 
 they're finished and once all their CPUs are done, get results and plot them:: 
 
-    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --run
+    ~/Documents/nicessa/trunk/examples/subsim nic$ nicessa . --run
     ********************************************************************************
     Running simulation Subsimulation Example
     ********************************************************************************
@@ -30,7 +30,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] Running code on ssh.cwi.nl
     [Nicessa] Running code on nicolashoening.de
     [Nicessa] deployed simulation on 2 host(s)
-    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
+    ~/Documents/nicessa/trunk/examples/subsim nic$ nicessa . --check
     [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
     [Nicessa] Finished cpus:
      ssh.cwi.nl  :  []
@@ -38,7 +38,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] Still running cpus:
      ssh.cwi.nl  :  [1, 2]
      nicolashoening.de:     [1]
-    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
+    ~/Documents/nicessa/trunk/examples/subsim nic$ nicessa . --check
     [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
     [Nicessa] Finished cpus:
      ssh.cwi.nl  :  [1, 2]
@@ -46,7 +46,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] Still running cpus:
      ssh.cwi.nl  :  []
      nicolashoening.de:     [1]
-    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
+    ~/Documents/nicessa/trunk/examples/subsim nic$ nicessa . --check
     [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
     [Nicessa] Finished cpus:
      ssh.cwi.nl  :  [1, 2]
@@ -54,7 +54,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] Still running cpus:
      ssh.cwi.nl  :  []
      nicolashoening.de:     []
-    ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --results --plots
+    ~/Documents/nicessa/trunk/examples/subsim nic$ nicessa . --results --plots
     ********************************************************************************
     [Nicessa] getting results ... 
     [Nicessa] This may take a while, depending on your simulation. I'll tell you when I got everything from a host.
@@ -91,10 +91,10 @@ The servers.conf file
 ---------------------
 If you have set ``local: 0``, you'll need to extend the configuration with 
 some server credentials in a separate file. 
-Nicessa will look for a file called `remote.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subexp/remote.conf>`_ with server credentials
+Nicessa will look for a file called `remote.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/remote.conf>`_ with server credentials
 and some other things. Here is an example (go to :ref:`remote_reference` for a full reference on the settings):
 
-.. literalinclude:: ../../examples/subexp/remote.conf
+.. literalinclude:: ../../examples/subsim/remote.conf
 
 
 Nicessa will transfer all the files to the servers and start background sreens on them, running a portion of the
