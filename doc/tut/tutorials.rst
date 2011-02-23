@@ -3,7 +3,7 @@
 Tutorials
 ==========
 
-I made three small tutorials in which I try to cover all functionality of
+I made several small tutorials in which I try to cover all functionality of
 Nicessa:
 
 Basic

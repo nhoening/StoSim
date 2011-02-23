@@ -4,7 +4,7 @@
 ===================
 sim
 ===================
-Assisting code
+Assisting code to support other code and prepare simulations
 
 .. automodule:: sim.setup
     :members:
