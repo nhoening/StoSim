@@ -11,4 +11,7 @@ The log files are then later used by Nicessa to produce figures and tests.
  
 Here is a more detailled picture of what is going under the hood:
 
-.. image:: ../img/overview.png
+.. figure:: ../img/overview.png
+    :scale: 70%
+    
+    Call structure under the hood

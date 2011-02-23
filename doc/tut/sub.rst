@@ -174,15 +174,21 @@ This is from sim2.conf:
 Here are the plots we get - Since we use only line plots, all data was averaged.
 First the probability to cooperate:
 
-.. image:: ../img/subsim_cooperation.png
+.. figure:: ../img/subsim_cooperation.png
     :align: center
     :scale: 75
+    
+    Payoffs for agents in sub-simulation example
+
 
 And the payoffs the agents got:
 
-.. image:: ../img/subsim_payoffs.png
+.. figure:: ../img/subsim_payoffs.png
     :align: center
     :scale: 75
+
+    Payoffs for agents in sub-simulation example
+
 
 .. note:: Again, the example is here to show you functionality rather than to convey
         scientific value :) However, we can see in simulation 1 that - using our

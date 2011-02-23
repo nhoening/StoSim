@@ -27,8 +27,10 @@ say how far apart, horizontally, they should be plotted.
 Here is one plot from the second subsimulation,
 to show you what it looks like:
 
-.. image:: ../img/PD_sim2_errorbars.png
+.. figure:: ../img/PD_sim2_errorbars.png
     :scale: 60%
+
+    Errorbar plot from sub-simulation example
 
 We see that there is not much variance anywhere, except maybe when
 all agents are learners.

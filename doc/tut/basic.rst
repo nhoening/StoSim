@@ -205,8 +205,10 @@ Let's now run the simulation with
 
 This is what I see on the terminal:
 
-.. image:: ../img/basic_run.png
+.. figure:: ../img/basic_run.png
     :align: center
+
+    The terminal during a run of the basic example
 
 You should now find a folder called ``data/_steps500``. There, all the log files
 have been written. The folder name ``_steps500`` indicates the parameter settings
@@ -215,8 +217,10 @@ setting).
 
 Here is the plot which should be found in the ``examples/basic/plots`` directory when everything went well:
 
-.. image:: ../img/basic_plot.png
+.. figure:: ../img/basic_plot.png
     :align: center
+
+    The plot created by the basic example
 
 So we note that the average of five runs is visible between 10 and -10, but the actual maxima and minima
 range between 40 and -40, respectively. Otherwise, this example is not very useful scientifically :)

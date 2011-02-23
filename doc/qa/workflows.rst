@@ -12,9 +12,11 @@ workflow and as many analysis workflows as needed.
 We'll describe both of them here in detail. If you really need to get started,
 head right over to :ref:`get`, :ref:`usage` and :ref:`tutorials`.
 
-.. image:: ../img/nicessa-workflows.png
+.. figure:: ../img/nicessa-workflows.png
     :align: center
     :scale: 75%
+
+    The workflows of Nicessa: Execution and Analysis
 
 Execution
 ------------
