@@ -12,7 +12,7 @@ in the executive and analytical workflows, while being non-intrusive with respec
 
 In short:
 
-Nicessa runs your simulation experiment for you. 
+Nicessa runs your stochastic simulation(s) for you. 
 You write the actual simulation, but nicessa relieves you of:
 
   * arranging runs for all combinations of your parameters
@@ -23,7 +23,7 @@ You write the actual simulation, but nicessa relieves you of:
 From you Nicessa only needs:
     
   * An executable to perform a typical run of your simulation
-  * A configuration file, so Nicessa knows about your experiment: where the code is, which parameter settings you want to use
+  * A configuration file, so Nicessa knows about your simulation: where the code is, which parameter settings you want to use
     and what of the result data you want to plot or test statistically.
 
 It is in particular targeting the class of simulations which are *stochastic* (in that the research 

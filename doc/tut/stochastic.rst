@@ -18,16 +18,16 @@ First, let's add error-bars to the line graphs, so we can see how
 much variance is in the data. There is two configuration settings
 that are of interest for this:
 
-.. literalinclude:: ../../examples/stochastic/experiment.conf
+.. literalinclude:: ../../examples/stochastic/nicessa.conf
     :lines: 36-38
 
 
 First, we say that we indeed want to see error-bars and then we
 say how far apart, horizontally, they should be plotted.
-Here is one plot from the second subexperiment,
+Here is one plot from the second subsimulation,
 to show you what it looks like:
 
-.. image:: ../img/PD_exp2_errorbars.png
+.. image:: ../img/PD_sim2_errorbars.png
     :scale: 60%
 
 We see that there is not much variance anywhere, except maybe when
@@ -44,7 +44,7 @@ simulation, for repeatability of your randomised results.
 In this example, we do five runs, so we provide a distinct
 seed for every one. Here are the first five:
 
-.. literalinclude:: ../../examples/stochastic/experiment.conf
+.. literalinclude:: ../../examples/stochastic/nicessa.conf
     :lines: 24-29
 
 .. note:: The length of a seed is up to you. Your program needs to handle it. 
@@ -54,10 +54,10 @@ seed for every one. Here are the first five:
 T-tests
 --------
 A T-Test is configured much like a Figure, only it is simpler.
-In the first sub-experiment, we saw that payoff was bigger in the 
+In the first sub-simulation, we saw that payoff was bigger in the 
 cooperative scenario. Let's put that to a T-Test:
 
-.. literalinclude:: ../../examples/stochastic/experiment.conf
+.. literalinclude:: ../../examples/stochastic/nicessa.conf
     :lines: 40-43
 
 Here is the output of the Gnu R T-Test, which confirms our hypothesis
@@ -91,18 +91,18 @@ Adding more runs
 Sometimes you might want to add a couple of runs, to add statistical
 weight to the results. That is quite easy in Nicessa. The following session 
 shows how to use the ``--list`` and ``--more`` commands to see how
-many runs you have and add more. Here, I had only made runs for experiment 2
-(``nicessa . --experiments=exp2``) and I add another 5 runs (note that
+many runs you have and add more. Here, I had only made runs for simulation 2
+(``nicessa . --simulations=sim2``) and I add another 5 runs (note that
 I now have 10 runs for some of the configurations, so I'd better also
 have 10 seeds)::
 
     nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa . --list
     [Nicessa] The configurations and number of runs made so far:
 
-    exp1
-    No runs found for experiment exp1
+    sim1
+    No runs found for simulation sim1
 
-    exp2
+    sim2
     --------------------------------------------------------------------------------------------------------
     |   mean_coop  |   n  |   epochs  |   pd_t  |   ratio_learning  |   pd_p  |   pd_s  |   pd_r  | | runs |
     --------------------------------------------------------------------------------------------------------
@@ -130,29 +130,29 @@ have 10 seeds)::
     (Remember that configuration and code should still be the same!)
 
     ********************************************************************************
-    Running experiment The stochastic-features example
+    Running simulation The stochastic-features example
     ********************************************************************************
 
     ********************************************************************************
     [Nicessa] Running jobs on cpu 1 of server fidel
 
     [Nicessa] Processing 1/4 
-    (section exp1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)
+    (section sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)
     . . . . .
     [Nicessa] Processing 2/4 
-    (section exp2_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
+    (section sim2_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
     . . . . .
     [Nicessa] Processing 3/4 
-    (section exp1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)
+    (section sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)
     . . . . .
     [Nicessa] Processing 4/4 
-    (section exp2_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
+    (section sim2_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
     . . . . .
     ********************************************************************************
     nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa . --list
     [Nicessa] The configurations and number of runs made so far:
 
-    exp1
+    sim1
     --------------------------------------------------------------------------------------------------------
     |   mean_coop  |   n  |   epochs  |   pd_t  |   ratio_learning  |   pd_p  |   pd_s  |   pd_r  | | runs |
     --------------------------------------------------------------------------------------------------------
@@ -160,7 +160,7 @@ have 10 seeds)::
     --------------------------------------------------------------------------------------------------------
     |   0.8        |   100|   200     |   5     |   1               |   1     |   0     |   3     | |    5 |
     --------------------------------------------------------------------------------------------------------
-    exp2
+    sim2
     --------------------------------------------------------------------------------------------------------
     |   mean_coop  |   n  |   epochs  |   pd_t  |   ratio_learning  |   pd_p  |   pd_s  |   pd_r  | | runs |
     --------------------------------------------------------------------------------------------------------

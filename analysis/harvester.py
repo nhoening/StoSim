@@ -49,13 +49,14 @@ def collect_values(filepath, outfile_name, cols=[], selector='all'):
     Collect specific x/y values from a bunch of .log files (to be found via the filepath)
     and write them into a new file.
 
+    TODO: how to pass custom selectors?
+
     :param string filepath: path to the .log files
     :param string outfile_name: path and name of file to write into
     :param list cols: columns to select, at least one,
                       we consider the first as x, the second as y
     :param selector: method to specify how to choose lines from the data files
                      one of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y']
-    TODO: how to pass custom selectors?
     '''
     assert(selector in ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y'])
     import harvester

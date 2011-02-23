@@ -1,7 +1,7 @@
 '''
 remote
 ======
-Code to realise runnning experiments remotely
+Code to realise runnning simulations remotely
 All remote communication is done via SSH with the help of paramiko
 '''
 
@@ -50,16 +50,16 @@ def ssh(client, cmd):
     return "[Nicessa] Log from remotely executing %s:\n\n\n%s" % (cmd, stdout.read())
 
 
-def run_remotely(expfolder, conf):
+def run_remotely(simfolder, conf):
     '''
-    Runs experiment as it was setup on remote hosts
+    Runs simulation as it was setup on remote hosts
 
-    :param string expfolder: relative path to expfolder
+    :param string simfolder: relative path to simfolder
     :param ConfigParser conf: main config
     '''
-    folder = expfolder
-    remote_conf = utils.get_host_conf(expfolder)
-    num_hosts = utils.num_hosts(expfolder)
+    folder = simfolder
+    remote_conf = utils.get_host_conf(simfolder)
+    num_hosts = utils.num_hosts(simfolder)
 
     for host in xrange(1, num_hosts+1):
         ssh_client = _get_ssh_client(remote_conf, host)
@@ -71,43 +71,43 @@ def run_remotely(expfolder, conf):
         # ------------- clean host (we want to be sure to use fresh code)
         # do this on all hosts before anything is run (e.g. they could operate on the same home dir)
         cleaning = "mkdir -p %s/%s;" % (path, folder)
-        togo = "data conf experiment.conf %s bgscreen screener.py starter.py _nicessa_bundle.tar.gz" \
+        togo = "data conf nicessa.conf %s bgscreen screener.py starter.py _nicessa_bundle.tar.gz" \
                 % (conf.get('control', 'executable'))
         if remote_conf.has_option('code', 'files'):
             for f in [f for f in remote_conf.get('code', 'files').split(',') if f is not ""]:
-                togo += " %s/%s " % (expfolder, f.strip())
+                togo += " %s/%s " % (simfolder, f.strip())
         if remote_conf.has_option('code', 'folders'):
             for f in [f for f in remote_conf.get('code', 'folders').split(',') if f is not ""]:
-                togo += " %s/%s " % (expfolder, f.strip())
+                togo += " %s/%s " % (simfolder, f.strip())
         cleaning += "cd %s/%s; rm -r %s;" % (path, folder, togo)
         # clean old states, too - never know how the last run was finished (e.g. Ctrl-C)
-        cleaning += clean_states(expfolder, conf, host)
+        cleaning += clean_states(simfolder, conf, host)
         ssh(ssh_client, cleaning)
 
     used_hosts = 0
-    cpus_per_host = utils.cpus_per_host(expfolder)
+    cpus_per_host = utils.cpus_per_host(simfolder)
     for host in xrange(1, num_hosts+1):
         # -------------  initialize each host
         # don't proceed if a host doesn't have work to do (TODO: maybe also don't clean before?)
         host_has_work = False
-        if osp.exists("%s/conf/%d" % (expfolder, host)):
+        if osp.exists("%s/conf/%d" % (simfolder, host)):
             host_has_work = True
             used_hosts += 1
         if not host_has_work:
             continue
 
         # ------------- start screen(s) on all of them
-        # let him run the batch for this host in a background screen (for each experiment we might have)
-        # TODO: remote works only with subexperiments right now? We should fix that
+        # let him run the batch for this host in a background screen (for each simulation we might have)
+        # TODO: remote works only with subsimulations right now? We should fix that
         screening = ""
         for cpu in xrange(1, cpus_per_host[host]+1):
-            if osp.exists("%s/conf/%d/%d" % (expfolder, host, cpu)):
+            if osp.exists("%s/conf/%d/%d" % (simfolder, host, cpu)):
                 screening += "rm %s/finished_%i_%i; ./%s/screener.py screen_host_%i_cpu_%i './%s/starter.py %s %i %i; touch %s/finished_%i_%i;exit;'; " \
                     % (folder, host, cpu, folder, host, cpu, folder, folder, host, cpu, folder, host, cpu)
-            
+
         #  --- local file shuffling
-        if not expfolder == ".":
-            os.chdir(expfolder)
+        if not simfolder == ".":
+            os.chdir(simfolder)
 
         # all host-side screen calls go in a script file, so screener.py can quietly make sure they all start without me waiting
         cmd = open("cmd_%d" % host, 'w')
@@ -116,9 +116,9 @@ def run_remotely(expfolder, conf):
         Popen("chmod +x cmd_%d;" % host, shell=True).wait();
         needed = " cmd_%d" % host
 
-        # send everything needed of the experiment to run batches to the host in one go
+        # send everything needed of the simulation to run batches to the host in one go
         needed += " conf"
-        needed += " experiment.conf"
+        needed += " nicessa.conf"
         needed += " %s" % (conf.get('control', 'executable'))
         if remote_conf.has_option('code', 'files'):
             for f in [f for f in remote_conf.get('code', 'files').split(',') if f is not ""]:
@@ -137,8 +137,8 @@ def run_remotely(expfolder, conf):
         # put all we need in a tar.gz archive
         Popen("tar -cf _nicessa_bundle.tar %s; gzip _nicessa_bundle.tar;" % (needed), shell=True).wait()
 
-        if not expfolder == ".":
-            for _ in expfolder.split("/"):
+        if not simfolder == ".":
+            for _ in simfolder.split("/"):
                 os.chdir('..')
         # --- end local file shuffling
 
@@ -149,7 +149,7 @@ def run_remotely(expfolder, conf):
         try:
             print "[Nicessa] Running code on %s" %  remote_conf.get("host%i" % host, "name")
             scp_client = scp.SCPClient(ssh_client._transport)
-            scp_client.put("%s/_nicessa_bundle.tar.gz" % expfolder, remote_path="%s/%s" % (path, folder))
+            scp_client.put("%s/_nicessa_bundle.tar.gz" % simfolder, remote_path="%s/%s" % (path, folder))
             time.sleep(2)
             log = open("log%d" % host, 'w')
             log.write(ssh(ssh_client, "%s mv %s/cmd_%d .; ./cmd_%d; rm cmd_%d;" % (initializing, folder, host, host, host)))
@@ -160,31 +160,31 @@ def run_remotely(expfolder, conf):
         ssh_client.close()
 
         # ------------ clean locally
-        os.remove("%s/_nicessa_bundle.tar.gz" % expfolder)
-        os.remove("%s/cmd_%d" % (expfolder, host))
+        os.remove("%s/_nicessa_bundle.tar.gz" % simfolder)
+        os.remove("%s/cmd_%d" % (simfolder, host))
         for c in copied_here:
-            os.remove("%s/%s" % (expfolder, c))
+            os.remove("%s/%s" % (simfolder, c))
 
-    print "[Nicessa] deployed experiment on %i host(s)" % (used_hosts)
+    print "[Nicessa] deployed simulation on %i host(s)" % (used_hosts)
 
 
-def check(expfolder):
+def check(simfolder):
     '''
     Performs a check to find out which portions of the exeriment are already done.
     For this, it looks at the marker files when a job is done.
     Prints out results.
 
-    :param string expfolder: relative path to expfolder
+    :param string simfolder: relative path to simfolder
     '''
-    conf = utils.get_main_conf(expfolder)
-    hosts = utils.num_hosts(expfolder)
-    cpus_per_host = utils.cpus_per_host(expfolder)
+    conf = utils.get_main_conf(simfolder)
+    hosts = utils.num_hosts(simfolder)
+    cpus_per_host = utils.cpus_per_host(simfolder)
     finished = dict.fromkeys(xrange(1, hosts+1))
     running = dict.fromkeys(xrange(1, hosts+1))
     for host in xrange(1, hosts+1):
         finished[host] = []
         running[host] = []
-    remote_conf = utils.get_host_conf(expfolder)
+    remote_conf = utils.get_host_conf(simfolder)
 
     print "[Nicessa] Checking hosts: ",
     sys.stdout.flush()
@@ -195,7 +195,7 @@ def check(expfolder):
         ssh_client = _get_ssh_client(remote_conf, host)
         if ssh_client:
             path = remote_conf.get("host%i" % host, "path")
-            fin = ssh(ssh_client, 'cd %s/%s; ls finished_*;' % (path, expfolder))
+            fin = ssh(ssh_client, 'cd %s/%s; ls finished_*;' % (path, simfolder))
             run = ssh(ssh_client, 'screen -ls;')
             for cpu in xrange(1, cpus_per_host[host]+1):
                 if "finished_%d_%d" % (host, cpu) in fin:
@@ -213,21 +213,21 @@ def check(expfolder):
         print " %.18s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(12), str(running[host]))
 
 
-def get_results(expfolder, do_wait=True):
+def get_results(simfolder, do_wait=True):
     '''
     Copies result logs from the remote host(s) if they are all available for the whole job.
 
-    :param string expfolder: relative path to expfolder
+    :param string simfolder: relative path to simfolder
     :param boolean do_wait: True if regular checks should be done until all data is available (default is True)
     '''
     print '*' * 80
     print "[Nicessa] getting results ... "
-    print "[Nicessa] This may take a while, depending on your experiment. I'll tell you when I got everything from a host."
+    print "[Nicessa] This may take a while, depending on your simulation. I'll tell you when I got everything from a host."
 
-    conf = utils.get_main_conf(expfolder)
-    remote_conf = utils.get_host_conf(expfolder)
-    cpus_per_host = utils.cpus_per_host(expfolder)
-    hosts_done = dict.fromkeys(xrange(1, utils.num_hosts(expfolder)+1), False)
+    conf = utils.get_main_conf(simfolder)
+    remote_conf = utils.get_host_conf(simfolder)
+    cpus_per_host = utils.cpus_per_host(simfolder)
+    hosts_done = dict.fromkeys(xrange(1, utils.num_hosts(simfolder)+1), False)
     all_done = False
     if remote_conf.has_option('communication', 'wait'):
         if do_wait:
@@ -251,9 +251,9 @@ def get_results(expfolder, do_wait=True):
                     try:
                         path = remote_conf.get("host%i" % host, "path")
                         # check for status by looking for the marker files this host should generate
-                        res = ssh(ssh_client, 'cd %s/%s; ls' % (path, expfolder))
+                        res = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
                         # TODO: this is no good when we get the results on a different computer than we started from
-                        #relevant_subexps = [subexp for subexp in utils.get_experiment_names(conf) if osp.exists("%s/conf/%s/%s" % (expfolder, subexp, host))]
+                        #relevant_subsims = [subsim for subsim in utils.get_simulation_names(conf) if osp.exists("%s/conf/%s/%s" % (simfolder, subsim, host))]
                         if cpus_per_host[host] == 0:
                             hosts_done[host] = True
                         elif 'data' in res and reduce(lambda x, y: x and y, \
@@ -261,19 +261,19 @@ def get_results(expfolder, do_wait=True):
                             scp_client = scp.SCPClient(ssh_client._transport)
                             try:
                                 print "[Nicessa] copying data from %s ... " % hostname ,
-                                ssh(ssh_client, 'cd %s/%s; tar -cf data_%d.tar data/*; gzip data_%d.tar;' % (path, expfolder, host, host))
+                                ssh(ssh_client, 'cd %s/%s; tar -cf data_%d.tar data/*; gzip data_%d.tar;' % (path, simfolder, host, host))
                                 time.sleep(2)
-                                scp_client.get("%s/%s/data_%d.tar.gz" % (path, expfolder, host), local_path='%s' % expfolder)
-                                os.chdir(expfolder)
+                                scp_client.get("%s/%s/data_%d.tar.gz" % (path, simfolder, host), local_path='%s' % simfolder)
+                                os.chdir(simfolder)
                                 Popen("tar -zxf data_%d.tar.gz; rm data_%d.tar.gz" % (host, host), shell=True).wait()
-                                if not expfolder == ".":
-                                    for _ in expfolder.split("/"):
+                                if not simfolder == ".":
+                                    for _ in simfolder.split("/"):
                                         os.chdir('..')
                             except OSError, e:
                                 print e
                             hosts_done[host] = True
                             print "done."
-                            ssh(ssh_client, 'cd %s/%s; %s' % (path, expfolder, clean_states(expfolder, conf, host)))
+                            ssh(ssh_client, 'cd %s/%s; %s' % (path, simfolder, clean_states(simfolder, conf, host)))
                     except Exception, e:
                         print e
                     ssh_client.close()
@@ -319,12 +319,12 @@ def _get_ssh_client(remote_conf, host):
     return ssh_client
 
 
-def clean_states(expfolder, conf, host):
+def clean_states(simfolder, conf, host):
     '''
     Build commands which remove traces of any (former) Nicessa activity on one host:
     clean running screens and files that are used to indicate states.
 
-    :param string expfolder: relative path to expfolder
+    :param string simfolder: relative path to simfolder
     :param ConfigParser remote_conf: host configuration
     :param int host: index of host
     :returns: a string with all ``rm`` and ``kill`` commands
@@ -333,10 +333,10 @@ def clean_states(expfolder, conf, host):
     clean += "rm data_%d.tar.gz;" % host
     clean += "rm cmd_%d;" % host
     # clean up marker files
-    for cpu in utils.cpus_per_host(expfolder):
+    for cpu in utils.cpus_per_host(simfolder):
         clean += 'rm finished_%i_%i;' % (host, cpu)
     # try to kill old screens by name (they kill themselves after work, but you never know)
-    pattern = '|'.join(["exp_%s_%s" % (n, host) for n in utils.get_experiment_names(conf)])
+    pattern = '|'.join(["sim_%s_%s" % (n, host) for n in utils.get_simulation_names(conf)])
     clean += "kill `ps aux | awk '/screen_%s/{print $2}'`;" % pattern
     return clean
 

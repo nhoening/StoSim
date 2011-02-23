@@ -6,7 +6,7 @@ The Workflows
 
 Nicessas workflow can be described as the concatenation of two smaller workflows: 
 Simulations are first being executed and then analysed (see Figure below). 
-Several experiments can be described, with each of them performing one execution 
+Several sub-simulations can be described, with each of them performing one execution 
 workflow and as many analysis workflows as needed.
 
 We'll describe both of them here in detail. If you really need to get started,
@@ -20,7 +20,7 @@ Execution
 ------------
 
 The object of the execution workflow is one *configuration*, which is one of the possible combination of parameter settings. 
-You describe your experiment to Nicessa by listing all parameters and the possible settings for them. 
+You describe your simulation to Nicessa by listing all parameters and the possible settings for them. 
 In addition, you point it to an executable which starts a run of her simulation. 
 Nicessa will create one configuration file for every possible combination of these settings. 
 

@@ -1,6 +1,6 @@
 .. _basic_example:
 
-Setting up a basic experiment
+Setting up a basic simulation
 =============================
 
 Summary
@@ -12,27 +12,27 @@ nicessa - I made comments in the code files when appropriate, especially for
 this ``basic`` example.
 
 The two important things to look at are the 
-`configuration file <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/experiment.conf>`_ and the 
+`configuration file <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/nicessa.conf>`_ and the 
 `simulation executable <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/main.py>`_.
 
 Ah, what the heck. I'll explain the most important steps here :)
-The basic example is a really simple experiment. We only want to simulate a random walk,
+The basic example is a really simple simulation. We only want to simulate a random walk,
 run it several times and then plot the average outcome as well as maxima and
 minima for each run.
             
 The Main Configuration File
 ---------------------------
 
-This is the configuraton file for the basic experiment. We'll look at all parts
+This is the configuraton file for the basic simulation. We'll look at all parts
 separately here - however, there is also a full reference of all pooosible
 configuration settings at :ref:`main_reference`.
 
 [meta]
 ^^^^^^
-We first take the opportunity to note some general information about our experiment:
+We first take the opportunity to note some general information about our simulation:
 name and who is the maintainer.
 
-.. literalinclude:: ../../examples/basic/experiment.conf
+.. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 6-11
 
 
@@ -44,18 +44,18 @@ computers. Our simulation executable is main.py and we'll discuss it next.
 We run 5 times and are only doing it locally (we mention remote support in
 :ref:`sub_example`).
 
-.. literalinclude:: ../../examples/basic/experiment.conf
+.. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 12-19
 
 
 [params]
-^^^^^^
-Then, we can add parameters specific to our experiment. That is, we mention 
+^^^^^^^^
+Then, we can add parameters specific to our simulation. That is, we mention 
 parameters that will be used by the executable and tell Nicessa to pass them 
 on. This is simple in this case, 
-we only specify how long our experiment should run: 500 timesteps. 
+we only specify how long our simulation should run: 500 timesteps. 
 
-.. literalinclude:: ../../examples/basic/experiment.conf
+.. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 21-25
 
 
@@ -99,7 +99,7 @@ Below is the Python file from the basic example - it uses a lot of comments to e
 Using the data - Making Plots
 ------------------------------
 
-So we have now an experiment and it gets run by nicessa and it writes to log files. What do we do with them? Let's make
+So we have now an simulation and it gets run by nicessa and it writes to log files. What do we do with them? Let's make
 nice graphs! Nicessa organizes all its log files in the ``data`` folder. For each configuration, log files are put into a subfolder whose name
 contains all parameter settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
 ``_steps500``, containing five log files (Why five? We told Nicessa to run each setting five times in the configuration).
@@ -112,16 +112,16 @@ contains all parameter settings. We have only one possible setting now, so in ``
 General plot-settings
 ^^^^^^^^^^^^^^^^^^^^^
 General settings of plots can be in the main configuration file or, for convenience, 
-be put into the subexperiment files (see the next example :ref:`sub_example`).
+be put into the subsimulation files (see the next example :ref:`sub_example`).
 Those settings can also be set per figure. Settings per figure overwrite
-plot-settings in subexperiments, which overwrite the plot-settings in the main
+plot-settings in subsimulations, which overwrite the plot-settings in the main
 configuration.
 
 The first three settings are of purely cosmetic nature, while the fourth is
 really interesting when we discuss line plots below - in essence, we're telling
 Nicessa here not to draw vertical error bars.
 
-.. literalinclude:: ../../examples/basic/experiment.conf
+.. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 27-34
 
 
@@ -134,7 +134,7 @@ We set the ``xcol`` to 1, since we wrote the step number in column 1 and the val
 
 .. note:: Note that all plots in each figure use the same x-axis.
 
-.. literalinclude:: ../../examples/basic/experiment.conf
+.. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 35-46
 
 There can be many figures, each having one or more plots (numerate the options consistently, i.e. figure1, figure2, figure3 and plot1, plot2, plot3).
@@ -144,7 +144,7 @@ Settings per plot
 
 Now pay attention to the plots descriptions. They have two types of possible settings, of which we use only the first here.
 
-.. literalinclude:: ../../examples/basic/experiment.conf
+.. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 47-
 
 Settings to narrow down data
@@ -161,7 +161,7 @@ The next example (see :ref:`sub_example`) is a little bit more sophisticated in 
 
 
 Nicessa-specific settings
-""""""""""""""""""""""""
+""""""""""""""""""""""""""
 
 In addition to that, there are nicessa-specific settings per plot (to set them
 apart from parameters, they all start with an underscore). 
@@ -199,9 +199,9 @@ and I certainly want custome selectors.
 .. note:: Nicessa will also soon support that you write your own gnuplot script
           to plot the processed data.
 
-Let's now run the experiment with
+Let's now run the simulation with
     
-    ``$ python experiment.py examples/basic/``
+    ``$ python nicessa.py examples/basic/``
 
 This is what I see on the terminal:
 

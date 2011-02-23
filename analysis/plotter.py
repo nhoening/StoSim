@@ -22,7 +22,7 @@ pdf_viewer = 'okular'
 tmp_dir = 'tmp_plotter'
 
 
-def plot(filepath='', outfile_name='', name='Experiment',\
+def plot(filepath='', outfile_name='', name='My simulation',\
          xcol=1, x_label='iteration', y_label='value', x_range=None,  y_range='[0:10]',\
          use_y_errorbars=False, errorbar_every=10, infobox_pos='top left', use_colors=True,\
          use_tex=False, line_width=6, font_size=22, custom_script='', plots=[]):
@@ -30,10 +30,12 @@ def plot(filepath='', outfile_name='', name='Experiment',\
     Make plots for specific portions of data in one figure.
 
     For each graph, this function ...
+
     - selects folders with data files depending on Regexes you provide
     - collects all log files contained in them in a temporary folder and
       averages over the contents
     - makes a (gnu)plot out of that, with yerrorbars if you want
+
     The output is one PDF file.
     Creating PDF for this yields far nicer linetypes.
     Also, we need linetypes (e.g. dashes/dots),
@@ -43,7 +45,7 @@ def plot(filepath='', outfile_name='', name='Experiment',\
 
     :param string filepath: path to data
     :param string outfile_name: name of the PDF file you want to make
-    :param string name: Title of the experiment
+    :param string name: Title of the simulation
     :param int xcol: column >= 1
     :param string x_label: label on x axis
     :param string y_label: label on y axis
@@ -72,7 +74,6 @@ def plot(filepath='', outfile_name='', name='Experiment',\
         Popen('rm -r %s/*' % tmp_dir, shell=True).wait()
 
     # ---- collect relevant data for each requested plot ----
-
     # get relevant files
     searches = {}
     for p in plots:
@@ -102,7 +103,6 @@ def plot(filepath='', outfile_name='', name='Experiment',\
                            selector=p['_select'] )
 
     # ---- plot the results ----
-
     if custom_script != "":
         if not osp.exists(custom_script):
             print "[Nicessa] Cannot find custom script at [%s]. Aborting ..." % (custom_script)

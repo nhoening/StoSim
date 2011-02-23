@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """
-Example nicessa experiment,
+Example nicessa simulation,
 Showing advanced usage with a Prisoner Dilemma setup.
-This experiment uses two subexperiments.
+This simulation uses two subsimulations.
 
 See the basic example if you have no idea what this file is for.
 """

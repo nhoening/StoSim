@@ -1,6 +1,6 @@
-================================
+=================================
 Customising the analysis workflow
-================================
+=================================
 
 While the configuration of the execution workflow is completely 
 straight-forward, the analysis workflow is a bit more complicated.
@@ -31,7 +31,7 @@ own Gnuplot script into the workflow.
 
 There is an additional configuration setting per figure, called 
 ``custom-script``. Put here the path to your custom script, relative to the 
-experiment folder (that is the first argument to Nicessa), e.g.::
+simulation folder (that is the first argument to Nicessa), e.g.::
 
     [figure1]
     name: my_custom_plot
@@ -57,7 +57,7 @@ plots (from the tutorial :ref:`sub_example`):
 
 .. note:: You can see Nicessas own Gnuplot script and all the data files it 
           creates for the analysis by simply adding ``-k`` to the call 
-          (e.g. ``./experiment.py . --p -k``). 
+          (e.g. ``./nicessa.py . --p -k``). 
           This will keep Nicessa from deleting its temporary files.
           There should now be a directory called ``tmp_plotter``, where you'll
           find a file called ``plot.gnu`` and a directory with collected

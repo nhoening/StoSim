@@ -5,27 +5,27 @@ How to use Nicessa
 
 Quick How-To
 ------------
-  1. Place an experiment.conf and the code to run your simulation in a folder of your choice.
-  2. In the experiment.conf (copy `the one from the basic example <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/experiment.conf>`_ to start), set the name of your executable.
-  3. Call ``./experiment.py <path-to-your-experiment-folder>``. Or, if you also have this shortcut I created for myself (see :ref:`get`), you can go to your experiment folder and simply type ``nicessa .``
+  1. Place an nicessa.conf and the code to run your simulation in a folder of your choice.
+  2. In the nicessa.conf (copy `the one from the basic example <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/nicessa.conf>`_ to start), set the name of your executable.
+  3. Call ``./nicessa.py <path-to-your-simulation-folder>``. Or, if you also have this shortcut I created for myself (see :ref:`get`), you can go to your simulation folder and simply type ``nicessa .``
   4. You should now find results in the "data" directory, in your folder (but if you like the plotting capabilities of nicessa you might never look there). Plots go in the "plots" directory.
 
 All commands at a glance
-----------
+-------------------------
 
 Usage
 ^^^^^^
-``experiment.py <path-to-experiment-folder> [--experiments=X,Y] [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list]``
+``nicessa.py <path-to-simulation-folder> [--simulations=X,Y] [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list]``
 
-.. note:: The experiment folder is where you have your experiment.conf
+.. note:: The simulation folder is where you have your nicessa.conf
 
 .. note:: If you run things on remote servers you will need the Python library 'paramiko'
 
 Commands
 ^^^^^^^^^^^^
 
---experiments
-    names of subexperiments (without '.conf', e.g. 'exp1,exp2')
+--simulations
+    names of sub-simulation configurations (without '.conf', e.g. 'sim1,sim2')
 --run
     Only run, do not get (remote) results and do not analyse
 --check

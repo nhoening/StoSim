@@ -14,8 +14,8 @@ examples, mostly the :ref:`basic_example`.
 
 Experiment configuration
 ------------------------
-These are the settings you can make in ``experiment.conf`` or
-in subexperiment configurations (see :ref:`sub_example`).
+These are the settings you can make in ``simulation.conf`` or
+in subsimulation configurations (see :ref:`sub_example`).
 
 meta
 ^^^^^^
@@ -25,7 +25,7 @@ General Description
     Name of the exeriment (**M**)
 
 :maintainer:
-    The person who is responsible for this experiment
+    The person who is responsible for this simulation
 
 
 control
@@ -39,17 +39,27 @@ control
 
 
 params
-^^^^^
+^^^^^^^
 Parameters of your simulation (whichever you need)
 if you want more than one setting for a parameter, give a comma-separated list
 
 
 seeds
 ^^^^^^^
+A list of seeds to use per run, for repeatability.
 This section is optional.
 
 :<i>:
     The seed for run number <i>
+
+simulations
+^^^^^^^^^^^^
+Use this if you separate simulations into separate sub-configs.
+This section is optional.
+
+:<configs>:
+    A comma-separated list of config-file names (without the .conf file ending) e.g. sim1,sim2
+
 
 .. _plot_reference:
 
@@ -96,7 +106,7 @@ In addition, you can specify:
 :y-range:
     The range of values for y axis, defaults to '[0:10]'
 :custom-script:
-    Path (relative from experiment folder) to a custom gnuplot script that
+    Path (relative from simulation folder) to a custom gnuplot script that
     should be used instead of the automatically generated one.
 
 plot<j>
@@ -129,7 +139,7 @@ Settings for T-Test <i> (start counting i at 1)
 :name:
     Name of the Test (**M**)
 :custom-script:
-    Path (relative from experiment folder) to a custom gnuplot script that
+    Path (relative from simulation folder) to a custom gnuplot script that
     should be used instead of the automatically generated one.
 
 set<j>
@@ -156,7 +166,7 @@ Remote computer configuration
 
 These settings should be in a file called ``remote.conf``.
 See :ref:`remote_example` on a tutorial for how to execute
-experiments remotely.
+simulations remotely.
 
 host<i>
 ^^^^^^^^^^^

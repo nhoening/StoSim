@@ -10,7 +10,7 @@ give each server some of it and fetch the results from them later.
 We'll reuse our example from :ref:`subex_example` to show how this works.
 Commands we will use here are ``--run``, ``--check`` and ``--results``
 
-We can turn on remote mode in the main configuration (``experiment.conf``) like this::
+We can turn on remote mode in the main configuration (``nicessa.conf``) like this::
 
     local: 0
 
@@ -24,12 +24,12 @@ they're finished and once all their CPUs are done, get results and plot them::
 
     ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --run
     ********************************************************************************
-    Running experiment Subexperiment Example
+    Running simulation Subsimulation Example
     ********************************************************************************
 
     [Nicessa] Running code on ssh.cwi.nl
     [Nicessa] Running code on nicolashoening.de
-    [Nicessa] deployed experiment on 2 host(s)
+    [Nicessa] deployed simulation on 2 host(s)
     ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --check
     [Nicessa] Checking hosts:  ssh.cwi.nl (host 1)   nicolashoening.de (host 2)  
     [Nicessa] Finished cpus:
@@ -57,7 +57,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     ~/Documents/nicessa/trunk/examples/subexp nic$ nicessa . --results --plots
     ********************************************************************************
     [Nicessa] getting results ... 
-    [Nicessa] This may take a while, depending on your experiment. I'll tell you when I got everything from a host.
+    [Nicessa] This may take a while, depending on your simulation. I'll tell you when I got everything from a host.
     [Nicessa] copying data from ssh.cwi.nl ...  done.
     [Nicessa] copying data from nicolashoening.de ...  done.
     _ [Nicessa] Got all results.
@@ -68,23 +68,23 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] creating plots ...
     ********************************************************************************
 
-    [Nicessa] Preparing ./plots/experiment1_cooperative.pdf:  learners-minority  learners-majority  learners_all 
-    [Nicessa] Plotting ./plots/experiment1_cooperative.pdf
+    [Nicessa] Preparing ./plots/simulation1_cooperative.pdf:  learners-minority  learners-majority  learners_all 
+    [Nicessa] Plotting ./plots/simulation1_cooperative.pdf
 
-    [Nicessa] Preparing ./plots/experiment1_non-cooperative.pdf:  learners-minority  learners-majority  learners-all 
-    [Nicessa] Plotting ./plots/experiment1_non-cooperative.pdf
+    [Nicessa] Preparing ./plots/simulation1_non-cooperative.pdf:  learners-minority  learners-majority  learners-all 
+    [Nicessa] Plotting ./plots/simulation1_non-cooperative.pdf
 
-    [Nicessa] Preparing ./plots/experiment1_payoff.pdf:  non-learners_in_coop  learners_in_coop  non-learners_in_non-coop  learners_in_non-coop 
-    [Nicessa] Plotting ./plots/experiment1_payoff.pdf
+    [Nicessa] Preparing ./plots/simulation1_payoff.pdf:  non-learners_in_coop  learners_in_coop  non-learners_in_non-coop  learners_in_non-coop 
+    [Nicessa] Plotting ./plots/simulation1_payoff.pdf
 
-    [Nicessa] Preparing ./plots/experiment2_cooperative.pdf:  learners-minority  learners-majority  learners_all 
-    [Nicessa] Plotting ./plots/experiment2_cooperative.pdf
+    [Nicessa] Preparing ./plots/simulation2_cooperative.pdf:  learners-minority  learners-majority  learners_all 
+    [Nicessa] Plotting ./plots/simulation2_cooperative.pdf
 
-    [Nicessa] Preparing ./plots/experiment2_non-cooperative.pdf:  learners-minority  learners-majority  learners-all 
-    [Nicessa] Plotting ./plots/experiment2_non-cooperative.pdf
+    [Nicessa] Preparing ./plots/simulation2_non-cooperative.pdf:  learners-minority  learners-majority  learners-all 
+    [Nicessa] Plotting ./plots/simulation2_non-cooperative.pdf
 
-    [Nicessa] Preparing ./plots/experiment2_payoff.pdf:  non-learners_in_coop  learners_in_coop  non-learners_in_non-coop  learners_in_non-coop 
-    [Nicessa] Plotting ./plots/experiment2_payoff.pdf
+    [Nicessa] Preparing ./plots/simulation2_payoff.pdf:  non-learners_in_coop  learners_in_coop  non-learners_in_non-coop  learners_in_non-coop 
+    [Nicessa] Plotting ./plots/simulation2_payoff.pdf
 
 
 The servers.conf file
@@ -98,7 +98,7 @@ and some other things. Here is an example (go to :ref:`remote_reference` for a f
 
 
 Nicessa will transfer all the files to the servers and start background sreens on them, running a portion of the
-workload (it only makes sense to have several servers when your experiment has multiple settings). 
+workload (it only makes sense to have several servers when your simulation has multiple settings). 
 
 If you did not use the ``--run`` command, then Nicessa checks
 each server periodically if they are done. If they all are, 
@@ -110,7 +110,7 @@ it fetches the results. Then, plots are made locally, like usual.
           (or you want to keep a CPU free on your own or your colleagues computer). 
           If all your servers have the same amount of CPUs, better leave it all at ``1``.
         
-.. note:: When running remote experiments, make sure that the servers are known 
+.. note:: When running remote simulations, make sure that the servers are known 
           in your .ssh/known_hosts file. I always connect to the servers once per 
           manual ssh login, where ssh asks me if I want to add that server to that file.
 

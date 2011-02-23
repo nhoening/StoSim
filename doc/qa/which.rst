@@ -1,7 +1,7 @@
 .. _which:
 
-Which kind of experiments would I run with Nicessa?
-==================================================
+Which kind of simulations would I run with Nicessa?
+=====================================================
 
 Four short points
 ------------------
@@ -32,13 +32,13 @@ Basically, almost any simulation can be run with Nicessa. Let me explain the wor
 
 
 Stochastic simulations
-----------------------
+------------------------
 
-Nicessa has been tailored to work very well with stochastic experiments:
+Nicessa has been tailored to work very well with stochastic simulations:
 
   * You can say **how many runs** you want to have done and even add more runs to the data you already collected (even only for specific configurations). 
   * You can also specify a list of **seeds**, so that the n-th run always uses the n-th key (nice for reproducability). 
   * Plots can have **errorbars**
   * You can request **T-tests** to be made, in order to look at statistical significance.
 
-To make your experiment actually stochastic in the first place, however, is your job. Nicessa just runs whatever code you tell it to run.
+To make your simulation actually stochastic in the first place, however, is your job. Nicessa just runs whatever code you tell it to run.

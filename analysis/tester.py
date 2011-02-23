@@ -14,25 +14,25 @@ from sim import utils
 from analysis import harvester
 
 
-def ttest(expfolder, c, i):
+def ttest(simfolder, c, i):
     '''
     Run a T-test with Gnu R
 
-    :param string expfolder: path to experiment folder
+    :param string simfolder: path to simulation folder
     :param ConfigParser c: the config file where this test is described
     :param int i: number of test in that config file
     '''
-    tmp_dir = '%s/tmp_tester' % expfolder
+    tmp_dir = '%s/tmp_tester' % simfolder
 
     # -- prepare data --
     # for each of the two datasets, retrieve files and then values
     sets = []
     for dset in [1,2]:
-        d = utils.decode_search_from_confstr(c.get('ttest%i' % i, 'set%i' % dset), exp=c.get('meta', 'name'))
+        d = utils.decode_search_from_confstr(c.get('ttest%i' % i, 'set%i' % dset), sim = c.get('meta', 'name'))
         if d.has_key('_name') and d.has_key('_col') and d['_col'].isdigit():
             sets.append(d['_name'])
             searches = {d['_name'] : [(k, d[k]) for k in d.keys() if not k in ['_name', '_col']]}
-            harvester.collect_files(searches, "%s/data" % expfolder, tmp_dir)
+            harvester.collect_files(searches, "%s/data" % simfolder, tmp_dir)
             #TODO: custom selectors?
             if not d.has_key('_select'):
                 d['_select'] = 'all'

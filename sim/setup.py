@@ -20,13 +20,13 @@ import utils
 
 
 
-def create(conf, expfolder, limit_to={}, more=False):
+def create(conf, simfolder, limit_to={}, more=False):
     """
     Writes a conf file for each run that the parameters in conf suggest.
-    Also divides all runs of an experiment in groups with a main conf each, to run on different hosts.
+    Also divides all runs of an simulation in groups with a main conf each, to run on different hosts.
 
     :param ConfigParser conf: main configuration
-    :param string expfolder: relative path to expfolder
+    :param string simfolder: relative path to simfolder
     :param dict limit_to: dict of configuration settings we should limit to (default is an empty dict)
     :param boolean more: True if runs should be appended to existing data (default is False)
     """
@@ -49,16 +49,16 @@ def create(conf, expfolder, limit_to={}, more=False):
         return res
 
 
-    def get_options_values(exp_params, limit_to):
+    def get_options_values(sim_params, limit_to):
         '''
-        :param dict exp_params: dict of configuration for one experiment
+        :param dict sim_params: dict of configuration for one simulation
         :param dict limit_to: dict of configuration settings we should limit to
-        :returns: a list of option names and lists of values to use in every possible combination in one experiment.
+        :returns: a list of option names and lists of values to use in every possible combination in one simulation.
         '''
         comb_options = [] # all my param names
         comb_values = [] # all my param values
 
-        for k, v in exp_params.iteritems():
+        for k, v in sim_params.iteritems():
             comb_options.append(k)
             comb_values.append(v)
         comb_values = combiner(comb_values)
@@ -90,7 +90,7 @@ def create(conf, expfolder, limit_to={}, more=False):
 
     def make_dir(srv, cpu):
         '''make a new dir in the conf directory (if it exists, delete it)'''
-        pdir = os.path.join(expfolder, 'conf', str(srv), str(cpu))
+        pdir = os.path.join(simfolder, 'conf', str(srv), str(cpu))
         if os.path.exists(pdir):
             rmtree(pdir)
         os.makedirs(pdir)
@@ -98,52 +98,52 @@ def create(conf, expfolder, limit_to={}, more=False):
 
     def writeopt((opt, isint, sec), tosub=True):
         ''' helper function to copy values in conf file from meta and control section '''
-        right_conf = exp_conf.has_option(sec, opt) and exp_conf or conf
+        right_conf = sim_conf.has_option(sec, opt) and sim_conf or conf
         getter = isint and getattr(right_conf, 'getint') or getattr(right_conf, 'get')
         target_conf = tosub and sub_conf or main_conf
         target_conf.write('%s:%s\n' % (opt, getter(sec, opt)))
 
 
     # ---------------------------------------------------------------------------------------------
-    # get parameters from subexperiments: combine them into our normal params
+    # get parameters from subsimulations: combine them into our normal params
     default_params = {}
     for param in conf.options('params'):
         default_params[param] = [v.strip() for v in conf.get('params', param).split(',')]
-    experiments = {'': default_params}
-    if 'experiments' in conf.sections() and conf.get('experiments', 'configs') != '':
-        experiments = {}
-        for ex in conf.get('experiments', 'configs').split(','):
-            ex = ex.strip()
-            experiments[ex] = default_params.copy()
-            exp_conf = ConfigParser()
-            exp_conf_name = "%s/%s.conf" % (expfolder, ex)
-            if not os.path.exists(exp_conf_name):
-                print "[Nicessa] Error: Can't find %s !" % exp_conf_name
+    simulations = {'': default_params}
+    if 'simulations' in conf.sections() and conf.get('simulations', 'configs') != '':
+        simulations = {}
+        for sim in conf.get('simulations', 'configs').split(','):
+            sim = sim.strip()
+            simulations[sim] = default_params.copy()
+            sim_conf = ConfigParser()
+            sim_conf_name = "%s/%s.conf" % (simfolder, sim)
+            if not os.path.exists(sim_conf_name):
+                print "[Nicessa] Error: Can't find %s !" % sim_conf_name
                 sys.exit()
-            exp_conf.read(exp_conf_name)
-            for param in exp_conf.options('params'):
-                experiments[ex][param] = [v.strip() for v in exp_conf.get('params', param).split(',')]
+            sim_conf.read(sim_conf_name)
+            for param in sim_conf.options('params'):
+                simulations[sim][param] = [v.strip() for v in sim_conf.get('params', param).split(',')]
 
     # ---------------------------------------------------------------------------------------------
-    # find out how many confs each host should do for each experiment
-    hosts = utils.num_hosts(expfolder)
-    cpus_per_host = utils.cpus_per_host(expfolder)
-    # this is the host we currently use, we don't reset this between experiments to get a fair distribution
+    # find out how many confs each host should do for each simulation
+    hosts = utils.num_hosts(simfolder)
+    cpus_per_host = utils.cpus_per_host(simfolder)
+    # this is the host we currently use, we don't reset this between simulations to get a fair distribution
     host = 0
-    num_per_hosts = range(len(experiments.keys()))
+    num_per_hosts = range(len(simulations.keys()))
     for n in range(len(num_per_hosts)):
         num_per_hosts[n] = dict.fromkeys(range(hosts), 0)
     unfulfilled = dict.fromkeys(range(hosts), 0)
 
-    # these hold all parameter names and the different value configurations, per experiment
+    # these hold all parameter names and the different value configurations, per simulation
     comb_options = {} # param names
     comb_values = {} # param values
 
-    for expname in experiments.keys():
-        nums = num_per_hosts[experiments.keys().index(expname)]
+    for sim_name in simulations.keys():
+        nums = num_per_hosts[simulations.keys().index(sim_name)]
 
-        comb_options[expname], comb_values[expname] = get_options_values(experiments[expname], limit_to)
-        confs = len(comb_values[expname])
+        comb_options[sim_name], comb_values[sim_name] = get_options_values(simulations[sim_name], limit_to)
+        confs = len(comb_values[sim_name])
         host = incrTo(host, hosts) # move to next host from where we left off
         if sum(cpus_per_host.values()) == 0:
             print "[Nicessa]: You have not configured any CPUs for me to use. Stopping Configuration ..."
@@ -152,7 +152,6 @@ def create(conf, expfolder, limit_to={}, more=False):
             available = min(int(cpus_per_host[host]), confs)
             # if earlier we gave the last host too few, let's even that out right now
             last_host = decrTo(host, hosts-1)
-            last_exp = num_per_hosts[decrTo(experiments.keys().index(expname), len(experiments.keys())-1)]
             if unfulfilled[last_host] > 0:
                 onlast = min(available, min(cpus_per_host[last_host], unfulfilled[last_host]))
                 nums[last_host] += onlast
@@ -173,8 +172,8 @@ def create(conf, expfolder, limit_to={}, more=False):
     for host in xrange(1, hosts+1):
         # find out how much each cpu should get (in a helper list, distribute excess one by one)
         load = 0
-        for exp in num_per_hosts:
-            load += exp[host-1]
+        for sim in num_per_hosts:
+            load += sim[host-1]
         my_cpus = cpus_per_host[host]
         if my_cpus == 0:
             continue
@@ -201,22 +200,22 @@ def create(conf, expfolder, limit_to={}, more=False):
 
             # write as many confs as cpuloads prescribes for this cpu
             for job in range(cpuloads[cpu]):
-                expindex = 0
-                expname = experiments.keys()[expindex]
-                while len(comb_values[expname]) == 0:
-                    expindex += 1
-                    if expindex == len(experiments.keys()): break
-                    expname = experiments.keys()[expindex]
-                act_comb_values = comb_values[expname].pop()
-                sub_name = "%s_" % expname
+                simindex = 0
+                sim_name = simulations.keys()[simindex]
+                while len(comb_values[sim_name]) == 0:
+                    simindex += 1
+                    if simindex == len(simulations.keys()): break
+                    sim_name = simulations.keys()[simindex]
+                act_comb_values = comb_values[sim_name].pop()
+                sub_name = "%s_" % sim_name
                 for i in range(len(act_comb_values)):
-                    sub_name += "%s%s" % (experiments[expname].keys()[i], act_comb_values[i])
+                    sub_name += "%s%s" % (simulations[sim_name].keys()[i], act_comb_values[i])
                     if i < len(act_comb_values)-1:
                         sub_name += "_"
                 sub_conf = open('%s/%s.conf' % (prefix_dir, sub_name), 'w')
 
-                # these sections settings can be overwritten per experiment
-                exp_conf = ConfigParser(); exp_conf.read("%s/%s.conf" % (expfolder, expname))
+                # these sections settings can be overwritten per simulation
+                sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim_name))
                 sub_conf.write('[meta]\n')
                 for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
                     writeopt(dat)
@@ -224,12 +223,12 @@ def create(conf, expfolder, limit_to={}, more=False):
                 for dat in [(opt, isint, 'control') for (opt, isint) in [('runs', 1), ('executable', 0)]]:
                     writeopt(dat)
                 if more:
-                    sub_conf.write('start_run:%d\n' % (utils.runs_in_folder(expfolder, sub_name) + 1))
+                    sub_conf.write('start_run:%d\n' % (utils.runs_in_folder(simfolder, sub_name) + 1))
                 sub_conf.write('\n')
 
                 sub_conf.write('[params]\n')
                 for i in range(len(act_comb_values)):
-                    sub_conf.write('%s:%s\n' % (comb_options[expname][i], act_comb_values[i]))
+                    sub_conf.write('%s:%s\n' % (comb_options[sim_name][i], act_comb_values[i]))
 
                 sub_conf.flush()
                 sub_conf.close()
