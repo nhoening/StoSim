@@ -117,7 +117,7 @@ Those settings can also be set per figure. Settings per figure overwrite
 plot-settings in subsimulations, which overwrite the plot-settings in the main
 configuration.
 
-The first three settings are of purely cosmetic nature, while the fourth is
+The first four settings are of purely cosmetic nature, while the fifth is
 really interesting when we discuss line plots below - in essence, we're telling
 Nicessa here not to draw vertical error bars.
 

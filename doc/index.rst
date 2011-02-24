@@ -31,12 +31,22 @@ Narrative contents
     qa/workflows.rst
     qa/get.rst
     qa/usage.rst
-    tut/tutorials.rst
     qa/underthehood.rst
     qa/depend.rst
+
+.. tut/tutorials.rst
+
+***************
+Tutorials
+***************
+
+.. toctree::
+
+    tut/basic.rst
+    tut/sub.rst
+    tut/stochastic.rst
+    tut/remote.rst
     tut/custom.rst
-
-
 
 .. image:: img/nicessa-workflows.png
     :align: center
