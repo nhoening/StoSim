@@ -34,7 +34,11 @@ Narrative contents
     qa/underthehood.rst
     qa/depend.rst
 
-.. tut/tutorials.rst
+
+.. image:: img/nicessa-workflows.png
+    :align: center
+    :scale: 90%
+
 
 ***************
 Tutorials
@@ -47,11 +51,6 @@ Tutorials
     tut/stochastic.rst
     tut/remote.rst
     tut/custom.rst
-
-.. image:: img/nicessa-workflows.png
-    :align: center
-    :scale: 90%
-
 
 ************************
 Configuration reference

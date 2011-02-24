@@ -3,12 +3,15 @@
 How to use Nicessa
 ==================
 
+
 Quick How-To
 ------------
   1. Place an nicessa.conf and the code to run your simulation in a folder of your choice.
   2. In the nicessa.conf (copy `the one from the basic example <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/nicessa.conf>`_ to start), set the name of your executable.
   3. Call ``./nicessa.py <path-to-your-simulation-folder>``. Or, if you also have this shortcut I created for myself (see :ref:`get`), you can go to your simulation folder and simply type ``nicessa .``
   4. You should now find results in the "data" directory, in your folder (but if you like the plotting capabilities of nicessa you might never look there). Plots go in the "plots" directory.
+
+.. note:: There are several tutorials in this documentation which describe how to use Nicessa in depth.
 
 All commands at a glance
 -------------------------
