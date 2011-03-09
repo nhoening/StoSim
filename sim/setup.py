@@ -121,8 +121,9 @@ def create(conf, simfolder, limit_to={}, more=False):
                 print "[Nicessa] Error: Can't find %s !" % sim_conf_name
                 sys.exit()
             sim_conf.read(sim_conf_name)
-            for param in sim_conf.options('params'):
-                simulations[sim][param] = [v.strip() for v in sim_conf.get('params', param).split(',')]
+            if sim_conf.has_section('params'):
+                for param in sim_conf.options('params'):
+                    simulations[sim][param] = [v.strip() for v in sim_conf.get('params', param).split(',')]
 
     # ---------------------------------------------------------------------------------------------
     # find out how many confs each host should do for each simulation

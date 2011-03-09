@@ -83,7 +83,7 @@ def plot(filepath='', outfile_name='', name='My simulation',\
     print
     # handle errors
     if len(failed) > 0:
-        print"[Nicessa] WARNING: Selectors %s didn't match any folders!" % ','.join(failed)
+        print "[Nicessa] WARNING: Selectors %s didn't match any folders!" % ','.join(failed)
     if len(failed) == len(plots):
         print "[Nicessa] In fact, no selectors of this figure matched anything. Aborting ..."
         print

@@ -153,7 +153,7 @@ def make_plots(simfolder):
             d[option.replace('-', '_')] = val
 
     general_settings = {}
-    c = ConfigParser(); c.read('%s/simulation.conf' % (simfolder))
+    c = ConfigParser(); c.read('%s/nicessa.conf' % (simfolder))
     for o,t in general_options.iteritems():
         get_opt_val(c, general_settings, 'plot-settings', o, t)
 

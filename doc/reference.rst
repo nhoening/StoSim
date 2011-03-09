@@ -57,7 +57,7 @@ simulations
 Use this if you separate simulations into separate sub-configs.
 This section is optional.
 
-:<configs>:
+:configs:
     A comma-separated list of config-file names (without the .conf file ending) e.g. sim1,sim2
 
 
@@ -112,8 +112,9 @@ In addition, you can specify:
 plot<j>
 *******
 This is not a section, but an option in a Figure. You need at least one to 
-describe data to plot (start counting j at 1)
-. You pass it a comma-separated list of settings (setting:value):
+describe data to plot (start counting j at 1).
+You pass it a comma-separated list of settings (setting:value). 
+First, these are the system-specific settings you can/need to set:
 
 :_name:
     Name of the plot (**M**)
@@ -126,7 +127,9 @@ describe data to plot (start counting j at 1)
     One out of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y']
 
 In addition, you can narrow down your data set for this plot by giving some
-settings for your parameters.
+settings for your parameters (e.g. ``param_1:value_a``).
+
+Nicessa has to parse the ``plot<j>`` string, so if you really want to use ``,`` or ``:`` in a name or value, escape it with ``\``.  
 
 
 tests
@@ -146,7 +149,8 @@ set<j>
 ********
 This is not a section, but an option in a Test. You need at least one to 
 describe data to test (for T-Tests: at least two) - start counting j at 1. 
-You pass it a comma-separated list of settings (setting:value):
+You pass it a comma-separated list of settings (setting:value). 
+First, these are the system-specific settings you can/need to set:
 
 :_name:
     Name of the data set (**M**)
@@ -157,6 +161,8 @@ You pass it a comma-separated list of settings (setting:value):
     One out of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y'] (**M**)
 
 In addition, you can narrow down your data set for this test by specifying some parameter settings.
+
+Nicessa has to parse the ``set<j>`` string, so if you really want to use ``,`` or ``:`` in a name or value, escape it with ``\``.  
 
 
 .. _remote_reference:

@@ -197,11 +197,20 @@ def decode_search_from_confstr(s, sim=""):
         :returns: dictionary made from the string
     '''
     d = {}
+    # prepare to deal with special chars
+    s = s.replace('\\\\,', '\\ ,')
+    s = s.replace('\\\\:', '\\ :')
+    s = s.replace('\\,', "#COMMA#")
+    s = s.replace('\\:', "#COLON#")
+    s = s.replace('\\\\', '\\')
+
     for item in s.split(','):
         try:
-            [k, v] = item.split(':')
+            k, v = item.split(':')
+            v = v.replace("#COMMA#", ',')
+            v = v.replace("#COLON#", ':')
         except:
-            print '[NICESSA] Misconfiguration in Experiment %s. Please check: [%s] ... ' % (sim, s)
+            print '[NICESSA] Misconfiguration in Experiment %s while parsing "%s". This is the plot configuration, please check: "%s" ... ' % (sim, item, s)
             continue
         d[k.strip()] = v.strip()
     return d

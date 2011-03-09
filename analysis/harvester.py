@@ -40,7 +40,7 @@ def collect_files(searches, filepath, target_dir):
             filenames = [fin for fin in os.listdir('%s/%s' % (filepath, fon)) if fin.endswith('.csv')]
             for fin in filenames:
                 copied_files += 1
-                os.system('cp %s/%s/%s %s/%s/%d.log' % (filepath, fon, fin, target_dir, s, copied_files))
+                os.system("cp %s/%s/%s '%s/%s/%d.log'" % (filepath, fon, fin, target_dir, s, copied_files))
     return failed
 
 
