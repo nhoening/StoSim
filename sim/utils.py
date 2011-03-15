@@ -10,6 +10,7 @@ import sys
 import os
 import os.path as osp
 from ConfigParser import ConfigParser
+from ConfigParser import NoOptionError, NoSectionError
 import getopt
 
 
@@ -39,6 +40,37 @@ def usage():
     print "%s : Run T-tests (needs R installed)" % '--ttests'.ljust(w)
     sys.exit(2)
 
+
+def check_conf(simfolder):
+    """
+    check if nicessa.conf contains all necessary sections and options
+    :param string simfolder: relative path to simfolder
+    """
+    conf = ConfigParser()
+    try:
+        conf.read("%s/nicessa.conf" % simfolder)
+    except ParsingError, e:
+        print "[NICESSA] %s" % e
+        sys.exit(2)
+
+    needed = [('meta', 'name'),
+              ('meta', 'maintainer'),
+              ('control', 'executable'),
+              ('control', 'local'),
+              ('control', 'runs')
+             ]
+    for n in needed:
+        try:
+            _ = conf.get(n[0], n[1])
+        except NoSectionError, e:
+            print "[NICESSA] %s" % e
+            sys.exit(2)
+        except NoOptionError, e:
+            print "[NICESSA] %s" % e
+            sys.exit(2)
+
+    if not conf.has_section('params'):
+        print "[NICESSA] Warning: You have not defined a 'params' - section."
 
 def get_main_conf(simfolder):
     """ Return ConfigParser object read from main conf, with all relevant

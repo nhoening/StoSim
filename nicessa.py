@@ -293,6 +293,8 @@ if __name__ == "__main__":
         utils.usage()
 
     simfolder = sys.argv[1].strip('/')
+    utils.check_conf(simfolder)
+
     conf = utils.get_main_conf(simfolder)
 
     opts, args = utils.read_args()
