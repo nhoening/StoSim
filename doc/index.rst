@@ -1,22 +1,18 @@
-.. Nicessa documentation master file, created by
-   sphinx-quickstart on Sat Jan  1 02:59:39 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Nicessa's documentation!
-==================================
+====================================
 
 Nicessa stands for "**\ N**\ on-\ **i**\ ntrusive **c**\ ombinatorial **e**\ xecution of **s**\ tochastic **s**\ imulations and their **A**\ nalysis".
 
-When running stochastic agent-based simulations, there is a recurring set of technical 
-tasks: Variable settings need to be recombined, log files need to be managed, and the results need to be
+When running stochastic simulations, there is a recurring set of technical 
+tasks: Parameter settings need to be recombined, log files need to be managed, and the results need to be
 analysed graphically and statistically. In addition, the computational workload should be distributed over
 several computers.
 
 NICESSA is a light-weight, general-purpose simulation framework, which relieves the researcher of generalisable technical tasks in the execution and analysis workflows, while being non-intrusive with respect to the individual implementation of the simulation model. 
-It is suited for stochastic and complex computational simulations in general and as such not exclusive to agent-based research - however, agent researchers who do stochastic simulations are the major target group.
 
-NICESSA is developed at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R.
+NICESSA is developed at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R. 
+
+Please contact `Nicolas Honing <nicolas@cwi.nl>`_ with any questions or problems.
 
 
 ******************
