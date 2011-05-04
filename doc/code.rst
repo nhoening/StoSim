@@ -2,6 +2,13 @@
     :members:
 
 ===================
+nicessa
+===================
+
+.. automodule:: nicessa
+    :members:
+
+===================
 sim
 ===================
 Assisting code to support other code and prepare simulations

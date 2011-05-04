@@ -1,18 +1,16 @@
 #!/usr/bin/python
+# -*- coding:iso-8859-1
 
 """
-main
-==========
-
-Utility functions to
-  * run simulations (locally or on some -up to 4- remote hosts via ssh access),
+This module contains the utility functions for the main use cases:
+  * run simulations (locally or on some remote hosts via ssh access),
   * get data from hosts
   * generate plots
   * run T-tests
-  * list runs so far
+  * list runs made so far
 
 The functions all expect the name of the simulation folder which should have an simulation.conf file in it.
-An simulation folder will in the end contain the following dirs:
+A simulation folder will in the end contain the following dirs:
 
   * conf (configurations for batches of needed computations)
   * data (all log files)
@@ -21,6 +19,28 @@ An simulation folder will in the end contain the following dirs:
 This module is careful with imports since it might be used in another context (on a remote host) and if
 no remote support is needed, the user doesn't need paramiko
 """
+
+'''
+Copyright (c) 2011 Nicolas Höning
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+'''
 
 import os
 import os.path as osp
