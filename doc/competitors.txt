@@ -1,0 +1,55 @@
+Competitor analysis
+---------------------------------
+
+Someone mentioned that these tools were already doing what nicessa does in some respect. It is worthwhile to study how much that is so or if Nicessa is indeed offering something different.
+
+
+**PaPy**
+http://code.google.com/p/papy/
+"Parallel Pipelines in Python
+The papy package provides an implementation of the flow-based programming paradigm in Python that enables the construction and deployment of distributed workflows."
+
+Nicessa sits on a higher level (it seems), when considering automating parameterisation and analysis. 
+Papys workflow definition is an acyclic graph of nodes who process and pass on information. In contrast, Nicessa deliberately treads the computation as a black box and considers it not distributable - the computation job instances are distributable.
+
+**OpenAlea**
+http://openalea.gforge.inria.fr/dokuwiki/doku.php?id=openalea
+"OpenAlea is an open source project primarily aimed at the plant research community. It is a distributed collaborative effort to develop Python libraries and tools that address the needs of current and future works in Plant Architecture modeling. OpenAlea includes modules to analyse, visualize and model the functioning and growth of plant architecture. "
+
+They mention plants a bit often in the intro so it seems that it is not general (e.g. it uses 3D libs to be able to model plants from data), where Nicessa is general (considers only numerical, stochastic and parameterisable simulations). It also is a flow-based, editor-driven workflow tool.
+
+
+**Joblib**
+http://packages.python.org/joblib/index.html
+"Joblib is a set of tools to provide lightweight pipelining in Python. In particular, joblib offers:
+       1. transparent disk-caching of the output values and lazy re-evaluation (memoize pattern)
+       2. easy simple parallel computing
+       3. logging and tracing of the execution
+"
+This tool is very nice (at least the docs give a very good impression), it seems to be invented to make embarassingly parallel computation and caching of results play nice with Python code, especially with numpy code. Parallelisation works only on local CPUs.
+
+
+
+**Orange**
+"Open source data visualization and analysis for novice and experts. Data mining through visual programming or Python scripting. Components for machine learning. Extensions for bioinformatics and text mining. Packed with features for data analytics."
+
+This tool covers the analysis workflow in great detail. Very visual. It is also imtermingled with many data mining features. I would say that Nicessa is considering a simpler use case when analysing data, but also a more open one (i.e. using Gnu R and Gnuplot, ability to write custom scripts for these). Maybe one can take home the inspiration to not only allow for data selection, but also make a data reformation step (e.g. data mining) possible (where integrating Orange is maybe not feasible, maybe other libs would be better). However, maybe this is not a Nicessa core feature, this is maybe a good discussion point.
+
+
+**VisTrails**
+http://www.vistrails.org/index.php/Main_Page
+"VisTrails is an open-source scientific workflow and provenance management system developed at the University of Utah that provides support for data exploration and visualization. (...) A key distinguishing feature of VisTrails is a comprehensive provenance infrastructure that maintains detailed history information about the steps followed and data derived in the course of an exploratory task: VisTrails maintains provenance of data products, of the workflows that derive these products and their executions."
+
+This is covering much the same ground as Orange I think, and therefore the same comments apply. One feature I found interesting is a parameter exploration option, but as this is only working on finished data, it's not the same thing.
+
+
+
+
+
+
+Nicessa is ...
+  * ... not visual. It could use a GUI, but its primary goal is not to visualise some complex model of computation.
+  * ... general in the sense of numerical, stochastic and parameterisable simulations.
+  * ... written in Python, but not a Python library that works only with python simulations. It is agnostic to the inner workings, cares only about giving parameter config (input) and reading logfiles (output).
+  * ... doesn't aim at helping you to parallelise execution, it will do it for you, based on its (automated) parameterisation
+  * ... distributes jobs over separate computers, not only local CPUs

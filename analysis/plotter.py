@@ -8,7 +8,6 @@ plotter
 import sys
 import os
 import os.path as osp
-import getopt
 from subprocess import Popen
 from shutil import rmtree
 
