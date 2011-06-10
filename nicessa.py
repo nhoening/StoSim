@@ -88,12 +88,13 @@ def run_more(simfolder):
     simfolder = simfolder.strip('/')
     conf = utils.get_main_conf(simfolder)
 
-    print "[Nicessa] Let's make %d more runs! Please tell me on which configurations.\n" % conf.getint('control', 'runs') \
+    print "[Nicessa] Let's make %d more run(s)! Please tell me on which configurations.\n" % conf.getint('control', 'runs') \
           + "Enter any parameter values you want to narrow down to, nothing otherwise."
 
     sel_params = {}
     for o in conf.options('params'):
         selected = False
+        print o
         params = [p.strip() for p in conf.get('params', o).split(',')]
         if len(params) <= 1:
             continue # no need to narrow down
@@ -116,7 +117,7 @@ def run_more(simfolder):
     print "You selected: %s. Do this? [Y|n]\n(Remember that configuration and code should still be the same!)" % str(sel_params)
     if raw_input().lower() in ["", "y"]:
         _prepare(simfolder, limit_to=sel_params, more=True)
-        run_simulation(simfolder)
+        run(simfolder)
 
 
 def make_plots(simfolder):
@@ -266,7 +267,7 @@ def list_data(simfolder):
         print '-' * charlen
         print "|",
         for p in params:
-            print "  %s  |" % v ,
+            print "  %s  |" % p ,
         print "| runs |"
         print '-' * charlen
         # now show how much we have in each relevant dir

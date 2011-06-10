@@ -94,7 +94,7 @@ In addition, you can specify:
 
 :name:
     Name of the Figure (**M**)
-:x-col:
+:xcol:
     Index of the x-column in the data (**M**)
 :x-label:
     Label on X-axis

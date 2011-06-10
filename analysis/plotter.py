@@ -66,16 +66,19 @@ def plot(filepath='', outfile_name='', name='My simulation',\
 
     print '[Nicessa] Preparing %s: ' % outfile_name ,
 
-    # make sure tmp dir exists and is empty
+    # make sure tmp dir exists
     if not os.path.exists(tmp_dir):
         os.mkdir(tmp_dir)
-    if len(os.listdir(tmp_dir)) > 0:
-        Popen('rm -r %s/*' % tmp_dir, shell=True).wait()
 
     # ---- collect relevant data for each requested plot ----
     # get relevant files
     searches = {}
     for p in plots:
+        # make sure no old data is around
+        plot_dir = '%s/%s' % (tmp_dir, p['_name'])
+        if os.path.exists(plot_dir):
+            if len(os.listdir(plot_dir)) > 0:
+                Popen('rm -r %s/*' % plot_dir, shell=True).wait()
         searches[p['_name']] = [(k, p[k]) for k in p.keys() if not k.startswith('_')]
         print '%s ' % p['_name'],
     failed = harvester.collect_files(searches, filepath, tmp_dir)

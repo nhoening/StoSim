@@ -72,6 +72,7 @@ def check_conf(simfolder):
     if not conf.has_section('params'):
         print "[NICESSA] Warning: You have not defined a 'params' - section."
 
+
 def get_main_conf(simfolder):
     """ Return ConfigParser object read from main conf, with all relevant
         subsimulation configs set
@@ -88,7 +89,7 @@ def get_main_conf(simfolder):
     conf.read("%s/nicessa.conf" % simfolder)
     opts, args = read_args()
     for opt, arg in opts:
-        if opt in ("--simulations="):
+        if opt in ("--simulations="): # overwrite simulation/configs
             s = []
             for a in arg.split(','):
                 if a in conf.get('simulations', 'configs').split(','):
@@ -96,6 +97,19 @@ def get_main_conf(simfolder):
                 if not osp.exists("%s.conf" % a):
                     print "[Nicessa] Warning: The file %s.conf does not exist!" % a
             conf.set('simulations', 'configs', ','.join(s))
+    for con in conf.get('simulations', 'configs').split(','):
+        print '----------------------------------------------', con
+        subconf = ConfigParser()
+        subconf.read('%s/%s.conf' % (simfolder, con))
+        for p in subconf.options('params'):
+            if conf.has_option('params', p):
+                conf.set('params', p, ','.join(set(conf.get('params', p).split(',').extend(subconf.get('params', p).split(',')))))
+            else:
+                conf.set('params', p, subconf.get('params', p))
+            print '---------'
+            print "for ", p, ' we set ', conf.get('params', p)
+            print '---------'
+            print '---------'
     return conf
 
 
