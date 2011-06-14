@@ -60,7 +60,6 @@ def collect_values(filepath, outfile_name, cols=[], selector='all'):
     '''
     assert(selector in ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y'])
     import harvester
-    print cols
     selector = harvester.__getattribute__('select_%s' % selector)
     vals = []
     files = [f for f in os.listdir(filepath) if f.endswith('.log')]

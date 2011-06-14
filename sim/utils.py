@@ -87,29 +87,29 @@ def get_main_conf(simfolder):
         print "[Nicessa] WARNING: Cannot find nicessa.conf in the folder %s." % simfolder
         sys.exit()
     conf.read("%s/nicessa.conf" % simfolder)
+    # overwrite simulation-configs
+    # first see if there are extra ones passed as params
     opts, args = read_args()
     for opt, arg in opts:
-        if opt in ("--simulations="): # overwrite simulation/configs
+        if opt in ("--simulations="): 
             s = []
             for a in arg.split(','):
                 if a in conf.get('simulations', 'configs').split(','):
                     s.append(a)
-                if not osp.exists("%s.conf" % a):
-                    print "[Nicessa] Warning: The file %s.conf does not exist!" % a
             conf.set('simulations', 'configs', ','.join(s))
-    for con in conf.get('simulations', 'configs').split(','):
-        print '----------------------------------------------', con
-        subconf = ConfigParser()
-        subconf.read('%s/%s.conf' % (simfolder, con))
-        for p in subconf.options('params'):
-            if conf.has_option('params', p):
-                conf.set('params', p, ','.join(set(conf.get('params', p).split(',').extend(subconf.get('params', p).split(',')))))
+    # then set all the params from subconfs
+    if conf.has_section('simulation'):
+        for c in conf.get('simulations', 'configs').split(','):
+            if not osp.exists("%s.conf" % a):
+                print "[Nicessa] Warning: The file %s.conf does not exist!" % a
             else:
-                conf.set('params', p, subconf.get('params', p))
-            print '---------'
-            print "for ", p, ' we set ', conf.get('params', p)
-            print '---------'
-            print '---------'
+                subconf = ConfigParser()
+                subconf.read('%s/%s.conf' % (simfolder, c))
+                for p in subconf.options('params'):
+                    if conf.has_option('params', p):
+                        conf.set('params', p, ','.join(set(conf.get('params', p).split(',').extend(subconf.get('params', p).split(',')))))
+                    else:
+                        conf.set('params', p, subconf.get('params', p))
     return conf
 
 
