@@ -92,14 +92,13 @@ def get_main_conf(simfolder):
         sys.exit()
     conf.read("%s/nicessa.conf" % simfolder)
     # overwrite simulation-configs
-    # first see if there are extra ones passed as params
+    # first see if there are some passed as params (then we use those)
     opts, args = read_args()
     for opt, arg in opts:
         if opt in ("--simulations="):
             s = []
             for a in arg.split(','):
-                if a in conf.get('simulations', 'configs').split(','):
-                    s.append(a)
+                s.append(a)
             conf.set('simulations', 'configs', ','.join(s))
     # then set all the params from subconfs
     if conf.has_section('simulations'):
@@ -111,7 +110,9 @@ def get_main_conf(simfolder):
                 subconf.read('%s/%s.conf' % (simfolder, c))
                 for p in subconf.options('params'):
                     if conf.has_option('params', p):
-                        conf.set('params', p, ','.join(set(conf.get('params', p).split(',').extend(subconf.get('params', p).split(',')))))
+                        both = conf.get('params', p).split(',')
+                        both.extend(subconf.get('params', p).split(','))
+                        conf.set('params', p, ','.join(set(both)))
                     else:
                         conf.set('params', p, subconf.get('params', p))
     return conf
