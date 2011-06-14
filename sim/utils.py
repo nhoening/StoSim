@@ -53,6 +53,10 @@ def check_conf(simfolder):
         print "[NICESSA] %s" % e
         sys.exit(2)
 
+    if not osp.exists("%s/nicessa.conf" % simfolder):
+        print "[Nicessa] Warning: The file %s/nicessa.conf does not exist!" % simfolder
+        sys.exit(2)
+
     needed = [('meta', 'name'),
               ('meta', 'maintainer'),
               ('control', 'executable'),
@@ -91,17 +95,17 @@ def get_main_conf(simfolder):
     # first see if there are extra ones passed as params
     opts, args = read_args()
     for opt, arg in opts:
-        if opt in ("--simulations="): 
+        if opt in ("--simulations="):
             s = []
             for a in arg.split(','):
                 if a in conf.get('simulations', 'configs').split(','):
                     s.append(a)
             conf.set('simulations', 'configs', ','.join(s))
     # then set all the params from subconfs
-    if conf.has_section('simulation'):
+    if conf.has_section('simulations'):
         for c in conf.get('simulations', 'configs').split(','):
-            if not osp.exists("%s.conf" % a):
-                print "[Nicessa] Warning: The file %s.conf does not exist!" % a
+            if not osp.exists("%s.conf" % c):
+                print "[Nicessa] Warning: The file %s.conf does not exist!" % c
             else:
                 subconf = ConfigParser()
                 subconf.read('%s/%s.conf' % (simfolder, c))
