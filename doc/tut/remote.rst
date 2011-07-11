@@ -87,7 +87,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] Plotting ./plots/simulation2_payoff.pdf
 
 
-The servers.conf file
+The remopte.conf file
 ---------------------
 If you have set ``local: 0``, you'll need to extend the configuration with 
 some server credentials in a separate file. 
@@ -105,7 +105,7 @@ each server periodically if they are done. If they all are,
 it fetches the results. Then, plots are made locally, like usual. 
 
 
-.. note:: The ``cpus``-setting gives you the opportunity to balance the workloadds better.
+.. note:: The ``cpus``-setting gives you the opportunity to balance the workloads better.
           This makes sense if some of your servers have more CPUs than the others 
           (or you want to keep a CPU free on your own or your colleagues computer). 
           If all your servers have the same amount of CPUs, better leave it all at ``1``.
