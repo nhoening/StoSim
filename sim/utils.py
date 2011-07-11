@@ -188,6 +188,8 @@ def num_hosts(simfolder):
     remote_conf = get_host_conf(simfolder)
     # 4 rows per host in host conf
     hosts = 0
+    if remote_conf.has_section('host0'):
+        print '[NICESSA] Please number your hosts starting with 1. Ignoring host0 ...'
     while remote_conf.has_section('host%d' % (hosts+1)):
         hosts += 1
     if hosts == 0:

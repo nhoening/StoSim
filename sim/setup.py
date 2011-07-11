@@ -133,8 +133,8 @@ def create(conf, simfolder, limit_to={}, more=False):
     host = 0
     num_per_hosts = range(len(simulations.keys()))
     for n in range(len(num_per_hosts)):
-        num_per_hosts[n] = dict.fromkeys(range(hosts), 0)
-    unfulfilled = dict.fromkeys(range(hosts), 0)
+        num_per_hosts[n] = dict.fromkeys(range(1, hosts+1), 0)
+    unfulfilled = dict.fromkeys(range(1, hosts+1), 0)
 
     # these hold all parameter names and the different value configurations, per simulation
     comb_options = {} # param names
@@ -162,7 +162,7 @@ def create(conf, simfolder, limit_to={}, more=False):
                 if confs <= 0: break
             if int(cpus_per_host[host]) > available:
                 unfulfilled[host] += int(cpus_per_host[host]) - available
-            nums[host-1] += available
+            nums[host] += available
             confs -= available
             if confs <= 0: break
             host = incrTo(host, hosts)
@@ -174,7 +174,7 @@ def create(conf, simfolder, limit_to={}, more=False):
         # find out how much each cpu should get (in a helper list, distribute excess one by one)
         load = 0
         for sim in num_per_hosts:
-            load += sim[host-1]
+            load += sim[host]
         my_cpus = cpus_per_host[host]
         if my_cpus == 0:
             continue
@@ -199,13 +199,21 @@ def create(conf, simfolder, limit_to={}, more=False):
                     for dat in [(str(opt), isint, 'seeds') for (opt, isint) in zip(range(1, num_seeds+1), [1 for _ in range(num_seeds)])]:
                         writeopt(dat, tosub=False)
 
-            # write as many confs as cpuloads prescribes for this cpu
+            # write as many confs as cpuloads prescribes for this cpu,
+            # iterate over simulations while doing so (to even their
+            # jobs out over cpus)
+            simindex = 0
+            jobindex = 0
             for job in range(cpuloads[cpu]):
-                simindex = 0
+                if not jobindex % hosts == 0:
+                    init_simindex = incrTo(simindex+1, len(simulations.keys()))-1
+                else:
+                    init_simindex = 0
+                simindex = init_simindex
                 sim_name = simulations.keys()[simindex]
                 while len(comb_values[sim_name]) == 0:
-                    simindex += 1
-                    if simindex == len(simulations.keys()): break
+                    simindex = incrTo(simindex+1, len(simulations.keys()))-1
+                    if simindex == init_simindex: break
                     sim_name = simulations.keys()[simindex]
                 act_comb_values = comb_values[sim_name].pop()
                 sub_name = "%s_" % sim_name
@@ -239,6 +247,7 @@ def create(conf, simfolder, limit_to={}, more=False):
                 main_conf.write('[%s]\n' % sub_name)
                 main_conf.write('config_file = %s/%s.conf\n' % (prefix_dir, sub_name))
                 main_conf.flush()
+                jobindex += 1
 
             main_conf.close()
 
