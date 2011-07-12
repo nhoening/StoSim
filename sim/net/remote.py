@@ -190,7 +190,7 @@ def check(simfolder):
     sys.stdout.flush()
     for host in xrange(1, hosts+1):
         hostname = remote_conf.get("host%i" % host, "name")
-        print "%s (host %d)  " % (hostname, host),
+        print "%s (host-nr:%d, cpus:%d)  " % (hostname, host, cpus_per_host[host]),
         sys.stdout.flush()
         ssh_client = _get_ssh_client(remote_conf, host)
         if ssh_client:
