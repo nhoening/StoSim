@@ -152,14 +152,15 @@ def create(conf, simfolder, limit_to={}, more=False):
         while 1==1:
             available = min(int(cpus_per_host[host]), confs)
             # if earlier we gave the last host too few, let's even that out right now
-            last_host = decrTo(host, hosts-1)
-            if unfulfilled[last_host] > 0:
-                onlast = min(available, min(cpus_per_host[last_host], unfulfilled[last_host]))
-                nums[last_host] += onlast
-                confs -= onlast
-                unfulfilled[last_host] -= onlast
-                available = min(int(cpus_per_host[host]), confs)
-                if confs <= 0: break
+            if hosts > 1:
+                last_host = decrTo(host, hosts-1)
+                if unfulfilled[last_host] > 0:
+                    onlast = min(available, min(cpus_per_host[last_host], unfulfilled[last_host]))
+                    nums[last_host] += onlast
+                    confs -= onlast
+                    unfulfilled[last_host] -= onlast
+                    available = min(int(cpus_per_host[host]), confs)
+                    if confs <= 0: break
             if int(cpus_per_host[host]) > available:
                 unfulfilled[host] += int(cpus_per_host[host]) - available
             nums[host] += available
