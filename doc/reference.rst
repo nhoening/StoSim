@@ -124,7 +124,8 @@ First, these are the system-specific settings you can/need to set:
     Type of plot, 'line' or 'scatter' (**M**)
 :_select:
     Use this to select certain values from the y-column.
-    One out of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y']
+    One out of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y'],
+    defaults to 'all'.
 
 In addition, you can narrow down your data set for this plot by giving some
 settings for your parameters (e.g. ``param_1:value_a``).

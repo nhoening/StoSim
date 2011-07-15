@@ -87,7 +87,7 @@ they're finished and once all their CPUs are done, get results and plot them::
     [Nicessa] Plotting ./plots/simulation2_payoff.pdf
 
 
-The remopte.conf file
+The remote.conf file
 ---------------------
 If you have set ``local: 0``, you'll need to extend the configuration with 
 some server credentials in a separate file. 
@@ -96,7 +96,7 @@ and some other things. Here is an example (go to :ref:`remote_reference` for a f
 
 .. literalinclude:: ../../examples/subsim/remote.conf
 
-
+ 
 Nicessa will transfer all the files to the servers and start background sreens on them, running a portion of the
 workload (it only makes sense to have several servers when your simulation has multiple settings). 
 
@@ -109,6 +109,8 @@ it fetches the results. Then, plots are made locally, like usual.
           This makes sense if some of your servers have more CPUs than the others 
           (or you want to keep a CPU free on your own or your colleagues computer). 
           If all your servers have the same amount of CPUs, better leave it all at ``1``.
+
+.. note:: To find out how many cores (cpus) a computer has, you might want to use the UNIX-command ``mpstat -P ALL``, which shows you current activity on all cores.
         
 .. note:: When running remote simulations, make sure that the servers are known 
           in your .ssh/known_hosts file. I always connect to the servers once per 

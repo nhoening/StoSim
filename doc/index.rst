@@ -14,6 +14,7 @@ NICESSA is developed under an open-source MIT license at the CWI Amsterdam and w
 
 Please contact `Nicolas Honing <nicolas@cwi.nl>`_ with any questions or problems.
 
+There also is a `PDF version <Nicessa.pdf>`_ of this documentation
 
 ******************
 Narrative contents
