@@ -20,8 +20,7 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
     It will average over the Y column (that you specify) and record the standard deviation.
     Data files should be named using an index starting by 1 and all have the same prefix and/or suffix arround that index.
 
-    It will create a file named <filePrefix><yCol><fileSuffix>.out
-    In gnuplot, you could then say "plot '<filePrefix><yCol><fileSuffix>.out' smooth unique with yerrorlines"
+    In gnuplot, you could then say "plot outName smooth unique with yerrorlines"
 
     :param int xCol: x column
     :param int yCol: y column
@@ -30,7 +29,7 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
     :param string fileSuffix: suffix in filenames
     :param string filePath: path to files
     :param string delim: delimiter used between columns
-    :param string outName: Name of the result file
+    :param string outName: Name of the result file, defaults to <filePrefix><yCol><fileSuffix>.out
     '''
 
     assert os.path.exists(filePath), 'File path %s does not exist' % filePath
