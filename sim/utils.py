@@ -54,24 +54,13 @@ def check_conf(simfolder):
         sys.exit(2)
 
     if not osp.exists("%s/nicessa.conf" % simfolder):
-        print "[Nicessa] Warning: The file %s/nicessa.conf does not exist!" % simfolder
+        print "[Nicessa] The file %s/nicessa.conf does not exist!" % simfolder
         sys.exit(2)
 
-    needed = [('meta', 'name'),
-              ('meta', 'maintainer'),
-              ('control', 'executable'),
-              ('control', 'local'),
-              ('control', 'runs')
-             ]
-    for n in needed:
-        try:
-            _ = conf.get(n[0], n[1])
-        except NoSectionError, e:
-            print "[NICESSA] %s" % e
-            sys.exit(2)
-        except NoOptionError, e:
-            print "[NICESSA] %s" % e
-            sys.exit(2)
+    if not conf.has_section('control'):
+        print "[NICESSA] You need to tell me what script to execute. \
+            Please define an option called 'executable' in a scetion called 'control'."
+        sys.exit(2)
 
     if not conf.has_section('params'):
         print "[NICESSA] Warning: You have not defined a 'params' - section."
@@ -91,6 +80,17 @@ def get_main_conf(simfolder):
         print "[Nicessa] WARNING: Cannot find nicessa.conf in the folder %s." % simfolder
         sys.exit()
     conf.read("%s/nicessa.conf" % simfolder)
+
+    if not conf.has_section('meta'):
+        conf.add_section('meta')
+    for (sec, opt, default) in\
+            [('meta', 'name', 'Nicessa Experiment'),\
+             ('meta', 'maintainer', os.getlogin()),\
+             ('control', 'local', '1'),\
+             ('control', 'runs', '1')]:
+        if not conf.has_option(sec, opt):
+            conf.set(sec, opt, default)
+
     # overwrite simulation-configs
     # first see if there are some passed as params (then we use those)
     opts, args = read_args()

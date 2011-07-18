@@ -228,7 +228,8 @@ def create(conf, simfolder, limit_to={}, more=False):
                 sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim_name))
                 sub_conf.write('[meta]\n')
                 for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
-                    writeopt(dat)
+                    if conf.has_option('meta', opt):
+                        writeopt(dat)
                 sub_conf.write('[control]\n')
                 for dat in [(opt, isint, 'control') for (opt, isint) in [('runs', 1), ('executable', 0)]]:
                     writeopt(dat)
