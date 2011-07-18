@@ -23,7 +23,7 @@ tmp_dir = 'tmp_plotter'
 
 def plot(filepath='', outfile_name='', name='My simulation',\
          xcol=1, x_label='iteration', y_label='value', x_range=None,  y_range='[0:10]',\
-         use_y_errorbars=False, errorbar_every=10, infobox_pos='top left', use_colors=True,\
+         use_y_errorbars=False, errorbar_every=1, infobox_pos='top left', use_colors=True,\
          use_tex=False, line_width=6, font_size=22, custom_script='', plots=[]):
     '''
     Make plots for specific portions of data in one figure.
@@ -53,7 +53,7 @@ def plot(filepath='', outfile_name='', name='My simulation',\
            value range of x values
     :param string y_range: the range of values for y axis, defaults to '[0:10]'
     :param boolean use_y_errorbars: True if errorbars should be shown, default is False
-    :param int errorbar_every: show an errorbar every x steps, defaults to 10
+    :param int errorbar_every: show an errorbar every x steps, defaults to 1
     :param string infobox_pos: where the infobox should go, e.g. 'bottom left',
            defaults to 'top left' when given empty
     :param boolean use_colors: whether to use colors or be b+w, defaults True
@@ -145,14 +145,17 @@ def plot(filepath='', outfile_name='', name='My simulation',\
                 gnu += ','
             num += 1
         # then the errorbars (this way, they don't reserve the linestyles)
-        offset = 1
-        offset_step = max(1, int(errorbar_every) / 5)
         if use_y_errorbars:
+            offset = 1
+            offset_step = max(1, int(errorbar_every) / 5)
+            offtxt = ''
+            if int(errorbar_every) > 1:
+                offtxt = 'every %d::%d' % (int(errorbar_every), offset)
             num = 1
             gnu += ","
             for p in plots:
-                gnu += "'%s/all.dat' every %d::%d with yerrorbars title '' lt 9" \
-                        % (p['_name'], int(errorbar_every), offset)
+                gnu += "'%s/all.dat' %s with yerrorbars title '' lt %d" \
+                        % (p['_name'], offtxt, num)
                 if num < len(plots):
                     gnu += ','
                 num += 1

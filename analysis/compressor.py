@@ -8,9 +8,7 @@ Compresses data (e.g. averaging)
 '''
 
 import os
-# cannot get this to work on my ibook :-(
-# import numpy
-import math # so I'll compute by hand
+import math
 
 
 def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', delim=' ', outName=None):
@@ -47,11 +45,13 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
     if outName is None: outName = '%s%s%s%s.out' % (filePath, filePrefix, str(yCol), fileSuffix)
     out = open(outName, 'w')
 
-    # for each row, write X, mean and STD in target file
+    # we'll collect values in this dictionary
+    d = {}
+
+    # for each x, collect y
     hasMoreRows = True
-    while hasMoreRows:
-        vals = []
-        x = None
+    while hasMoreRows: # assuming all files have the same number fo rows!
+        #x = None
         # get values from each file
         file_index = 0
         while file_index < numFiles:
@@ -61,25 +61,33 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
             if s == ['']: hasMoreRows = False # now no file is looked at no more
             else:
                 if not (s[0].startswith("#") or s[0].startswith('time_stamp')):
+                    x = s[xCol-1].strip()
+                    # make sure d has a list for that x
+                    if not d.has_key(x):
+                        d[x] = []
                     try:
-                        vals.append(float(s[int(yCol)-1])) # this might happen when file is corrupted
-                        #assert(x is None or x == s[xCol-1]) # x values need to be the same in all files
-                        x = s[xCol-1]
+                        # we assume that y values are nueric! Also,other
+                        # errors might happen here when file is corrupted
+                        d[x].append(float(s[int(yCol)-1]))
                     except Exception, e:
                         print "ERROR"
 
-        if hasMoreRows and len(vals)>0:
-            # mean
-            sum = 0.0
-            for v in vals: sum += v
-            mean = sum / float(len(vals))
-            # sample standard deviation
-            std = 0.0
-            for v in vals: std += math.pow(v - mean, 2)
-            std /= len(vals)
-            std = math.sqrt(std)
-            std /= math.sqrt(len(vals)) # standard error: divide by sample size
-            out.write('%s %f %f\n' % (str(x), mean, std))
+    # compute mean and standard deviation and write to target file
+    keys = d.keys()
+    keys.sort()
+    for x in keys:
+        # mean
+        sum = 0.0
+        for y in d[x]: sum += y
+        mean = sum / float(len(d[x]))
+        # sample standard deviation
+        std = 0.0
+        for y in d[x]:
+            std += math.pow(y - mean, 2)
+        std /= len(d[x])
+        std = math.sqrt(std)
+        #std /= math.sqrt(len(d[x])) # this would give the standard error of the mean
+        out.write('%s %f %f\n' % (str(x), mean, std))
 
     out.close()
     for i in xrange(numFiles):
