@@ -295,8 +295,11 @@ def _prepare(simfolder, limit_to={}, more=False):
         :param boolean more: when True, new data will simply be added to existing data
     """
     from sim import setup
-    if osp.exists("%s/data" % simfolder) and not more:
-        rmtree('%s/data' % simfolder)
+    if osp.exists("%s/data" % simfolder):
+        if not more:
+            print '[Nicessa] I found older log data (in %s/data). Remove? [y/N]' % simfolder
+            if raw_input().lower() == 'y':
+                rmtree('%s/data' % simfolder)
     if not osp.exists("%s/data" % simfolder):
         os.mkdir('%s/data' % simfolder)
     if osp.exists("%s/conf" % simfolder):
@@ -362,7 +365,7 @@ if __name__ == "__main__":
         from sim import setup
         # create confs (again) so we know what we expect to find on which host
         if not do_run:
-            _prepare(simfolder)
+            _prepare(simfolder, more=do_more)
         remote.get_results(simfolder, do_wait=do_run)
 
     if do_plots:
