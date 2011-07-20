@@ -179,3 +179,8 @@ have 10 seeds)::
     |   0.8        |   100|   200     |   5     |   1               |   1     |   1     |   5     | |   10 |
     --------------------------------------------------------------------------------------------------------
 
+
+.. note:: Note that if you add more results using remote hosts, 
+          you should keep on using the ``--more`` option together with ``--results``, 
+          such that the data folder doesn't get cleaned out (and you
+          would thus lose the runs you already made)

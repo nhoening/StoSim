@@ -22,7 +22,7 @@ meta
 General Description
 
 :name:
-    Name of the exeriment (**M**)
+    Name of the exeriment
 
 :maintainer:
     The person who is responsible for this simulation
@@ -33,9 +33,9 @@ control
 :executable:
     Which script to call for each run (**M**)
 :runs:
-    How often the same configuration should be run (**M**)
+    How often the same configuration should be run defaults to 1
 :local:
-    If local is 1, we run on localhost, otherwise provide a server.conf file (see 'remote' example) (**M**)
+    If local is 1, we run on localhost, otherwise provide a remote.conf file (see 'remote' reference further down), defaults to 1
 
 
 params
