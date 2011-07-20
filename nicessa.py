@@ -320,7 +320,7 @@ if __name__ == "__main__":
     conf = utils.get_main_conf(simfolder)
 
     opts, args = utils.read_args()
-    do_run = do_results = do_plots = do_ttests = do_check = do_more = do_list = False
+    do_run = do_results = do_plots = do_ttests = do_check = do_more = do_list = show_screen = False
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
