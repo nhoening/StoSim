@@ -307,25 +307,35 @@ def show_screen(simfolder, host, cpu, lines=50):
     :param int host: index of host
     :param int cpu: index of cpu
     '''
-    remote_conf = utils.get_host_conf(simfolder)
-    ssh_client = _get_ssh_client(remote_conf, host)
-    scp_client = scp.SCPClient(ssh_client._transport)
-    host_name = remote_conf.get("host%i" % host, "name")
-    path = remote_conf.get("host%i" % host, "path")
     screen_name = 'screen_host_%i_cpu_%i' % (host, cpu)
+    remote_conf = utils.get_host_conf(simfolder)
+    host_name = remote_conf.get("host%i" % host, "name")
+    ssh_client = _get_ssh_client(remote_conf, host)
+
+    running = ssh(ssh_client, 'screen -ls;')
+    if not screen_name in running:
+        print '[Nicessa] No screen for cpu %i on %s is running at the moment.' % (cpu, host_name)
+        return
+
+    scp_client = scp.SCPClient(ssh_client._transport)
+    path = remote_conf.get("host%i" % host, "path")
     print "[Nicessa] getting screen log from %s ... " % host_name
     try:
         scp_client.get("%s/%s/screenlogs/%s.log" % (path, simfolder, screen_name), local_path='%s' % simfolder)
     except scp.SCPException, e:
         print e
-    f = open('%s/%s.log' % (simfolder, screen_name), 'r')
-    all_lines = f.readlines()
-    f.close()
-    os.remove('%s/%s.log' % (simfolder, screen_name))
-    print '******************************************************'
-    for line in all_lines[-1 * lines:]:
-        print line,
-    print '******************************************************'
+    local_file_name = '%s/%s.log' % (simfolder, screen_name)
+    if os.path.exists(local_file_name):
+        f = open(local_file_name, 'r')
+        all_lines = f.readlines()
+        f.close()
+        os.remove('%s/%s.log' % (simfolder, screen_name))
+        print '************* Begin Screen Content ********************'
+        for line in all_lines[-1 * lines:]:
+            print line,
+        print '************* End Screen Content **********************'
+    else:
+        print '[Nicessa] Couldn\'t download the screen log for cpu %i on %s.' % (cpu, host_name)
 
 
 def _get_ssh_client(remote_conf, host):
