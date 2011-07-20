@@ -18,7 +18,7 @@ All commands at a glance
 
 Usage
 ^^^^^^
-``nicessa.py <path-to-simulation-folder> [--simulations=X,Y] [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list]``
+``nicessa.py <path-to-simulation-folder> [--simulations=X,Y] [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list] [--show-screen=HOST,CPU]``
 
 .. note:: The simulation folder is where you have your nicessa.conf
 
@@ -43,6 +43,8 @@ Commands
     Make plots (needs gnuplot and eps2pdf installed))
 --ttests
     Run T-tests (needs R installed)
+--show-screen
+    Show current output of a remote screen, e.g. '--show-screen=1,3' shows cpu 3 on host 1"
 
 .. note:: Each command line option can be shortened, as long as it's
           recognisable from other short forms. So ``--p`` instead of ``--plots``

@@ -74,8 +74,6 @@ def run(simfolder):
         from sim.net import remote
         remote.run_remotely(simfolder, utils.get_main_conf(simfolder))
     else:
-        #for s in range(utils.num_hosts(simfolder)):
-        #for cpu in range(utils.cpus_per_host(simfolder)[s]):
         starter.batch(simfolder, 1, 1)
 
 
@@ -295,7 +293,7 @@ def _prepare(simfolder, limit_to={}, more=False):
         :param boolean more: when True, new data will simply be added to existing data
     """
     from sim import setup
-    if osp.exists("%s/data" % simfolder):
+    if osp.exists("%s/data" % simfolder) and len(os.listdir('%s/data' % simfolder)) > 0:
         if not more:
             print '[Nicessa] I found older log data (in %s/data). Remove? [y/N]' % simfolder
             if raw_input().lower() == 'y':
@@ -343,9 +341,17 @@ if __name__ == "__main__":
             do_more = True
         elif opt == "--list":
             do_list = True
+        elif opt == "--show-screen":
+            show_screen = True
+            hostcpu = arg.split(',')
+            if not len(hostcpu) == 2:
+                print '[Nicessa] Please provide a host nr and a cpu nr to show a screen\n'
+                utils.usage()
+                sys.exit(2)
+            host, cpu = hostcpu
 
     # if nothing special is selected, do standard program
-    if do_run == do_results == do_check == do_plots == do_ttests == do_more == do_list == False:
+    if do_run == do_results == do_check == do_plots == do_ttests == do_more == do_list == show_screen == False:
         do_run = do_plots = do_ttests = True
         if utils.is_remote(simfolder) or utils.cpus_per_host(simfolder)[1] > 1:
             do_results = True
@@ -359,6 +365,9 @@ if __name__ == "__main__":
         remote.check(simfolder)
     elif do_more:
         run_more(simfolder)
+    elif show_screen:
+        from sim.net import remote
+        remote.show_screen(simfolder, int(host), int(cpu))
 
     if do_results:
         from sim.net import remote

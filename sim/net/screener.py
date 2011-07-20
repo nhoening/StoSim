@@ -22,6 +22,12 @@ def run(screen_name, command, abs_path):
     '''
     command = "touch %s_started;%s" % (screen_name, command)
 
+    f = open('screenrcs/%s.rc' % screen_name, 'w')
+    f.write('shell bash\n')
+    f.write('deflog on\n')
+    f.write('logfile screenlogs/%s.log\n' % screen_name)
+    f.close()
+
     counter = 1
     while counter < 10:
         Popen("%s/bgscreen %s '%s'" % (abs_path, screen_name, command), shell=True).wait()
@@ -38,4 +44,4 @@ def run(screen_name, command, abs_path):
 
 
 if __name__ == "__main__":
-    run("screen_%s" %  sys.argv[1], sys.argv[2], osp.join(osp.dirname(osp.abspath(__file__))))
+    run(sys.argv[1], sys.argv[2], osp.join(osp.dirname(osp.abspath(__file__))))

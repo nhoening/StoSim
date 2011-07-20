@@ -17,7 +17,7 @@ import getopt
 def read_args():
     """ read in cmd line arguments for Nicessa, print usage if something is unexpected """
     try:
-        return getopt.getopt(sys.argv[2:], "hk", ["help", "simulations=", "run", "check", "results", "plots", "ttests", "more", "list"])
+        return getopt.getopt(sys.argv[2:], "hk", ["help", "simulations=", "run", "check", "results", "plots", "ttests", "more", "list", "show-screen="])
     except getopt.GetoptError, e:
         print '[Nicessa] %s\n' % e
         usage()
@@ -26,7 +26,7 @@ def read_args():
 def usage():
     """ print usage and exit """
     print "[Nicessa] usage: nicessa.py <path-to-simulation-folder> [--simulations=X,Y]"\
-          " [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list]"
+          " [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list] [--show-screen=HOST,CPU]"
     print "(the simulation folder is where you have your simulation.conf)"
     print "(If you run things on remote hosts you will need paramiko)\n"
     w = 25
@@ -38,6 +38,7 @@ def usage():
     print "%s : Add more runs to current state of config and data" % '--more'.ljust(w)
     print "%s : Make plots (needs gnuplot and eps2pdf installed))" % '--plots'.ljust(w)
     print "%s : Run T-tests (needs R installed)" % '--ttests'.ljust(w)
+    print "%s : Show current output of a remote screen, e.g. '--show-screen=1,3' shows cpu 3 on host 1" % '--show-screen'.ljust(w)
     sys.exit(2)
 
 

@@ -80,6 +80,8 @@ def run_remotely(simfolder, conf):
             for f in [f for f in remote_conf.get('code', 'folders').split(',') if f is not ""]:
                 togo += " %s/%s " % (simfolder, f.strip())
         cleaning += "cd %s/%s; rm -r %s;" % (path, folder, togo)
+        # make fresh dirs to config and log screens
+        cleaning += 'mkdir -p screenrcs; rm -r screenrcs/*; mkdir -p screenlogs; rm -r screenlogs/*;'
         # clean old states, too - never know how the last run was finished (e.g. Ctrl-C)
         cleaning += clean_states(simfolder, conf, host)
         ssh(ssh_client, cleaning)
@@ -135,7 +137,7 @@ def run_remotely(simfolder, conf):
             needed += " %s" % filename.split('/')[-1:][0]
 
         # put all we need in a tar.gz archive
-        Popen("tar -cf _nicessa_bundle.tar %s; gzip _nicessa_bundle.tar;" % (needed), shell=True).wait()
+        Popen("tar -cf _nicessa_bundle.tar %s; gzip -f _nicessa_bundle.tar;" % (needed), shell=True).wait()
 
         if not simfolder == ".":
             for _ in simfolder.split("/"):
@@ -261,7 +263,7 @@ def get_results(simfolder, do_wait=True):
                             scp_client = scp.SCPClient(ssh_client._transport)
                             try:
                                 print "[Nicessa] copying data from %s ... " % hostname ,
-                                ssh(ssh_client, 'cd %s/%s; tar -cf data_%d.tar data/*; gzip data_%d.tar;' % (path, simfolder, host, host))
+                                ssh(ssh_client, 'cd %s/%s; tar -cf data_%d.tar data/*; gzip -f data_%d.tar;' % (path, simfolder, host, host))
                                 time.sleep(2)
                                 scp_client.get("%s/%s/data_%d.tar.gz" % (path, simfolder, host), local_path='%s' % simfolder)
                                 os.chdir(simfolder)
@@ -297,6 +299,35 @@ def get_results(simfolder, do_wait=True):
     print;
 
 
+def show_screen(simfolder, host, cpu, lines=50):
+    '''
+    Show the screen log of the screen running on a specific host and cpu.
+
+    :param string simfolder: relative path to simfolder
+    :param int host: index of host
+    :param int cpu: index of cpu
+    '''
+    remote_conf = utils.get_host_conf(simfolder)
+    ssh_client = _get_ssh_client(remote_conf, host)
+    scp_client = scp.SCPClient(ssh_client._transport)
+    host_name = remote_conf.get("host%i" % host, "name")
+    path = remote_conf.get("host%i" % host, "path")
+    screen_name = 'screen_host_%i_cpu_%i' % (host, cpu)
+    print "[Nicessa] getting screen log from %s ... " % host_name
+    try:
+        scp_client.get("%s/%s/screenlogs/%s.log" % (path, simfolder, screen_name), local_path='%s' % simfolder)
+    except scp.SCPException, e:
+        print e
+    f = open('%s/%s.log' % (simfolder, screen_name), 'r')
+    all_lines = f.readlines()
+    f.close()
+    os.remove('%s/%s.log' % (simfolder, screen_name))
+    print '******************************************************'
+    for line in all_lines[-1 * lines:]:
+        print line,
+    print '******************************************************'
+
+
 def _get_ssh_client(remote_conf, host):
     '''
     make an SSH client and connect it
@@ -323,6 +354,7 @@ def clean_states(simfolder, conf, host):
     '''
     Build commands which remove traces of any (former) Nicessa activity on one host:
     clean running screens and files that are used to indicate states.
+    For files, we assume to be located in the data dir Nicessa uses in that host.
 
     :param string simfolder: relative path to simfolder
     :param ConfigParser remote_conf: host configuration
