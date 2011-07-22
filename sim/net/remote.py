@@ -377,8 +377,9 @@ def clean_states(simfolder, conf, host):
     # clean up marker files
     for cpu in utils.cpus_per_host(simfolder):
         clean += 'rm finished_%i_%i;' % (host, cpu)
-    # try to kill old screens by name (they kill themselves after work, but you never know)
-    pattern = '|'.join(["sim_%s_%s" % (n, host) for n in utils.get_simulation_names(conf)])
-    clean += "kill `ps aux | awk '/screen_%s/{print $2}'`;" % pattern
+    # kill old screens by name
+    pattern = '|'.join(["screen_host_%i_cpu_%i" % (host, cpu) for cpu in range(1, utils.cpus_per_host(simfolder)[host]+1)])
+    clean += "kill `ps aux | awk '/%s/{print $2}'`;" % pattern
+    print clean
     return clean
 

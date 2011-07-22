@@ -49,6 +49,6 @@ Commands
 .. note:: Each command line option can be shortened, as long as it's
           recognisable from other short forms. So ``--p`` instead of ``--plots``
           also works, while ``--r`` does not, because it could mean ``--run`` as well as
-          ``--results``. 
+          ``--results``. A common example from my usage for this is ``nicessa . --sim=experiment1 --ch``. 
 
 
