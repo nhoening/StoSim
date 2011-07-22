@@ -380,6 +380,5 @@ def clean_states(simfolder, conf, host):
     # kill old screens by name
     pattern = '|'.join(["screen_host_%i_cpu_%i" % (host, cpu) for cpu in range(1, utils.cpus_per_host(simfolder)[host]+1)])
     clean += "kill `ps aux | awk '/%s/{print $2}'`;" % pattern
-    print clean
     return clean
 
