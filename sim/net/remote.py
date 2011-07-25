@@ -224,7 +224,7 @@ def get_results(simfolder, do_wait=True):
     '''
     print '*' * 80
     print "[Nicessa] getting results ... "
-    print "[Nicessa] This may take a while, depending on your simulation. I'll tell you when I got everything from a host."
+    print "[Nicessa] This may take a while, depending on how much data your simulation generated. I'll tell you when I got everything from a host."
 
     conf = utils.get_main_conf(simfolder)
     remote_conf = utils.get_host_conf(simfolder)
@@ -287,8 +287,8 @@ def get_results(simfolder, do_wait=True):
         sys.stdout.flush()
         # all done now?
         all_done = True
-        for done in hosts_done.values():
-            all_done = all_done and done
+        for host_done in hosts_done.values():
+            all_done = all_done and host_done
         if not first_time_done and not all_done:
             print "[Nicessa] now checking every %d seconds ... " % check_interval
             first_time_done = True
@@ -374,11 +374,12 @@ def clean_states(simfolder, conf, host):
     clean = ""
     clean += "rm data_%d.tar.gz;" % host
     clean += "rm cmd_%d;" % host
+    cpus = utils.cpus_per_host(simfolder)[host]
     # clean up marker files
-    for cpu in utils.cpus_per_host(simfolder):
+    for cpu in xrange(1, cpus+1):
         clean += 'rm finished_%i_%i;' % (host, cpu)
     # kill old screens by name
-    pattern = '|'.join(["screen_host_%i_cpu_%i" % (host, cpu) for cpu in range(1, utils.cpus_per_host(simfolder)[host]+1)])
+    pattern = '|'.join(["screen_host_%i_cpu_%i" % (host, cpu) for cpu in xrange(1, cpus+1)])
     clean += "kill `ps aux | awk '/%s/{print $2}'`;" % pattern
     return clean
 
