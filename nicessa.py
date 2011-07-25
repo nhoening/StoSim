@@ -371,7 +371,6 @@ if __name__ == "__main__":
 
     if do_results:
         from sim.net import remote
-        from sim import setup
         # create confs (again) so we know what we expect to find on which host
         if not do_run:
             _prepare(simfolder, more=do_more)
