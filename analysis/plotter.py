@@ -84,13 +84,14 @@ def plot(filepath='', outfile_name='', name='My simulation',\
     failed = harvester.collect_files(searches, filepath, tmp_dir)
     print
     # handle errors
+    init_plots_num = len(plots)
     if len(failed) > 0:
         print "[Nicessa] WARNING: Selectors %s didn't match any folders!" % ','.join(failed)
         for fail in failed:
             for p in plots:
                 if p['_name'] == fail:
                     plots.remove(p)
-    if len(failed) == len(plots):
+    if len(failed) == init_plots_num:
         print "[Nicessa] In fact, no selectors of this figure matched anything. Aborting ..."
         print
         return
