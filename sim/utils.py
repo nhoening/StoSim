@@ -259,6 +259,8 @@ def decode_search_from_confstr(s, sim=""):
     s = s.replace('\\\\', '\\')
 
     for item in s.split(','):
+        if item == '':
+            continue
         try:
             k, v = item.split(':')
             v = v.replace("#COMMA#", ',')
