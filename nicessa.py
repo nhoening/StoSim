@@ -114,7 +114,7 @@ def run_more(simfolder):
             print "No restriction chosen."
     print "You selected: %s. Do this? [Y|n]\n(Remember that configuration and code should still be the same!)" % str(sel_params)
     if raw_input().lower() in ["", "y"]:
-        _prepare(simfolder, limit_to=sel_params, more=True)
+        _prepare_dirs(simfolder, limit_to=sel_params, more=True)
         run(simfolder)
 
 
@@ -284,8 +284,20 @@ def list_data(simfolder):
 
 # ---------------------------------------------------------------------------------------------------
 
-def _prepare(simfolder, limit_to={}, more=False):
-    """ clean data, fill config directory with all subconfigs we want
+def _check_data(simfolder, more=False):
+    """ check if old data is lyinf around, ask if it can go
+
+        :param boolean more: when True, new data will simply be added to existing data
+    """
+    if osp.exists("%s/data" % simfolder) and len(os.listdir('%s/data' % simfolder)) > 0:
+       if not more:
+            print '[Nicessa] I found older log data (in %s/data). Remove? [y/N]' % simfolder
+            if raw_input().lower() == 'y':
+                rmtree('%s/data' % simfolder)
+
+
+def _prepare_dirs(simfolder, limit_to={}, more=False):
+    """ ensure that output directories exist, fill config directory with all subconfigs we want
         limit_to can contain parameter settings we want to limit ourselves to (this is in case we add more data)
 
         :param string simfolder: relative path to simfolder
@@ -293,11 +305,6 @@ def _prepare(simfolder, limit_to={}, more=False):
         :param boolean more: when True, new data will simply be added to existing data
     """
     from sim import setup
-    if osp.exists("%s/data" % simfolder) and len(os.listdir('%s/data' % simfolder)) > 0:
-        if not more:
-            print '[Nicessa] I found older log data (in %s/data). Remove? [y/N]' % simfolder
-            if raw_input().lower() == 'y':
-                rmtree('%s/data' % simfolder)
     if not osp.exists("%s/data" % simfolder):
         os.mkdir('%s/data' % simfolder)
     if osp.exists("%s/conf" % simfolder):
@@ -357,14 +364,16 @@ if __name__ == "__main__":
             do_results = True
 
     # only one of these at a time:
-    if do_run:
-        _prepare(simfolder)
+    if do_more:
+        run_more(simfolder)
+    elif do_run:
+        if not utils.is_remote(simfolder):
+            _check_data(simfolder, more=do_more)
+        _prepare_dirs(simfolder)
         run(simfolder)
     elif do_check:
         from sim.net import remote
         remote.check(simfolder)
-    elif do_more:
-        run_more(simfolder)
     elif show_screen:
         from sim.net import remote
         remote.show_screen(simfolder, int(host), int(cpu))
@@ -373,7 +382,8 @@ if __name__ == "__main__":
         from sim.net import remote
         # create confs (again) so we know what we expect to find on which host
         if not do_run:
-            _prepare(simfolder, more=do_more)
+            _check_data(simfolder, more=do_more)
+            _prepare_dirs(simfolder, more=do_more)
         remote.get_results(simfolder, do_wait=do_run)
 
     if do_plots:
