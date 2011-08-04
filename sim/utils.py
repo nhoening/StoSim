@@ -11,35 +11,28 @@ import os
 import os.path as osp
 from ConfigParser import ConfigParser
 from ConfigParser import NoOptionError, NoSectionError
-import getopt
+import argparse
 
 
 def read_args():
-    """ read in cmd line arguments for Nicessa, print usage if something is unexpected """
-    try:
-        return getopt.getopt(sys.argv[2:], "hk", ["help", "simulations=", "run", "check", "results", "plots", "ttests", "more", "list", "show-screen="])
-    except getopt.GetoptError, e:
-        print '[Nicessa] %s\n' % e
-        usage()
+    """
+    read in cmd line arguments for Nicessa, print usage if something is unexpected
+    :returns: arg object returned by argparse
+    """
+    parser = argparse.ArgumentParser(description='Nicessa is an open-source toolkit for running parameterised stochastic simulations and analysing them.\
+                                                  Please visit http://homepages.cwi.nl/~nicolas/nicessa')
+    parser.add_argument('--folder', metavar='PATH', default='.', help='Path to simulation folder (this is where you keep your nicessa.conf), defaults to "."')
+    parser.add_argument('--simulations', metavar='<NAME>', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
+    parser.add_argument('--run', action='store_true', help='Only run, do not get (remote) results and do not analyse.')
+    parser.add_argument('--check', action='store_true', help='Check state on remote computers.')
+    parser.add_argument('--results', action='store_true', help='Get results from remote computers.')
+    parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
+    parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
+    parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
+    parser.add_argument('--ttests', action='store_true', help='Run T-tests (needs Gnu R installed).')
+    parser.add_argument('--showscreen', metavar="<HOST CPU>", nargs='2', type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
 
-
-def usage():
-    """ print usage and exit """
-    print "[Nicessa] usage: nicessa.py <path-to-simulation-folder> [--simulations=X,Y]"\
-          " [--run] [--check] [--results] [--plots] [--ttests] [--more] [--list] [--show-screen=HOST,CPU]"
-    print "(the simulation folder is where you have your simulation.conf)"
-    print "(If you run things on remote hosts you will need paramiko)\n"
-    w = 25
-    print "%s : names of subsimulations (without '.conf', e.g. 'sim1,sim2')" % '--simulations'.ljust(w)
-    print "%s : Only run, do not get (remote) results and do not analyse" % '--run'.ljust(w)
-    print "%s : Check state of remote computers" % '--check'.ljust(w)
-    print "%s : Get results from remote computers" % '--results'.ljust(w)
-    print "%s : List number of runs made so far, per configuration" % '--list'.ljust(w)
-    print "%s : Add more runs to current state of config and data" % '--more'.ljust(w)
-    print "%s : Make plots (needs gnuplot and eps2pdf installed))" % '--plots'.ljust(w)
-    print "%s : Run T-tests (needs R installed)" % '--ttests'.ljust(w)
-    print "%s : Show current output of a remote screen, e.g. '--show-screen=1,3' shows cpu 3 on host 1" % '--show-screen'.ljust(w)
-    sys.exit(2)
+    return parser.parse_args()
 
 
 def check_conf(simfolder):
@@ -94,13 +87,9 @@ def get_main_conf(simfolder):
 
     # overwrite simulation-configs
     # first see if there are some passed as params (then we use those)
-    opts, args = read_args()
-    for opt, arg in opts:
-        if opt in ("--simulations="):
-            s = []
-            for a in arg.split(','):
-                s.append(a)
-            conf.set('simulations', 'configs', ','.join(s))
+    args = read_args()
+    if args.simulations:
+        conf.set('simulations', 'configs', ','.join(args.simulations))
     # then set all the params from subconfs
     if conf.has_section('simulations'):
         for c in conf.get('simulations', 'configs').split(','):

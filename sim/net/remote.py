@@ -262,7 +262,7 @@ def get_results(simfolder, do_wait=True):
                                              map(res.__contains__, ["finished_%s_%i" % (host, cpu) for cpu in xrange(1, cpus_per_host[host]+1)])):
                             scp_client = scp.SCPClient(ssh_client._transport)
                             try:
-                                print "[Nicessa] contacting %s for results - compressing ... " % hostname ,
+                                print "[Nicessa] contacting %s - compressing ... " % hostname ,
                                 sys.stdout.flush()
                                 ssh(ssh_client, 'cd %s/%s; tar -cf data_%d.tar data/*; gzip -f data_%d.tar;' % (path, simfolder, host, host))
                                 time.sleep(2)

@@ -118,10 +118,11 @@ def run_more(simfolder):
         run(simfolder)
 
 
-def make_plots(simfolder):
+def make_plots(simfolder, plot_nrs=[]):
     """ generate plots as specified in the simulation conf
 
         :param string simfolder: relative path to simfolder
+        :param list plot_nrs: a list with plot indices. If empty, plot all there are.
     """
     from sim import utils
     from analysis import plotter
@@ -184,29 +185,30 @@ def make_plots(simfolder):
             get_opt_val(c, settings, 'plot-settings', o, t)
 
         while c.has_section("figure%i" % i):
-            fig_settings = settings.copy()
-            for o,t in figure_specific_options.iteritems():
-                get_opt_val(c, fig_settings, 'figure%i' % i, o, t)
+            if i in plot_nrs or len(plot_nrs) == 0:
+                fig_settings = settings.copy()
+                for o,t in figure_specific_options.iteritems():
+                    get_opt_val(c, fig_settings, 'figure%i' % i, o, t)
 
-            plots = []
-            j = 1
-            while c.has_option("figure%i" % i, "plot%i" % j):
-                d = utils.decode_search_from_confstr(
-                        c.get('figure%i' % i, 'plot%i' % j),
-                        sim = c.get('meta', 'name')
-                    )
-                # making sure all necessary plot attributes are there
-                if d.has_key('_name') and d.has_key('_ycol') and d.has_key('_type'):
-                    plots.append(d)
-                else:
-                    print '[NICESSA] Warning: Incomplete graph specification in Experiment %s - for plot %i in figure %i. '\
-                          'Specify at least _name and _ycol.' % (c.get('meta', 'name'), j, i)
-                j += 1
-            plotter.plot(filepath='%s/data' % simfolder,\
-                         outfile_name='%s/plots/%s.pdf' \
-                            % (simfolder, fig_settings['name']),\
-                         plots=plots,\
-                         **fig_settings)
+                plot_confs = []
+                j = 1
+                while c.has_option("figure%i" % i, "plot%i" % j):
+                    d = utils.decode_search_from_confstr(
+                            c.get('figure%i' % i, 'plot%i' % j),
+                            sim = c.get('meta', 'name')
+                        )
+                    # making sure all necessary plot attributes are there
+                    if d.has_key('_name') and d.has_key('_ycol') and d.has_key('_type'):
+                        plot_confs.append(d)
+                    else:
+                        print '[NICESSA] Warning: Incomplete graph specification in Experiment %s - for plot %i in figure %i. '\
+                              'Specify at least _name and _ycol.' % (c.get('meta', 'name'), j, i)
+                    j += 1
+                plotter.plot(filepath='%s/data' % simfolder,\
+                             outfile_name='%s/plots/%s.pdf' \
+                                % (simfolder, fig_settings['name']),\
+                             plots=plot_confs,\
+                             **fig_settings)
             i += 1
 
 
@@ -318,80 +320,47 @@ def _prepare_dirs(simfolder, limit_to={}, more=False):
 if __name__ == "__main__":
     from sim import utils
 
-    if len(sys.argv) < 2:
-        utils.usage()
+    args = utils.read_args()
 
-    simfolder = sys.argv[1].strip('/')
-    utils.check_conf(simfolder)
-
-    conf = utils.get_main_conf(simfolder)
-
-    opts, args = utils.read_args()
-    do_run = do_results = do_plots = do_ttests = do_check = do_more = do_list = show_screen = False
-
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            utils.usage()
-        elif opt == "--run":
-            do_run = True
-        elif opt == "--check":
-            do_check = True
-            do_results = do_plots = False
-            break
-        elif opt ==  "--results":
-            do_results = True
-        elif opt ==  "--plots":
-            do_plots = True
-        elif opt == "--ttests":
-            do_ttests = True
-        elif opt == "--more":
-            do_more = True
-        elif opt == "--list":
-            do_list = True
-        elif opt == "--show-screen":
-            show_screen = True
-            hostcpu = arg.split(',')
-            if not len(hostcpu) == 2:
-                print '[Nicessa] Please provide a host nr and a cpu nr to show a screen\n'
-                utils.usage()
-                sys.exit(2)
-            host, cpu = hostcpu
+    utils.check_conf(args.folder)
+    conf = utils.get_main_conf(args.folder)
 
     # if nothing special is selected, do standard program
-    if do_run == do_results == do_check == do_plots == do_ttests == do_more == do_list == show_screen == False:
-        do_run = do_plots = do_ttests = True
-        if utils.is_remote(simfolder) or utils.cpus_per_host(simfolder)[1] > 1:
-            do_results = True
+    if args.run == args.results == args.check == args.plots == args.ttests\
+        == args.more == args.list == args.showscreen == False:
+        args.run = args.plots = args.ttests = True
+        if utils.is_remote(args.folder) or utils.cpus_per_host(args.folder)[1] > 1:
+            args.results = True
 
     # only one of these at a time:
-    if do_more:
-        run_more(simfolder)
-    elif do_run:
-        if not utils.is_remote(simfolder):
-            _check_data(simfolder, more=do_more)
-        _prepare_dirs(simfolder)
-        run(simfolder)
-    elif do_check:
+    if args.more:
+        run_more(args.folder)
+    elif args.run:
+        if not utils.is_remote(args.folder):
+            _check_data(args.folder, more=do_more)
+        _prepare_dirs(args.folder)
+        run(args.folder)
+    elif args.check:
         from sim.net import remote
-        remote.check(simfolder)
-    elif show_screen:
+        remote.check(args.folder)
+    elif args.showscreen:
         from sim.net import remote
-        remote.show_screen(simfolder, int(host), int(cpu))
+        remote.show_screen(args.folder, args.showscreen[0], args.showscreen[1])
 
-    if do_results:
+    if args.results:
         from sim.net import remote
         # create confs (again) so we know what we expect to find on which host
-        if not do_run:
-            _check_data(simfolder, more=do_more)
-            _prepare_dirs(simfolder, more=do_more)
-        remote.get_results(simfolder, do_wait=do_run)
+        if not args.run:
+            _check_data(args.folder, more=do_more)
+            _prepare_dirs(args.folder, more=do_more)
+        remote.get_results(args.folder, do_wait=do_run)
 
-    if do_plots:
-        make_plots(simfolder)
+    if args.plots is not None:
+        make_plots(args.folder, plot_nrs=args.plots)
 
-    if do_ttests:
-        run_ttests(simfolder)
+    if args.ttests:
+        run_ttests(args.folder)
 
-    if do_list:
-        list_data(simfolder)
+    if args.list:
+        list_data(args.folder)
 
