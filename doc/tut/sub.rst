@@ -85,7 +85,7 @@ Running
 
 Let's run this thing. This is the output I get::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/subsim$ nicessa . --run
+    nic@fidel:/media/data/projects/nicessa/trunk/examples/subsim$ nicessa --run
     ********************************************************************************
     Running simulation Subsimulation Example
     ********************************************************************************

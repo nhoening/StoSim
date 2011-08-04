@@ -201,7 +201,7 @@ and I certainly want custome selectors.
 
 Let's now run the simulation with
     
-    ``$ python nicessa.py examples/basic/``
+    ``$ python nicessa.py --folder examples/basic/``
 
 This is what I see on the terminal:
 

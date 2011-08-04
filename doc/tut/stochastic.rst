@@ -65,7 +65,7 @@ cooperative scenario. Let's put that to a T-Test:
 Here is the output of the Gnu R T-Test, which confirms our hypothesis
 that the difference is significant::
 
-  nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa . --ttests
+  nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --ttests
 
   ********************************************************************************
   [Nicessa] Running T-tests ...
@@ -94,11 +94,11 @@ Sometimes you might want to add a couple of runs, to add statistical
 weight to the results. That is quite easy in Nicessa. The following session 
 shows how to use the ``--list`` and ``--more`` commands to see how
 many runs you have and add more. Here, I had only made runs for simulation 2
-(``nicessa . --simulations=sim2``) and I add another 5 runs (note that
+(``nicessa --simulations=sim2``) and I add another 5 runs (note that
 I now have 10 runs for some of the configurations, so I'd better also
 have 10 seeds)::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa . --list
+    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --list
     [Nicessa] The configurations and number of runs made so far:
 
     sim1
@@ -120,7 +120,7 @@ have 10 seeds)::
     --------------------------------------------------------------------------------------------------------
     |   0.8        |   100|   200     |   5     |   1               |   1     |   1     |   5     | |    5 |
     --------------------------------------------------------------------------------------------------------
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa . --more
+    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --more
     [Nicessa] Let's make 5 more runs! Please tell me on which configurations.
     Enter any parameter values you want to narrow down to, nothing otherwise.
     ratio_learning ? (out of [0.25,0.75,1])
@@ -151,7 +151,7 @@ have 10 seeds)::
     (section sim2_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
     . . . . .
     ********************************************************************************
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa . --list
+    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --list
     [Nicessa] The configurations and number of runs made so far:
 
     sim1

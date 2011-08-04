@@ -326,9 +326,10 @@ if __name__ == "__main__":
     conf = utils.get_main_conf(args.folder)
 
     # if nothing special is selected, do standard program
-    if args.run == args.results == args.check == args.plots == args.ttests\
-        == args.more == args.list == args.showscreen == False:
-        args.run = args.plots = args.ttests = True
+    if args.run == args.results == args.check == args.ttests == args.more \
+                == args.list and args.showscreen is None and args.plots is None:
+        args.run = args.ttests = True
+        args.plots = []
         if utils.is_remote(args.folder) or utils.cpus_per_host(args.folder)[1] > 1:
             args.results = True
 
@@ -337,7 +338,7 @@ if __name__ == "__main__":
         run_more(args.folder)
     elif args.run:
         if not utils.is_remote(args.folder):
-            _check_data(args.folder, more=do_more)
+            _check_data(args.folder, more=args.more)
         _prepare_dirs(args.folder)
         run(args.folder)
     elif args.check:
