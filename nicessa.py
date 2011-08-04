@@ -352,9 +352,9 @@ if __name__ == "__main__":
         from sim.net import remote
         # create confs (again) so we know what we expect to find on which host
         if not args.run:
-            _check_data(args.folder, more=do_more)
-            _prepare_dirs(args.folder, more=do_more)
-        remote.get_results(args.folder, do_wait=do_run)
+            _check_data(args.folder, more=args.more)
+            _prepare_dirs(args.folder, more=args.more)
+        remote.get_results(args.folder, do_wait=args.run)
 
     if args.plots is not None:
         make_plots(args.folder, plot_nrs=args.plots)
