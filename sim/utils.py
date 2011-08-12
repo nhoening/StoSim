@@ -30,7 +30,7 @@ def read_args():
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
     parser.add_argument('--ttests', action='store_true', help='Run T-tests (needs Gnu R installed).')
-    parser.add_argument('--showscreen', metavar="<HOST CPU>", nargs='2', type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
+    parser.add_argument('--showscreen', metavar="<HOST CPU>", nargs=2, type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
 
     return parser.parse_args()
 
