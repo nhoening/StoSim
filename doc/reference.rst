@@ -86,6 +86,10 @@ General settings for all plots. This section is optional.
 :use-tex:
     whether to use enhanced mode, which interpretes
     tex-like encoding (e.g. subscript, math, greek symbols), defaults to False
+:params:
+    You can give a list of parameter settings here (just as you normally do 
+    in the plot-options for each figure, see below), which all plots on all figures should adhere to. This can be very 
+    convenient if you need to check how several figures change given the difference in one parameter setting.
 
 figure<i>
 **********

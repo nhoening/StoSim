@@ -176,6 +176,9 @@ def make_plots(simfolder, plot_nrs=[]):
     c = ConfigParser(); c.read('%s/nicessa.conf' % (simfolder))
     for o,t in general_options.iteritems():
         get_opt_val(c, general_settings, 'plot-settings', o, t)
+    general_params = []
+    if c.has_option('plot-settings', 'params'):
+        general_params = c.get('plot-settings', 'params').split(',')
 
     for c in relevant_confs:
         i = 1
@@ -183,6 +186,8 @@ def make_plots(simfolder, plot_nrs=[]):
         # overwrite with plot-settings for this subsimulation
         for o, t in general_options.iteritems():
             get_opt_val(c, settings, 'plot-settings', o, t)
+        if c.has_option('plot-settings', 'params'):
+            general_params.extend(c.get('plot-settings', 'params').split(','))
 
         while c.has_section("figure%i" % i):
             if i in plot_nrs or len(plot_nrs) == 0:
@@ -193,10 +198,19 @@ def make_plots(simfolder, plot_nrs=[]):
                 plot_confs = []
                 j = 1
                 while c.has_option("figure%i" % i, "plot%i" % j):
+                    # make plot settings from conf string
                     d = utils.decode_search_from_confstr(
                             c.get('figure%i' % i, 'plot%i' % j),
                             sim = c.get('meta', 'name')
                         )
+                    # then add general param settings to each plot, if
+                    # not explicitly in there
+                    for param in general_params:
+                        if ":" in param:
+                            param = param.split(':')
+                            key = param[0].strip()
+                            if not d.has_key(key):
+                                d[key] = param[1].strip()
                     # making sure all necessary plot attributes are there
                     if d.has_key('_name') and d.has_key('_ycol') and d.has_key('_type'):
                         plot_confs.append(d)
