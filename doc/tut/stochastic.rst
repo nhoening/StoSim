@@ -180,7 +180,3 @@ have 10 seeds)::
     --------------------------------------------------------------------------------------------------------
 
 
-.. note:: Note that if you add more results using remote hosts, 
-          you should keep on using the ``--more`` option together with ``--results``, 
-          such that the data folder doesn't get cleaned out (and you
-          would thus lose the runs you already made)

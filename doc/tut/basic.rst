@@ -142,7 +142,8 @@ There can be many figures, each having one or more plots (numerate the options c
 Settings per plot
 ^^^^^^^^^^^^^^^^^^
 
-Now pay attention to the plots descriptions. They have two types of possible settings, of which we use only the first here.
+Now pay attention to the plots descriptions, where each dataset which is plotted on the figure is described.
+Nicessa can do two kinds of plots for you, line- and scatterplots, both of whioch are used in the example below.
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 47-
@@ -152,9 +153,9 @@ Settings to narrow down data
 
 For each plot, you can specify name-value pairs (where the names refer to parameter names from the
 ``params`` section (see above). With this, you narrow down the dataset used for making the plot and this is also why Nicessa puts all parameter settings 
-in the data folder names containing the log files, so it can easily pick the ones it needs to collect data from we'll use that feature in the next example. 
+in the data folder names containing the log files, so it can easily pick the ones it needs to collect data from. 
 
-Here, we have only one parameter setting - we could add ``runs:5`` to the plot descriptions but that would still 
+In the current example figure, we have only one parameter (``steps``) with only one setting (``500``) - we could add ``steps:500`` to the plot descriptions but that would still 
 select all five files and thus change nothing. Thus, we do not use this feature in this example - 
 we plot data from all five files we generated.
 The next example (see :ref:`sub_example`) is a little bit more sophisticated in this regard.
@@ -172,7 +173,7 @@ apart from parameters, they all start with an underscore).
   * ``_ycol`` (Required) This number indicates which column of your log files should be plotted on the y-axis. We wrote the values in column 2,
     so we take column 2 here as the y xolumn. 
   * ``_select`` This refers to a method to pick specific valued from the log
-    files. We will also use this below.
+    files. We also used this in our figure, so we'll discuss it below.
 
 
 Selecting type and data
@@ -194,10 +195,8 @@ optional ``_select``  directive here to say that for each run Nicessa made on ou
 simulation, we want to select only one value - the maximal number which the
 random walk encountered and also the minimal (before you ask, Nicessa currently
 has ``max-x``, ``max-y``, ``min-x``, ``min-y`` and ``last``. More are possible
-and I certainly want custome selectors.
+and I certainly want custome selectors).
 
-.. note:: Nicessa will also soon support that you write your own gnuplot script
-          to plot the processed data.
 
 Let's now run the simulation with
     
@@ -215,7 +214,7 @@ have been written. The folder name ``_steps500`` indicates the parameter setting
 used in those runs (and in this simple example, we only have parameter with one
 setting).
 
-Here is the plot which should be found in the ``examples/basic/plots`` directory when everything went well:
+Here is the plot which should be found in the ``examples/basic/plots`` directory if everything went well:
 
 .. figure:: ../img/basic_plot.png
     :align: center
