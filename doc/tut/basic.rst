@@ -143,7 +143,7 @@ Settings per plot
 ^^^^^^^^^^^^^^^^^^
 
 Now pay attention to the plots descriptions, where each dataset which is plotted on the figure is described.
-Nicessa can do two kinds of plots for you, line- and scatterplots, both of whioch are used in the example below.
+Nicessa can do two kinds of plots for you, line- and scatterplots, both of which are used in the example below.
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 47-
