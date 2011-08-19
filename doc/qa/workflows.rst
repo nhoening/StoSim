@@ -10,11 +10,11 @@ Several sub-simulations can be described, with each of them performing one execu
 workflow and as many analysis workflows as needed.
 
 We'll describe both of them here in detail. If you really need to get started,
-head right over to :ref:`get`, :ref:`usage` and :ref:`tutorials`.
+head right over to :ref:`get`, :ref:`usage` and :ref:`basic_example`.
 
 .. figure:: ../img/nicessa-workflows.png
     :align: center
-    :scale: 75%
+    :scale: 40%
 
     The workflows of Nicessa: Execution and Analysis
 

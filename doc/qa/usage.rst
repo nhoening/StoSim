@@ -6,32 +6,35 @@ How to use Nicessa
 
 Quick How-To
 ------------
-  1. Place an nicessa.conf and the code to run your simulation in a folder of your choice.
-  2. In the nicessa.conf (copy `the one from the basic example <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/nicessa.conf>`_ to start), set the name of your executable.
+  1. Place a file called ``nicessa.conf`` and the code to run your simulation in a folder of your choice.
+  2. In the file nicessa.conf (copy `the one from the basic example <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/nicessa.conf>`_ to start), set the name of your executable.
   3. Call ``./nicessa.py``. Or, if you also have this shortcut I created for myself (see :ref:`get`), you can go to your simulation folder and simply type ``nicessa``
-  4. You should now find results in the "data" directory, in your folder (but if you like the plotting capabilities of nicessa you might never look there). Plots go in the "plots" directory.
+  4. You should then see some output on the screen about what nicessa is doing and if it went well find results (the logfiles your executable wrote) in the "data" directory, in your folder (but if you like the plotting capabilities of nicessa you might never look there). Plots go in the "plots" directory.
 
-.. note:: There are several tutorials in this documentation which describe how to use Nicessa in depth.
+.. note:: There are several tutorials in this documentation which describe how to use Nicessa in depth. Start with :ref:`basic_example`.
 
 All commands at a glance
 -------------------------
 
 Usage
 ^^^^^^
-``nicessa.py [-h] [--simfolder PATH]
-                  [--simulations [<NAME> [<NAME> ...]]] [--run] [--check]
-                  [--results] [--list] [--more]
-                  [--plots [FIGURE [FIGURE ...]]] [--ttests]
-                  [--showscreen [<HOST,CPU>]]``
+You can call Nicessa like this::
+
+    nicessa.py [-h] [--simfolder PATH]
+                    [--simulations [<NAME> [<NAME> ...]]] [--run] [--check]
+                    [--results] [--list] [--more]
+                    [--plots [FIGURE [FIGURE ...]]] [--ttests]
+                    [--showscreen [<HOST,CPU>]]``
 
 .. note:: If you run things on remote servers you will need the Python library 'paramiko'
 
 Commands/Arguments
 ^^^^^^^^^^^^^^^^^^^
 
-optional arguments:
+This is a more detailled overview over the possible optional arguments::
+
   -h, --help            show this help message and exit
-  --folder PATH      Path to simulation folder (this is where you keep your
+  --folder PATH         Path to simulation folder (this is where you keep your
                         nicessa.conf), defaults to "."
   --simulations [<NAME> [<NAME> ...]]
                         names of subsimulations (the filenames of their

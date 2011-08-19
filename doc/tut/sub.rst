@@ -13,7 +13,7 @@ the data set against each other.
 Describing Subsimulations
 -------------------------
 To use subsimulations means that you run different simulations 
-and require in some of them that some parameters are different from the others. 
+which differ in specific sets of parameters.
 There are often situations where this is a good approach.
 Sometimes just because it structures your process, sometimes for technical
 reasons. We use a good example for a technical reason here: Two simulations
@@ -41,7 +41,7 @@ settings there. The *subsim* example mentions its subsimulations in
           exactly. Basically, we are interested in the likelihood to
           cooperate which the learning agents will arrive at (they start
           at around 0.5).
-          The second dilemma (in sim2.conf) is technically not a Prisoners Dilemma.
+          The second dilemma (in ``sim2.conf``) is technically not a Prisoners Dilemma.
           I just played with the numbers to see how the very very simple 
           learning algorithm I used behaves when in the dilemma temptation
           and reward (as well as penalty and suckers' payoff) are the same. 
@@ -60,24 +60,24 @@ in our two versions of the Prisoner's Dilemma.
 We can also give each simulation an own name and name a new maintainer for each
 subsimulation.
 
-Here is the configuration (figures left out for now) in sim1.conf:
+Here is the configuration (figures left out for now) in ``sim1.conf``:
 
 .. literalinclude:: ../../examples/subsim/sim1.conf
     :lines: 1-8
 
-And here is sim2.conf:
+And here is ``sim2.conf``:
 
 .. literalinclude:: ../../examples/subsim/sim2.conf
     :lines: 1-9
 
 To make it clear: It does not appear any different to your executable if a parameter setting is defined in one configuration file 
-or the other. If you specified a comma-separated list of options in nicessa.conf or in a subnicessa.config, 
-your executable code will get one config-file with all parameters available in
+or the other. If you specified a comma-separated list of parameter values in ``nicessa.conf`` or in a sub-simulation config file, 
+your executable code will get one config file with all parameters available in
 the ``params`` section (the configuration file for each setting is also put into the subfolder in the ``data`` dir). 
-You only need to know that settings in the nicessa.configuration files overwrite
-the general settings in the main configuration file.
+You only need to know that settings in the sub-simulation config files (here: ``sim1.conf`` and ``sim2.conf``) overwrite
+the general settings in the main configuration file (``nicessa.conf``).
 
-This is where I think Nicessa makes your life easier :)
+This is one of the ways in which I believe Nicessa makes your life easier :)
 
 
 Running
@@ -198,7 +198,7 @@ And the payoffs the agents got:
         and they are not able to extract higher profits
         overall. 
         This is different when the dilemma is not really a Prisoners Dilemma,
-        but reward and temptation are the same. Cooperation started arounf 0.5
+        but reward and temptation are the same. Cooperation started around 0.5
         and basically stays the same. However, there is an interesting bump
-        at the beginning of the simulation ...
+        at the beginning of the simulation which we can call an orientation phase ...
 

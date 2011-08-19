@@ -19,7 +19,8 @@ Nicessa lets you select some values from the columns you want to analyse, e.g.
 the maximum value or simply the last one.
 You can also write a custom selector and tell Nicessa to use it.
 
-.. warning:: This feature is not implemented yet, but high on the TODO-list!
+.. warning:: Custom selectors are not implemented yet, 
+             `but high on the TODO-list <http://www.assembla.com/space/nicessa/tickets/23-custom-selectors>`_!
 
 
 Custom plots
@@ -50,18 +51,18 @@ columns and selected values in them. For each plot, your script can access
 these in a file called ``all.dat``, to be found in a directory named after
 the ``_name`` attribute of the plot.
 
-As a reference, here is a file that Nicessa creates itself to make line
+As a reference, here is a Gnuplot file that Nicessa creates itself to make line
 plots (from the tutorial :ref:`sub_example`):
 
 .. literalinclude:: example.gnu
 
 .. note:: You can see Nicessas own Gnuplot script and all the data files it 
           creates for the analysis by simply adding ``-k`` to the call 
-          (e.g. ``./nicessa.py . --p -k``). 
+          (e.g. ``./nicessa.py . --plots -k``). 
           This will keep Nicessa from deleting its temporary files.
           There should now be a directory called ``tmp_plotter``, where you'll
           find a file called ``plot.gnu`` and a directory with collected
-          data for each plot. That might be a good starting point.
+          data for the last generated plot. That might be a good starting point.
 
 
 Custom tests
