@@ -190,11 +190,12 @@ Settings for computer <i> (start counting i at 1)
     place (**M**)
 :user:
     Username to log in with (**M**)
-:passwd:
-    Password to log in with (**M**)
 :cpus:
     Number of cpus to be used on this server (**M**)
 
+There is no password setting as it is not secure to write those down. To ease your life, `here are a couple tips <http://blogs.perl.org/users/smylers/2011/08/ssh-productivity-tips.html>`_.
+You can set up RSA keys to connect with the hosts, use the ``ControlPersist`` option in the SSH config file to keep connections alive 
+(only OpenSSH >= 5.6) or simply have one SSH connection open somewhere and let SSH share it.
 
 [code]
 ^^^^^^^

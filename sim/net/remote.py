@@ -10,6 +10,7 @@ import os
 import os.path as osp
 import time
 from subprocess import Popen
+from getpass import getpass
 # ignore deprecation warnings that paramiko currently delivers
 import warnings
 warnings.simplefilter("ignore", DeprecationWarning)
@@ -56,16 +57,22 @@ def run_remotely(simfolder, conf):
 
     :param string simfolder: relative path to simfolder
     :param ConfigParser conf: main config
+    :returns: True if successful, False otherwise
     '''
     folder = simfolder
     remote_conf = utils.get_host_conf(simfolder)
     num_hosts = utils.num_hosts(simfolder)
+    ssh_clients = {} # we login twice to each
 
+    print "[Nicessa] Preparing hosts ..."
     for host in xrange(1, num_hosts+1):
-        ssh_client = _get_ssh_client(remote_conf, host)
+        ssh_clients[host] = _get_ssh_client(remote_conf, host)
+        if ssh_clients[host] is None:
+            print "[Nicessa] Cannot connect to host %d. Aborting ...  " % host
+            return False
         if not remote_conf.has_section("host%i" % host):
-            print "[Nicessa] Server %d is not configured!" % host
-            return
+            print "[Nicessa] Host %d is not configured!" % host
+            return False
 
         path = remote_conf.get("host%i" % host, "path")
         # ------------- clean host (we want to be sure to use fresh code)
@@ -84,7 +91,7 @@ def run_remotely(simfolder, conf):
         cleaning += 'mkdir -p screenrcs; rm -r screenrcs/*; mkdir -p screenlogs; rm -r screenlogs/*;'
         # clean old states, too - never know how the last run was finished (e.g. Ctrl-C)
         cleaning += clean_states(simfolder, conf, host)
-        ssh(ssh_client, cleaning)
+        ssh(ssh_clients[host], cleaning)
 
     used_hosts = 0
     cpus_per_host = utils.cpus_per_host(simfolder)
@@ -147,19 +154,20 @@ def run_remotely(simfolder, conf):
         # ------------ now we actually connect and do all these things online
         initializing = "cd %s/%s; tar -zxf _nicessa_bundle.tar.gz; cd; cd %s;" % (path, folder, path)
 
-        ssh_client = _get_ssh_client(remote_conf, host)
+        if ssh_clients[host] is None:
+            return False
         try:
             print "[Nicessa] Running code on %s" %  remote_conf.get("host%i" % host, "name")
-            scp_client = scp.SCPClient(ssh_client._transport)
+            scp_client = scp.SCPClient(ssh_clients[host]._transport)
             scp_client.put("%s/_nicessa_bundle.tar.gz" % simfolder, remote_path="%s/%s" % (path, folder))
             time.sleep(2)
             log = open("log%d" % host, 'w')
-            log.write(ssh(ssh_client, "%s mv %s/cmd_%d .; ./cmd_%d; rm cmd_%d;" % (initializing, folder, host, host, host)))
+            log.write(ssh(ssh_clients[host], "%s mv %s/cmd_%d .; ./cmd_%d; rm cmd_%d;" % (initializing, folder, host, host, host)))
             log.flush()
             log.close()
         except scp.SCPException, e:
             print e
-        ssh_client.close()
+        ssh_clients[host].close()
 
         # ------------ clean locally
         os.remove("%s/_nicessa_bundle.tar.gz" % simfolder)
@@ -168,6 +176,7 @@ def run_remotely(simfolder, conf):
             os.remove("%s/%s" % (simfolder, c))
 
     print "[Nicessa] deployed simulation on %i host(s)" % (used_hosts)
+    return True
 
 
 def check(simfolder):
@@ -177,6 +186,7 @@ def check(simfolder):
     Prints out results.
 
     :param string simfolder: relative path to simfolder
+    :returns: True if successful, False otherwise
     '''
     conf = utils.get_main_conf(simfolder)
     hosts = utils.num_hosts(simfolder)
@@ -206,13 +216,17 @@ def check(simfolder):
                     running[host].append(cpu)
                 if "No sockets found" in run:
                     print "No sockets found on host %s..." % hostname
+        else:
+            print "[Nicessa] Cannot make connection to host %d" % host
+            #return False
     print
     print "[Nicessa] Finished cpus:"
     for host in finished.keys():
-        print " %.18s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(12), str(finished[host]))
+        print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(finished[host]))
     print "[Nicessa] Still running cpus:"
     for host in running.keys():
-        print " %.18s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(12), str(running[host]))
+        print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(running[host]))
+    return True
 
 
 def get_results(simfolder, do_wait=True):
@@ -308,6 +322,7 @@ def show_screen(simfolder, host, cpu, lines=50):
     :param string simfolder: relative path to simfolder
     :param int host: index of host
     :param int cpu: index of cpu
+    :returns: True if successful, False otherwise
     '''
     screen_name = 'screen_host_%i_cpu_%i' % (host, cpu)
     remote_conf = utils.get_host_conf(simfolder)
@@ -317,7 +332,7 @@ def show_screen(simfolder, host, cpu, lines=50):
     running = ssh(ssh_client, 'screen -ls;')
     if not screen_name in running:
         print '[Nicessa] No screen for cpu %i on %s is running at the moment.' % (cpu, host_name)
-        return
+        return False
 
     scp_client = scp.SCPClient(ssh_client._transport)
     path = remote_conf.get("host%i" % host, "path")
@@ -338,27 +353,51 @@ def show_screen(simfolder, host, cpu, lines=50):
         print '************* End Screen Content **********************'
     else:
         print '[Nicessa] Couldn\'t download the screen log for cpu %i on %s.' % (cpu, host_name)
+    return True
 
 
 def _get_ssh_client(remote_conf, host):
     '''
-    make an SSH client and connect it
+    Make an SSH client and connect it.
+    We first try a passwordless login, and then ask for credentials.
 
     :param ConfigParser remote_conf: host configuration
     :param int host: index of host
-    :returns: paramiko.SSHClient
+    :returns: paramiko.SSHClient if successful, None otherwise
     '''
     usr = remote_conf.get("host%i" % host, "user")
     hostname = remote_conf.get("host%i" % host, "name")
-    passwd = remote_conf.get("host%i" % host, "passwd")
 
+    ssh_client = paramiko.SSHClient()
+    ssh_client.load_system_host_keys()
     try:
+        ssh_client.connect(hostname, username=usr)
+    except paramiko.AuthenticationException:
+        print "[Nicessa] Could not connect to host '%s' as user '%s' with no password." % (hostname, usr)
+        print "          If you want password-less logon, please check your RSA key or shared/remembered connection setup."
+    except Exception, e:
+        print "[Nicessa] WARNING: Error while connecting with host %s: %s. " % (hostname, e)
+        if "Unknown server" in str(e):
+            print "          Is it a known host (look in ~/.ssh/known_hosts)?"
+        return None
+    else:
+        return ssh_client
+    ssh_client = None
+    while ssh_client is None:
+        print "You can enter the password for user '%s' now (type 'exit' to abort): " % usr
+        passwd = getpass()
+        if passwd == 'exit':
+            break
         ssh_client = paramiko.SSHClient()
         ssh_client.load_system_host_keys()
-        ssh_client.connect(hostname, username=usr, password=passwd)
-    except:
-        print "[Nicessa] WARNING: Could not connect to host %s. Is it a known host (look in .ssh/known_hosts)? Is the password correct?" % hostname
-        return None
+        try:
+            ssh_client.connect(hostname, username=usr, password=passwd)
+        except paramiko.AuthenticationException:
+            print "[Nicessa] Authentication was not successful."
+            ssh_client = None
+        except Exception, e:
+            print "[Nicessa] WARNING: Error while connecting with host %s: %s" % (hostname, e)
+            ssh_client = None
     return ssh_client
 
 

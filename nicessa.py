@@ -56,6 +56,7 @@ def run(simfolder):
     ''' The main function to start running simulations
 
         :param string simfolder: relative path to simfolder
+        :returns: True if successful, False otherwise
     '''
     from sim import setup, utils
 
@@ -68,19 +69,20 @@ def run(simfolder):
     if not osp.exists("%s/nicessa.conf" % simfolder):
         print "[Nicessa] %s/nicessa.conf does not exist!" % simfolder
         utils.usage()
-        return 0
+        return False
 
     if utils.is_remote(simfolder) or utils.cpus_per_host(simfolder)[1] > 1:
         from sim.net import remote
-        remote.run_remotely(simfolder, utils.get_main_conf(simfolder))
+        return remote.run_remotely(simfolder, utils.get_main_conf(simfolder))
     else:
-        starter.batch(simfolder, 1, 1)
+        return starter.batch(simfolder, 1, 1)
 
 
 def run_more(simfolder):
     """ let the user make more runs on current config, in addition to the given data
 
         :param string simfolder: relative path to simfolder
+        :returns: True if successful, False otherwise
     """
     from sim import utils
     simfolder = simfolder.strip('/')
@@ -115,7 +117,8 @@ def run_more(simfolder):
     print "You selected: %s. Do this? [Y|n]\n(Remember that configuration and code should still be the same!)" % str(sel_params)
     if raw_input().lower() in ["", "y"]:
         _prepare_dirs(simfolder, limit_to=sel_params, more=True)
-        run(simfolder)
+        return run(simfolder)
+    return False
 
 
 def make_plots(simfolder, plot_nrs=[]):
@@ -264,6 +267,7 @@ def list_data(simfolder):
     """ List the runs that have been made.
 
         :param string simfolder: relative path to simfolder
+        :returns: True if successful, False otherwise
     """
     print "[Nicessa] The configurations and number of runs made so far:\n"
     for sim in utils.get_simulation_names(utils.get_main_conf(simfolder)):
@@ -296,7 +300,7 @@ def list_data(simfolder):
                 print "  %s|" % cp.get('params', p).ljust(len(p) + 2) ,
             print "| %s |" % str(utils.runs_in_folder(simfolder, dir)).rjust(4)
             print '-' * charlen
-
+    return True
 
 # ---------------------------------------------------------------------------------------------------
 
@@ -347,35 +351,37 @@ if __name__ == "__main__":
         if utils.is_remote(args.folder) or utils.cpus_per_host(args.folder)[1] > 1:
             args.results = True
 
-    # only one of these at a time:
+    # 'first-class' commands : only one of these at a time:
+    fine = True
     if args.more:
-        run_more(args.folder)
+        fine = run_more(args.folder)
     elif args.run:
         if not utils.is_remote(args.folder):
             _check_data(args.folder, more=args.more)
         _prepare_dirs(args.folder)
-        run(args.folder)
+        fine = run(args.folder)
     elif args.check:
         from sim.net import remote
-        remote.check(args.folder)
+        fine = remote.check(args.folder)
     elif args.showscreen:
         from sim.net import remote
-        remote.show_screen(args.folder, args.showscreen[0], args.showscreen[1])
-
-    if args.results:
-        from sim.net import remote
-        # create confs (again) so we know what we expect to find on which host
-        if not args.run:
-            _check_data(args.folder, more=args.more)
-            _prepare_dirs(args.folder, more=args.more)
-        remote.get_results(args.folder, do_wait=args.run)
-
-    if args.plots is not None:
-        make_plots(args.folder, plot_nrs=args.plots)
-
-    if args.ttests:
-        run_ttests(args.folder)
-
+        fine = remote.show_screen(args.folder, args.showscreen[0], args.showscreen[1])
     if args.list:
-        list_data(args.folder)
+        fine = list_data(args.folder)
+
+    if fine:
+        if args.results:
+            from sim.net import remote
+            # create confs (again) so we know what we expect to find on which host
+            if not args.run:
+                _check_data(args.folder, more=args.more)
+                _prepare_dirs(args.folder, more=args.more)
+            remote.get_results(args.folder, do_wait=args.run)
+
+        if args.plots is not None:
+            make_plots(args.folder, plot_nrs=args.plots)
+
+        if args.ttests:
+            run_ttests(args.folder)
+
 

@@ -28,6 +28,7 @@ def batch(simfolder, host, cpu):
     :param string simfolder: relative path to simfolder
     :param int host: index of computer this batch is meant to run on
     :param int cpu: index of cpu this batch is meant to run on
+    :returns: True if successful, False otherwise
     '''
     conf = ConfigParser()
     conf.read(osp.join(simfolder, "conf", str(host), str(cpu), "main.conf"))
@@ -43,6 +44,7 @@ def batch(simfolder, host, cpu):
         single(section, simfolder, conf, conf.get(section, 'config_file'))
     print
     print '*' * 80
+    return True
 
 
 def single(section, simfolder, uber_conf, config_file):
