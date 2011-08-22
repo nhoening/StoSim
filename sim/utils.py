@@ -188,7 +188,7 @@ def num_hosts(simfolder):
 
 
 def cpus_per_host(simfolder):
-    ''' :returns: a dict, mapping host indices to the number of cpus specified for them
+    ''' :returns: a dict, mapping host indices to the number of cpus specified for them to be available
         :param string simfolder: relative path to simfolder
     '''
     if not is_remote(simfolder):
@@ -204,6 +204,15 @@ def cpus_per_host(simfolder):
     #    cpus_per_host[0] = 1 # poor guy gets everything either way, so this need not be true
     return cpus_per_host
 
+def working_cpus_per_host(simfolder):
+    ''' :returns: a dict, mapping host indices to the number of cpus that have been assigned work on them
+        :param string simfolder: relative path to simfolder
+    '''
+    d = dict.fromkeys(xrange(1, num_hosts(simfolder)+1), 0)
+    for host in d.keys():
+        if os.path.exists('%s/conf/%d' % (simfolder, host)):
+            d[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
+    return d
 
 def runs_in_folder(simfolder, fname):
     ''' :returns: number of runs that have been made in this data folder

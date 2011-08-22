@@ -247,7 +247,7 @@ def create(conf, simfolder, limit_to={}, more=False):
                 # mention this sub-conf in the main-conf of this cpu
                 main_conf.write('\n')
                 main_conf.write('[%s]\n' % sub_name)
-                main_conf.write('config_file = %s/%s.conf\n' % (prefix_dir, sub_name))
+                main_conf.write('config_file = conf/%d/%d/%s.conf\n' % (host, cpu, sub_name))
                 main_conf.flush()
                 jobindex += 1
 

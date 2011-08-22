@@ -57,9 +57,11 @@ def single(section, simfolder, uber_conf, config_file):
     :param CinfigParser uber_conf: the main simulation configuration
     :param string config_file: name of the config file for this run
     '''
+    if not simfolder == ".":
+        os.chdir(simfolder)
     conf = ConfigParser()
     conf.read('%s' % config_file)
-    data_dirname = "%s/data" % (simfolder)
+    data_dirname = 'data'
     section_dirname = "%s/%s" % (data_dirname, section)
 
     # make sure data section dir exists + copy actual config file there
@@ -89,7 +91,12 @@ def single(section, simfolder, uber_conf, config_file):
         csv.write("# Log for run %d in simulation %s \n" % (run, conf.get('meta', 'name')))
         csv.flush()
         csv.close()
-        Popen("%s/%s %s %s %s" % (simfolder, conf.get('control', 'executable'), logfile, config_file, seed), shell=True).wait()
+        Popen("%s %s %s %s" % (conf.get('control', 'executable'), logfile, config_file, seed), shell=True).wait()
+
+    if not simfolder == ".":
+        for sf in simfolder.split("/"):
+            if sf != '':
+                os.chdir('..')
 
 
 if __name__ == '__main__':

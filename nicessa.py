@@ -94,12 +94,11 @@ def run_more(simfolder):
     sel_params = {}
     for o in conf.options('params'):
         selected = False
-        print o
         params = [p.strip() for p in conf.get('params', o).split(',')]
         if len(params) <= 1:
             continue # no need to narrow down
         while not selected:
-            print "%s ? (out of [%s])" % (o, conf.get('params', o))
+            print "<%s> ? (out of [%s])" % (o, conf.get('params', o))
             choice = []
             for selection in raw_input().split(','):
                 selected = True
@@ -305,7 +304,7 @@ def list_data(simfolder):
 # ---------------------------------------------------------------------------------------------------
 
 def _check_data(simfolder, more=False):
-    """ check if old data is lyinf around, ask if it can go
+    """ check if old data is lying around, ask if it can go
 
         :param boolean more: when True, new data will simply be added to existing data
     """
