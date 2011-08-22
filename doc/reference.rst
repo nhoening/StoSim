@@ -12,9 +12,9 @@ examples, mostly the :ref:`basic_example`.
 
 .. _main_reference:
 
-Experiment configuration
+Main configuration
 ------------------------
-These are the settings you can make in ``simulation.conf`` or
+These are the settings you can make in ``nicessa.conf`` or
 in subsimulation configurations (see :ref:`sub_example`).
 
 meta

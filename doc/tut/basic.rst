@@ -24,7 +24,7 @@ The Main Configuration File
 ---------------------------
 
 This is the configuraton file for the basic simulation. We'll look at all parts
-separately here - however, there is also a full reference of all pooosible
+separately here - however, there is also a full reference of all possible
 configuration settings at :ref:`main_reference`.
 
 [meta]
@@ -202,7 +202,7 @@ Let's now run the simulation with
     
     ``$ python nicessa.py --folder examples/basic/``
 
-This is what I see on the terminal:
+This is what I see on the terminal (on my PC, I made ``nicessa`` an alias for ``python <path/to/>nicessa.py``):
 
 .. figure:: ../img/basic_run.png
     :align: center
