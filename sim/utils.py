@@ -48,7 +48,7 @@ def check_conf(simfolder):
         sys.exit(2)
 
     if not osp.exists("%s/nicessa.conf" % simfolder):
-        print "[Nicessa] The file %s/nicessa.conf does not exist!" % simfolder
+        print "[Nicessa] Cannot find nicessa.conf in the folder '%s' - Exiting..." % simfolder
         sys.exit(2)
 
     if not conf.has_section('control'):
@@ -71,8 +71,8 @@ def get_main_conf(simfolder):
     try:
         assert(osp.exists('%s/nicessa.conf' % simfolder))
     except AssertionError:
-        print "[Nicessa] WARNING: Cannot find nicessa.conf in the folder %s." % simfolder
-        sys.exit()
+        print "[Nicessa] Cannot find nicessa.conf in the folder '%s' - Exiting ..." % simfolder
+        sys.exit(2)
     conf.read("%s/nicessa.conf" % simfolder)
 
     if not conf.has_section('meta'):

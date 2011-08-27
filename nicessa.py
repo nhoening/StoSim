@@ -21,7 +21,7 @@ no remote support is needed, the user doesn't need paramiko
 """
 
 '''
-Copyright (c) 2011 Nicolas Höning
+Copyright (c) 2011 Nicolas HÃ¶ning
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
