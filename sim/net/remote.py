@@ -377,9 +377,10 @@ def _get_ssh_client(remote_conf, host):
 
     ssh_client = paramiko.SSHClient()
     ssh_client.load_system_host_keys()
+    ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
         ssh_client.connect(hostname, username=usr)
-    except paramiko.AuthenticationException:
+    except (paramiko.AuthenticationException, paramiko.SSHException):
         pass
         #print "[Nicessa] Could not connect to host '%s' as user '%s' with no password." % (hostname, usr)
         #print "          If you want password-less logon, please check your RSA key or shared/remembered connection setup."
