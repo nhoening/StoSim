@@ -12,6 +12,12 @@ The papy package provides an implementation of the flow-based programming paradi
 Nicessa sits on a higher level (it seems), when considering automating parameterisation and analysis. 
 Papys workflow definition is an acyclic graph of nodes who process and pass on information. In contrast, Nicessa deliberately treads the computation as a black box and considers it not distributable - the computation job instances are distributable.
 
+**Parallel Python**
+http://www.parallelpython.com
+"PP is a python module which provides mechanism for parallel execution of python code on SMP (systems with multiple processors or cores) and clusters (computers connected via network)."
+A bit hard to understand what exactly it is doing, I think it helps you to parallelize Python code and run those parallelized jobs on remote computers.
+I am unsure if it simply executes the function you pass to it or does some other magic with that. If Nicessa would use this and osimply passes a function which calls the simulation executable, it might be useful for #19. However, this environment works via servers lstening on ports, so the paradigm is a bit different.
+
 **OpenAlea**
 http://openalea.gforge.inria.fr/dokuwiki/doku.php?id=openalea
 "OpenAlea is an open source project primarily aimed at the plant research community. It is a distributed collaborative effort to develop Python libraries and tools that address the needs of current and future works in Plant Architecture modeling. OpenAlea includes modules to analyse, visualize and model the functioning and growth of plant architecture. "
