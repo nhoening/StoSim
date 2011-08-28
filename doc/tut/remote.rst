@@ -1,5 +1,6 @@
 .. _remote_example:
 
+========================================
 Running simulations on remote computers
 ========================================
 

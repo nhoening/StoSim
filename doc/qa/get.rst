@@ -8,7 +8,7 @@ You get the latest version by typing ``svn co http://my-svn.assembla.com/svn/nic
 most unix systems these days, otherwise you have to install that first). This downloads the repository and you can always update it by
 going in that new "nicessa"-directory this created and typing ``svn up``.
 
-I also made a shortcut to the main executable of nicessa in my ~/.bashrc file: 
+I also made a shortcut to the main executable of nicessa in my `~/.bashrc` file (`~/.profile` on Mac): 
     
     ``alias nicessa='python </your/system/path/to/>/nicessa/trunk/nicessa.py'``
 

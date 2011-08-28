@@ -34,10 +34,10 @@ used for several publications and extended with feedback. It is open-source and 
 
 Maybe this broad overview helps to understand the basic notion of it:
 
-.. figure:: ../img/nicessa_overview.png
-    :scale: 70%
+.. image:: ../img/nicessa_overview.png
+    :align: center
+..    :scale: 40%
  
-    Broad overview over what Nicessa is doing
 
 If not, have a look at :ref:`workflows` that are covered by Nicessa.
 

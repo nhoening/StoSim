@@ -1,16 +1,24 @@
 Welcome to Nicessa's documentation!
 ====================================
 
+NICESSA is a light-weight framework for parameterised simulations. The researcher provides the simulation itself (written in the language of his/her choice), 
+but the framework relieves him/her of many generalisable technical tasks in 
+
+  * configuring the simulation
+  * executing many runs
+  * and analysing the results
+
+Nicessa should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on several cpus in the network. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with Nicessa is to read a set of parameters from a config file and write its outout into a file Nicessa provides.
+.. mention that it depends on not much?
+
+.. image:: img/wrapping.png
+    :align: center
+
+But Nicessa also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which Niessa generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
+
 Nicessa stands for "**\ N**\ on-\ **i**\ ntrusive **c**\ ombinatorial **e**\ xecution of **s**\ tochastic **s**\ imulations and their **A**\ nalysis".
-
-When running stochastic simulations, there is a recurring set of technical 
-tasks: Parameter settings need to be recombined, log files need to be managed, and the results need to be
-analysed graphically and statistically. In addition, the computational workload should be distributed over
-several computers.
-
-NICESSA is a light-weight, general-purpose simulation framework, which relieves the researcher of generalisable technical tasks in the execution and analysis workflows, while being non-intrusive with respect to the individual implementation of the simulation model. 
-
-NICESSA is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R.
+It is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R.
+While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.assembla.com/spaces/nicessa/tickets>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
 
 Please contact `Nicolas Honing <nicolas@cwi.nl>`_ with any questions or problems.
 
@@ -34,7 +42,7 @@ Narrative contents
 
 .. image:: img/nicessa-workflows.png
     :align: center
-    :scale: 40%
+..    :scale: 40%
 
 
 ***************
