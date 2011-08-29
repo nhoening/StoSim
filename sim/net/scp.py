@@ -1,50 +1,26 @@
-#!/usr/bin/python
-
 # scp.py
 # Copyright (C) 2008 James Bardin <jbardin@bu.edu>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 
 """
-Secure Shell (scp) client, using paramiko
-(http://www.lag.net/paramiko/)
-
-Here is an example on how to use it:
-
->>> import paramiko
->>> transport = paramiko.Transport(('ssh.example.com', 22))
->>> transport.connect(username = 'xyz', password = 'xyz')
->>> client = SCPClient(transport)
->>> if os.path.isdir(my_path):
->>>     client.put_r(my_path)
->>> else:
->>>     client.put(my_path)
-
-An SSHClient comes with Paramiko, here is an example how to use it:
-
->>> import paramiko
->>> client = paramiko.SSHClient()
->>> client.load_system_host_keys()
->>> client.connect('ssh.example.com', username="xyz", password="xyz")
->>> stdin, stdout, stderr = client.exec_command('ls -l')
->>> stdout.read()
-
+Utilities for sending files over ssh using the scp1 protocol.
 """
 
 import os
-import sys
 from socket import timeout as SocketTimeout
 
 class SCPClient(object):
@@ -60,17 +36,8 @@ class SCPClient(object):
     The put method uses os.walk for recursion, and sends files accordingly.
     Since scp doesn't support symlinks, we send file symlinks as the file
     (matching scp behaviour), but we make no attempt at symlinked directories.
-
-    Convenience methods:
-        put_r:  put with recursion
-        put_p:  put preserving times
-        put_rp: put with recursion, preserving times
-        get_r:  get with recursion
-        get_p:  get preserving times
-        get_rp: get with recursion, preserving times
     """
-    def __init__(self, transport, buff_size = 16384, socket_timeout = 5.0,
-                 callback = None):
+    def __init__(self, transport, buff_size = 16384, socket_timeout = 5.0, progress = None):
         """
         Create an scp1 client.
 
@@ -80,15 +47,15 @@ class SCPClient(object):
         @type buff_size: int
         @param socket_timeout: channel socket timeout in seconds
         @type socket_timeout: float
-        @param callback: callback function for transfer status
-        @type callback: func
+        @param progress: callback - called with (filename, size, sent) during transfers
+        @type progress: function(string, int, int)
         """
         self.transport = transport
         self.buff_size = buff_size
         self.socket_timeout = socket_timeout
         self.channel = None
         self.preserve_times = False
-        self.callback = callback
+        self._progress = progress
         self._recv_dir = ''
         self._utime = None
         self._dirtimes = {}
@@ -113,7 +80,7 @@ class SCPClient(object):
         self.preserve_times = preserve_times
         self.channel = self.transport.open_session()
         self.channel.settimeout(self.socket_timeout)
-        scp_command = ('scp -t %s\n', 'scp -r -t %s\n')[recursive]
+        scp_command = ('scp -t %s', 'scp -r -t %s')[recursive]
         self.channel.exec_command(scp_command % remote_path)
         self._recv_confirm()
        
@@ -128,42 +95,6 @@ class SCPClient(object):
         if self.channel:
             self.channel.close()
     
-    def put_r(self, files, remote_path = '.'):
-        """
-        Convenience function for a recursive put
-
-        @param files: A single path, or a list of paths to be transfered.
-        @type files: str, list
-        @param remote_path: path in which to receive the files on the remote
-            host. defaults to '.'
-        @type remote_path: bool
-        """
-        self.put(files, remote_path, recursive = True)
-
-    def put_p(self, files, remote_path = '.'):
-        """
-        Convenience function to put preserving times.
-
-        @param files: A single path, or a list of paths to be transfered.
-        @type files: str, list
-        @param remote_path: path in which to receive the files on the remote
-            host. defaults to '.'
-        @type remote_path: bool
-        """
-        self.put(files, remote_path, preserve_times = True)
-   
-    def put_rp(self, files, remote_path = '.'):
-        """
-        Convenience function for a recursive put, preserving times.
-
-        @param files: A single path, or a list of paths to be transfered.
-        @type files: str, list
-        @param remote_path: path in which to receive the files on the remote
-            host. defaults to '.'
-        @type remote_path: bool
-        """
-        self.put(files, remote_path, recursive = True, preserve_times = True)
-
     def get(self, remote_path, local_path = '',
             recursive = False, preserve_times = False):
         """
@@ -192,39 +123,6 @@ class SCPClient(object):
         if self.channel:
             self.channel.close()
 
-    def get_r(self, remote_path, local_path = '.'):
-        """
-        Convenience function for a recursive get
-
-        @param remote_path: path to retrieve from server
-        @type remote_path: str
-        @param local_path: path in which to recieve files. default cwd
-        @type local_path: str
-        """
-        self.get(remote_path, local_path, recursive = True)
-
-    def get_p(self, remote_path, local_path = '.'):
-        """
-        Convenience function for get, preserving times.
-
-        @param remote_path: path to retrieve from server
-        @type remote_path: str
-        @param local_path: path in which to recieve files. default cwd
-        @type local_path: str
-        """
-        self.get(remote_path, local_path, preserve_times = True)
-
-    def get_rp(self, remote_path, local_path = '.'):
-        """
-        Convenience function for a recursive get, preserving times.
-
-        @param remote_path: path to retrieve from server
-        @type remote_path: str
-        @param local_path: path in which to recieve files. default cwd
-        @type local_path: str
-        """
-        self.get(remote_path, local_path, recursive = True, preserve_times = True)
-
     def _read_stats(self, name):
         """return just the file stats needed for scp"""
         stats = os.stat(name)
@@ -249,8 +147,8 @@ class SCPClient(object):
             while file_pos < size:
                 chan.sendall(file_hdl.read(buff_size))
                 file_pos = file_hdl.tell()
-                if self.callback:
-                    self.callback(file_pos, size)
+                if self._progress:
+                    self._progress(basename, size, file_pos)
             chan.sendall('\x00')
             file_hdl.close()
 
@@ -361,8 +259,8 @@ class SCPClient(object):
                     buff_size = size - pos
                 file_hdl.write(chan.recv(buff_size))
                 pos = file_hdl.tell()
-                if self.callback:
-                    self.callback(pos, size)
+                if self._progress:
+                    self._progress(path, size, pos)
             
             msg = chan.recv(512)
             if msg and msg[0] != '\x00':
@@ -413,8 +311,7 @@ class SCPClient(object):
         finally:
             self._dirtimes = {}
 
+
 class SCPException(Exception):
     """SCP exception class"""
     pass
-
-
