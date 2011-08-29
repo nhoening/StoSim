@@ -21,7 +21,7 @@ pdf_viewer = 'okular'
 tmp_dir = 'tmp_plotter'
 
 
-def plot(filepath='', outfile_name='', name='My simulation',\
+def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
          xcol=1, x_label='iteration', y_label='value', x_range=None,  y_range='[0:10]',\
          use_y_errorbars=False, errorbar_every=1, infobox_pos='top left', use_colors=True,\
          use_tex=False, line_width=6, font_size=22, custom_script='', plots=[]):
@@ -30,19 +30,20 @@ def plot(filepath='', outfile_name='', name='My simulation',\
 
     For each graph, this function ...
 
-    - selects folders with data files depending on Regexes you provide
-    - collects all log files contained in them in a temporary folder and
-      averages over the contents
+    - selects folders with data files depending on parameter values you provide
+    - collects all log files contained in them in a temporary folder
+    - averages over the contents or just selects values from them
     - makes a (gnu)plot out of that, with yerrorbars if you want
 
     The output is one PDF file.
     Creating PDF for this yields far nicer linetypes.
-    Also, we need linetypes (e.g. dashes/dots),
+    Also, this makes different linetypes (e.g. dashes/dots) possible,
     bcs papers are often printed b/w.
 
     In addition to gnuplot, you need epstopdf installed.
 
     :param string filepath: path to data
+    :param string delim: delimiter used between columns
     :param string outfile_name: name of the PDF file you want to make
     :param string name: Title of the simulation
     :param int xcol: column >= 1
@@ -99,13 +100,13 @@ def plot(filepath='', outfile_name='', name='My simulation',\
     # ---- prepare data  ----
     for p in plots:
         if p['_type'] == 'line':
-            compressor.avg_stats(xcol, int(p['_ycol']), None, fileSuffix='.log',
-                      filePath='%s/%s' % (tmp_dir, p['_name']),
-                      delim=',', outName='%s/%s/all.dat' % (tmp_dir, p['_name']))
+            compressor.avg_stats(xcol, int(p['_ycol']), None, filePrefix='log',
+                      fileSuffix='.dat', filePath='%s/%s' % (tmp_dir, p['_name']),
+                      delim=delim, outName='%s/%s/all.dat' % (tmp_dir, p['_name']))
         else: # scatter
             if not p.has_key('_select'):
                 p['_select'] = 'all'
-            harvester.collect_values('%s/%s' % (tmp_dir, p['_name']), '%s/%s/all.dat' \
+            harvester.collect_values('%s/%s' % (tmp_dir, p['_name']), delim, '%s/%s/all.dat' \
                            % (tmp_dir, p['_name']), cols=[xcol, int(p['_ycol'])],
                            selector=p['_select'] )
 

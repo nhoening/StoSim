@@ -24,7 +24,7 @@ between the two dilemmas (4*4=16). We want only two combinations -
 the two dilemmas.
 
 To describe subsimulations, you can have some more ``.conf`` files next to ``nicessa.conf``, one for each simulation.
-In those, you can specify parameter settings that only hold in those simulations (subsimulations inherit
+In those, you can specify parameter settings that only hold in those simulations. Subsimulations inherit
 settings from the main configuration `nicessa.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/nicessa.conf>`_ and their settings overwrite
 settings there. The *subsim* example mentions its subsimulations in
 ``nicessa.conf`` in a section called ``[simulations]``, like so:

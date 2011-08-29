@@ -48,6 +48,6 @@ if __name__ == '__main__':
         else:
             val -= 1
         # we write two columns per row: step and value
-        log.write("%d, %d\n" % (step, val))
+        log.write("%d\t%d\n" % (step, val))
     log.flush()
     log.close()

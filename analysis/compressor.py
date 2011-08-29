@@ -11,7 +11,7 @@ import os
 import math
 
 
-def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', delim=' ', outName=None):
+def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', delim=',', outName=None):
     '''
     This function can take several data files and transfer them into a file that is formatted
     ready to be plotted by gnuplot.
@@ -50,7 +50,7 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
 
     # for each x, collect y
     hasMoreRows = True
-    while hasMoreRows: # assuming all files have the same number fo rows!
+    while hasMoreRows: # assuming all files have the same number of rows!
         #x = None
         # get values from each file
         file_index = 0

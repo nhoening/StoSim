@@ -42,10 +42,12 @@ We then describe how it should be run. What code should it call, how often
 should each configuration run, and should we distribute the runs on other
 computers. Our simulation executable is main.py and we'll discuss it next.
 We run 5 times and are only doing it locally (we mention remote support in
-:ref:`sub_example`).
+:ref:`sub_example`). We also note that we use the tab delimiter ('\\t') to
+separate between columns when we write log data (the default value is a 
+comma, but the tab is also very common).
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
-    :lines: 12-19
+    :lines: 14-22
 
 
 [params]
@@ -56,7 +58,7 @@ on. This is simple in this case,
 we only specify how long our simulation should run: 500 timesteps. 
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
-    :lines: 21-25
+    :lines: 24-28
 
 
 .. _plot_settings:
@@ -88,8 +90,7 @@ Below is the Python file from the basic example - it uses a lot of comments to e
 
 .. literalinclude:: ../../examples/basic/main.py
 
-.. note:: Note that we use here the comma-separated-value format for our logs. Currently
-          Nicessa expects this but that will soon change.
+.. note:: Note that we use the tab (\\t) here to separate values, just as we told Nicessa above.
 
 .. note:: Note also that you can write comments in the logs (here: first line).
           Be sure to indicate comments with a starting '#'
@@ -122,7 +123,7 @@ really interesting when we discuss line plots below - in essence, we're telling
 Nicessa here not to draw vertical error bars.
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
-    :lines: 27-34
+    :lines: 30-37
 
 
 Settings per figure
@@ -135,7 +136,7 @@ We set the ``xcol`` to 1, since we wrote the step number in column 1 and the val
 .. note:: Note that all plots in each figure use the same x-axis.
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
-    :lines: 35-46
+    :lines: 38-49
 
 There can be many figures, each having one or more plots (numerate the options consistently, i.e. figure1, figure2, figure3 and plot1, plot2, plot3).
 
@@ -146,7 +147,7 @@ Now pay attention to the plots descriptions, where each dataset which is plotted
 Nicessa can do two kinds of plots for you, line- and scatterplots, both of which are used in the example below.
 
 .. literalinclude:: ../../examples/basic/nicessa.conf
-    :lines: 47-
+    :lines: 50-
 
 Settings to narrow down data
 """""""""""""""""""""""""""""

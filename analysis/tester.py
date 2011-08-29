@@ -14,7 +14,7 @@ from sim import utils
 from analysis import harvester
 
 
-def ttest(simfolder, c, i):
+def ttest(simfolder, c, i, delim):
     '''
     Run a T-test with Gnu R
 
@@ -37,6 +37,7 @@ def ttest(simfolder, c, i):
             if not d.has_key('_select'):
                 d['_select'] = 'all'
             harvester.collect_values("%s/%s" % (tmp_dir, d['_name']),
+                                     delim,
                                      '%s/%s.dat' % (tmp_dir, d['_name']),
                                      cols=[int(d['_col'])],
                                      selector=d['_select']

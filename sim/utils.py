@@ -204,15 +204,19 @@ def cpus_per_host(simfolder):
     #    cpus_per_host[0] = 1 # poor guy gets everything either way, so this need not be true
     return cpus_per_host
 
+
 def working_cpus_per_host(simfolder):
     ''' :returns: a dict, mapping host indices to the number of cpus that have been assigned work on them
         :param string simfolder: relative path to simfolder
     '''
+    if not os.path.exists('%s/conf' % simfolder):
+        return cpus_per_host(simfolder)
     d = dict.fromkeys(xrange(1, num_hosts(simfolder)+1), 0)
     for host in d.keys():
         if os.path.exists('%s/conf/%d' % (simfolder, host)):
             d[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
     return d
+
 
 def runs_in_folder(simfolder, fname):
     ''' :returns: number of runs that have been made in this data folder
@@ -221,7 +225,7 @@ def runs_in_folder(simfolder, fname):
     fpath = "%s/data/%s" % (simfolder, fname)
     if not os.path.exists(fpath):
         return 0
-    logfiles = [f for f in os.listdir(fpath) if f.startswith('log') and f.endswith('.csv')]
+    logfiles = [f for f in os.listdir(fpath) if f.startswith('log') and f.endswith('.dat')]
     if len(logfiles) == 0:
         return 0
     log_numbers = [int(f.split('.')[0][3:]) for f in logfiles]
@@ -240,6 +244,20 @@ def get_relevant_confs(simfolder):
             c.read("%s/%s.conf" % (simfolder, subsim))
             relevant_confs.append(c)
     return relevant_confs
+
+
+def get_delimiter(conf):
+    ''' get the delimiter used in the log files between values
+
+        :param ConfigParser conf: the main config file
+        :returns: the user-defined delimiter or the assumed default one (,)
+    '''
+    if conf.has_option('control', 'delimiter'):
+        d = conf.get('control', 'delimiter')
+        d = d.replace('\\t', '\t')
+        return d
+    else:
+        return ','
 
 
 def decode_search_from_confstr(s, sim=""):

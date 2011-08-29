@@ -33,10 +33,13 @@ control
 :executable:
     Which script to call for each run (**M**)
 :runs:
-    How often the same configuration should be run defaults to 1
+    How often the same configuration should be run, defaults to 1
 :local:
-    If local is 1, we run on localhost, otherwise provide a remote.conf file (see 'remote' reference further down), defaults to 1
-
+    If local is 1, we run on localhost, otherwise (if 0), we run remotely. Then, you will need to provide 
+    a remote.conf file (see 'remote' reference further down), defaults to 1
+:delimiter:
+    the delimiter your simulation uses to separate values in its logs,
+    defaults to comma (,) if you leave this setting away
 
 params
 ^^^^^^^
@@ -54,7 +57,8 @@ This section is optional.
 
 simulations
 ^^^^^^^^^^^^
-Use this if you separate simulations into separate sub-configs.
+Use this if you separate simulations into separate sub-configs
+(see :ref:`sub_example`).
 This section is optional.
 
 :configs:

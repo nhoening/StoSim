@@ -8,13 +8,12 @@ but the framework relieves him/her of many generalisable technical tasks in
   * executing many runs
   * and analysing the results
 
-Nicessa should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on several cpus in the network. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with Nicessa is to read a set of parameters from a config file and write its outout into a file Nicessa provides.
-.. mention that it depends on not much?
+Nicessa should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on several cpus in the network. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with Nicessa is to read a set of parameters from a config file and write its output into a file which Nicessa provides.
 
 .. image:: img/wrapping.png
     :align: center
 
-But Nicessa also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which Niessa generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
+But Nicessa also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which Nicessa generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
 
 Nicessa stands for "**\ N**\ on-\ **i**\ ntrusive **c**\ ombinatorial **e**\ xecution of **s**\ tochastic **s**\ imulations and their **A**\ nalysis".
 It is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R.

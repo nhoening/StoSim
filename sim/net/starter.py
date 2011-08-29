@@ -86,11 +86,11 @@ def single(section, simfolder, uber_conf, config_file):
         else:
             random.seed()
 
-        logfile = "%s/log%d.csv" % (section_dirname, run)
-        csv = open(logfile, 'w')
-        csv.write("# Log for run %d in simulation %s \n" % (run, conf.get('meta', 'name')))
-        csv.flush()
-        csv.close()
+        logfile = "%s/log%d.dat" % (section_dirname, run)
+        dat = open(logfile, 'w')
+        dat.write("# Log for run %d in simulation %s \n" % (run, conf.get('meta', 'name')))
+        dat.flush()
+        dat.close()
         Popen("%s %s %s %s" % (conf.get('control', 'executable'), logfile, config_file, seed), shell=True).wait()
 
     if not simfolder == ".":

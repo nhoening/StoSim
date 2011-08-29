@@ -49,8 +49,6 @@ from shutil import rmtree
 from ConfigParser import ConfigParser
 from subprocess import Popen
 
-from sim.net import starter
-
 
 def run(simfolder):
     ''' The main function to start running simulations
@@ -59,6 +57,7 @@ def run(simfolder):
         :returns: True if successful, False otherwise
     '''
     from sim import setup, utils
+    from sim.net import starter
 
     print '*' * 80
     sim_name = utils.ensure_name(simfolder)
@@ -176,6 +175,7 @@ def make_plots(simfolder, plot_nrs=[]):
 
     general_settings = {}
     c = ConfigParser(); c.read('%s/nicessa.conf' % (simfolder))
+    delim = utils.get_delimiter(c)
     for o,t in general_options.iteritems():
         get_opt_val(c, general_settings, 'plot-settings', o, t)
     general_params = []
@@ -220,7 +220,8 @@ def make_plots(simfolder, plot_nrs=[]):
                         print '[NICESSA] Warning: Incomplete graph specification in Experiment %s - for plot %i in figure %i. '\
                               'Specify at least _name and _ycol.' % (c.get('meta', 'name'), j, i)
                     j += 1
-                plotter.plot(filepath='%s/data' % simfolder,\
+                plotter.plot(filepath='%s/data' % simfolder,
+                             delim=delim,
                              outfile_name='%s/plots/%s.pdf' \
                                 % (simfolder, fig_settings['name']),\
                              plots=plot_confs,\
@@ -235,6 +236,10 @@ def run_ttests(simfolder):
     :param string simfolder: relative path to simfolder
     '''
     from analysis import harvester, tester
+
+    c = ConfigParser(); c.read('%s/nicessa.conf' % (simfolder))
+    delim = utils.get_delimiter(c)
+
     relevant_confs = utils.get_relevant_confs(simfolder)
 
     # tell about what we'll do if we have at least one test
@@ -258,7 +263,7 @@ def run_ttests(simfolder):
                 print "[Nicessa] T-test %i is missing one or both data set descriptions." % i
                 break
 
-            tester.ttest(simfolder, c, i)
+            tester.ttest(simfolder, c, i, delim)
             i += 1
 
 
