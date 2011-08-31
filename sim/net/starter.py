@@ -7,7 +7,7 @@ starter
 Start jobs for configurations.
 You can start a whole preconfigured batch, which then starts jobs for each single configuration.
 
-This module is used locally by simulation.py.
+This module is used locally by nicessa.py.
 Remotely, it is called via command line.
 '''
 

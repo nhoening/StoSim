@@ -22,7 +22,7 @@ def read_args():
     parser = argparse.ArgumentParser(description='Nicessa is an open-source toolkit for running parameterised stochastic simulations and analysing them.\
                                                   Please visit http://homepages.cwi.nl/~nicolas/nicessa')
     parser.add_argument('--folder', metavar='PATH', default='.', help='Path to simulation folder (this is where you keep your nicessa.conf), defaults to "."')
-    parser.add_argument('--simulations', metavar='<NAME>', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
+    parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
     parser.add_argument('--run', action='store_true', help='Only run, do not get (remote) results and do not analyse.')
     parser.add_argument('--check', action='store_true', help='Check state on remote computers.')
     parser.add_argument('--results', action='store_true', help='Get results from remote computers.')
@@ -30,7 +30,7 @@ def read_args():
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
     parser.add_argument('--ttests', action='store_true', help='Run T-tests (needs Gnu R installed).')
-    parser.add_argument('--showscreen', metavar="<HOST CPU>", nargs=2, type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
+    parser.add_argument('--showscreen', metavar="INDEX", nargs=2, type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
 
     return parser.parse_args()
 
