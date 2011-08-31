@@ -338,8 +338,9 @@ def show_screen(simfolder, host, cpu, lines=50):
 
     running = ssh(ssh_client, 'screen -ls;')
     if not screen_name in running:
-        print '[Nicessa] No screen for cpu %i on %s is running at the moment.' % (cpu, host_name)
-        return False
+        print '[Nicessa] No screen for cpu %i on %s is running at the moment. Show the screenlog? [Y|n]' % (cpu, host_name)
+        if raw_input().lower() == 'n':
+            return False
 
     scp_client = scp.SCPClient(ssh_client._transport)
     path = remote_conf.get("host%i" % host, "path")
