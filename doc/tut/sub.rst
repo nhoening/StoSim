@@ -25,7 +25,7 @@ the two dilemmas.
 
 To describe subsimulations, you can have some more ``.conf`` files next to ``nicessa.conf``, one for each simulation.
 In those, you can specify parameter settings that only hold in those simulations. Subsimulations inherit
-settings from the main configuration `nicessa.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/nicessa.conf>`_ and their settings overwrite
+settings from the main configuration `nicessa.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/nicessa.conf>`_ and their settings overwrite
 settings there. The *subsim* example mentions its subsimulations in
 ``nicessa.conf`` in a section called ``[simulations]``, like so:
 
@@ -37,7 +37,7 @@ settings there. The *subsim* example mentions its subsimulations in
           ``mean_coop`` is the mean likelihood to cooperate of the
           (non-learning) agents.
           Have a look in `the executable for this simulation
-          <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/main.py>`_ to see what the simulation is doing
+          <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/main.py>`_ to see what the simulation is doing
           exactly. Basically, we are interested in the likelihood to
           cooperate which the learning agents will arrive at (they start
           at around 0.5).
@@ -48,8 +48,8 @@ settings there. The *subsim* example mentions its subsimulations in
 
 
 In this case, we need to provide the configuration files
-`sim1.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/sim1.conf>`_ and 
-`sim2.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/sim2.conf>`_. Note that we left out the
+`sim1.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/sim1.conf>`_ and 
+`sim2.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/sim2.conf>`_. Note that we left out the
 ``.conf``-extension when we mentioned them.
 
 In the subsimulations, we define a unique subset of settings in their own ``[params]`` - section.

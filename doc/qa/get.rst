@@ -3,10 +3,10 @@
 How to get and install Nicessa
 ===============================
 
-I develop nicessa in a subversion repository and don't make stable versions available (maybe later). 
-You get the latest version by typing ``svn co http://my-svn.assembla.com/svn/nicessa``  (subversion, or svn, should be installed on
-most unix systems these days, otherwise you have to install that first). This downloads the repository and you can always update it by
-going in that new "nicessa"-directory this created and typing ``svn up``.
+I develop nicessa in a `git <http://git-scm.com>`_ repository and do not make stable versions available (this will come soon). 
+You get the latest version by typing ``git clone git@github.com:nhoening/Nicessa.git`` (git should be installed on
+most unix systems these days, otherwise you have to install that first). This downloads the code and you can always update it by
+going in that new "Nicessa"-directory this created and typing ``git pull``.
 
 I also made a shortcut to the main executable of nicessa in my `~/.bashrc` file (`~/.profile` on Mac): 
     
