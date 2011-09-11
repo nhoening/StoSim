@@ -14,7 +14,7 @@ from ConfigParser import NoOptionError, NoSectionError
 try:
 	import argparse
 except ImportError:
-	print("ERROR: You need Python 2.7+ unless you have the argparse module installed independently.", file=sys.stderr)
+	print("[Nicessa] Import error: You need Python 2.7+ unless you have the argparse module installed independently.")
 	sys.exit(1)
 
 
