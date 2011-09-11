@@ -9,11 +9,13 @@ You write the actual simulation, but nicessa relieves you of:
 
 There are example simulations in the "example" folder and you can find extensive documentation at
 http://homepages.cwi.nl/~nicolas/nicessa/
-(If you have sphinx, you can also generate the documentation yourself by going into that directory and typing make html).
+(If you have sphinx, you can also generate the documentation yourself by going
+ into that directory and typing 'make html').
 
 Dependencies
 --------------------
-You need Python (I mostly test on 2.6 but lower versions, say 2.3+, should also work)
+You need Python 2.7, or 2.6 if you install the argparse module locally (remote
+hosts that execute your code can also run lower versions, say 2.3+).
 You need the python-paramiko library for remote server support.
 For plotting, you need gnuplot and epstopdf (some tips: for debian-linux, epstopdf 
 is currently in the "texlive-extra-utils" package. On OSX, install gwTex via i-installer).

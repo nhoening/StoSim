@@ -11,7 +11,12 @@ import os
 import os.path as osp
 from ConfigParser import ConfigParser
 from ConfigParser import NoOptionError, NoSectionError
-import argparse
+try:
+	import argparse
+except ImportError:
+	print("ERROR: You need Python 2.7+ unless you have the argparse module installed independently.", file=sys.stderr)
+	sys.exit(1)
+
 
 
 def read_args():
