@@ -16,7 +16,7 @@ Nicessa should be easy to get started with: By only writing one configuration fi
 But Nicessa also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which Nicessa generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
 
 Nicessa stands for "**\ N**\ on-\ **i**\ ntrusive **c**\ ombinatorial **e**\ xecution of **s**\ tochastic **s**\ imulations and their **A**\ nalysis".
-It is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). It makes use of open-source industry standards like Gnuplot and Gnu R.
+It is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). Find the `code at github<https://github.com/nhoening/Nicessa/>`_. It makes use of open-source industry standards like Gnuplot and Gnu R.
 While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.assembla.com/spaces/nicessa/tickets>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
 
 Please contact `Nicolas Honing <nicolas@cwi.nl>`_ with any questions or problems.
