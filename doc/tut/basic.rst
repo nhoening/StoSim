@@ -12,8 +12,8 @@ nicessa - I made comments in the code files when appropriate, especially for
 this ``basic`` example.
 
 The two important things to look at are the 
-`configuration file <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/nicessa.conf>`_ and the 
-`simulation executable <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/basic/main.py>`_.
+`configuration file <https://github.com/nhoening/Nicessa/raw/master/examples/basic/nicessa.conf>`_ and the 
+`simulation executable <https://github.com/nhoening/Nicessa/raw/master/examples/basic/main.py>`_.
 
 Ah, what the heck. I'll explain the most important steps here :)
 The basic example is a really simple simulation. We only want to simulate a random walk,

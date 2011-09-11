@@ -119,7 +119,7 @@ The remote.conf file
 ---------------------
 If you have set ``local: 0``, you'll need to extend the configuration with 
 some information about the hosts in a separate file. 
-Nicessa will look for a file called `remote.conf <http://www.assembla.com/code/nicessa/subversion/nodes/trunk/examples/subsim/remote.conf>`_ with information about hosts
+Nicessa will look for a file called `remote.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/remote.conf>`_ with information about hosts
 and some other things. Here is an example (go to :ref:`remote_reference` for a full reference on the settings):
 
 .. literalinclude:: ../../examples/subsim/remote.conf
