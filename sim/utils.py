@@ -58,7 +58,7 @@ def check_conf(simfolder):
 
     if not conf.has_section('control'):
         print "[NICESSA] You need to tell me what script to execute. \
-            Please define an option called 'executable' in a scetion called 'control'."
+            Please define an option called 'executable' in a section called 'control'."
         sys.exit(2)
 
     if not conf.has_section('params'):
@@ -87,7 +87,7 @@ def get_main_conf(simfolder):
     except OSError, e:
         def_user = os.getenv('USER')
     for (sec, opt, default) in\
-            [('meta', 'name', 'Nicessa Experiment'),\
+            [('meta', 'name', 'A simulation run by Nicessa'),\
              ('meta', 'maintainer', def_user),\
              ('control', 'local', '1'),\
              ('control', 'runs', '1')]:
