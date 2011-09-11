@@ -82,9 +82,13 @@ def get_main_conf(simfolder):
 
     if not conf.has_section('meta'):
         conf.add_section('meta')
+    try:
+        def_user = os.getlogin()
+    except OSError, e:
+        def_user = os.getenv('USER')
     for (sec, opt, default) in\
             [('meta', 'name', 'Nicessa Experiment'),\
-             ('meta', 'maintainer', os.getlogin()),\
+             ('meta', 'maintainer', def_user),\
              ('control', 'local', '1'),\
              ('control', 'runs', '1')]:
         if not conf.has_option(sec, opt):
