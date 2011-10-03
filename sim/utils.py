@@ -151,8 +151,10 @@ def make_screen_name(simfolder, host, cpu):
         :returns: a screen name
     '''
     nicessa_conf = get_main_conf(simfolder)
-    subsims = nicessa_conf.get('simulations', 'configs').split(',')
     sim_name = ''
+    subsims = []
+    if nicessa_conf.has_option('simulations', 'configs'):
+        subsims = nicessa_conf.get('simulations', 'configs').split(',')
     if len(subsims) == 1:
         sub_conf = ConfigParser()
         sub_conf.read('%s/%s.conf' % (simfolder, subsims[0]))
