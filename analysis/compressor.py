@@ -14,8 +14,7 @@ import math
 def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', delim=',', outName=None):
     '''
     This function can take several data files and transfer them into a file that is formatted
-    ready to be plotted by gnuplot.
-    It will average over the Y column (that you specify) and record the standard deviation.
+    ready to be plotted by gnuplot (each line is "<x> <mean of y vals> <std of y vals>").
     Data files should be named using an index starting by 1 and all have the same prefix and/or suffix arround that index.
 
     In gnuplot, you could then say "plot outName smooth unique with yerrorlines"
@@ -38,49 +37,42 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
     assert xCol, 'xCol is not set'
     assert yCol, 'yCol is not set'
 
-    # open files
-    of = list()
+    # ---- First,  we'll collect all y values from all files
+    d = {} # this will store a list of y values for each x
     for i in xrange(1, numFiles+1, 1):
-        of.append(open(filePath + filePrefix + str(i) + fileSuffix, 'r'))
+        f = open(filePath + filePrefix + str(i) + fileSuffix, 'r')
+        hasMoreRows = True
+        while hasMoreRows:
+            s = f.readline().strip().split(delim)
+            if s == ['']:
+                hasMoreRows = False
+            else:
+                # disregard comments and unsuitable lines
+                if s[0].startswith('#') or len(s) < xCol or len(s) < yCol:
+                    continue
+                x = s[xCol-1].strip()
+                if not x == '' and not d.has_key(x):
+                    d[x] = []
+                try:
+                    # we assume that y values are numeric! Also,other
+                    # errors might happen here when file is corrupted
+                    d[x].append(float(s[int(yCol)-1]))
+                except Exception, e:
+                    print "ERROR"
+        f.close()
+
+    # ---- Then, we compute mean and standard deviation for the v values for
+    #      each x and write them to target file
     if outName is None: outName = '%s%s%s%s.out' % (filePath, filePrefix, str(yCol), fileSuffix)
     out = open(outName, 'w')
-
-    # we'll collect values in this dictionary
-    d = {}
-
-    # for each x, collect y
-    hasMoreRows = True
-    while hasMoreRows: # assuming all files have the same number of rows!
-        #x = None
-        # get values from each file
-        file_index = 0
-        while file_index < numFiles:
-            s = of[file_index].readline().strip().split(delim)
-            #if s[0].startswith("#") or s[0].startswith('time_stamp'): continue
-            file_index += 1
-            if s == ['']: hasMoreRows = False # now no file is looked at no more
-            else:
-                if not (s[0].startswith("#") or s[0].startswith('time_stamp')):
-                    x = s[xCol-1].strip()
-                    # make sure d has a list for that x
-                    if not d.has_key(x):
-                        d[x] = []
-                    try:
-                        # we assume that y values are nueric! Also,other
-                        # errors might happen here when file is corrupted
-                        d[x].append(float(s[int(yCol)-1]))
-                    except Exception, e:
-                        print "ERROR"
-
-    # compute mean and standard deviation and write to target file
     keys = d.keys()
     keys.sort()
     for x in keys:
-        # mean
+        # -- mean
         sum = 0.0
         for y in d[x]: sum += y
         mean = sum / float(len(d[x]))
-        # sample standard deviation
+        # -- sample standard deviation
         std = 0.0
         for y in d[x]:
             std += math.pow(y - mean, 2)
@@ -90,6 +82,4 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
         out.write('%s %f %f\n' % (str(x), mean, std))
 
     out.close()
-    for i in xrange(numFiles):
-        of[i].close()
 
