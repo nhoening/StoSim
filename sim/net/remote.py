@@ -201,6 +201,7 @@ def check(simfolder):
         finished[host] = []
         running[host] = []
     remote_conf = utils.get_host_conf(simfolder)
+    found_jobs = 0
 
     print "[Nicessa] Checking hosts: ",
     sys.stdout.flush()
@@ -218,20 +219,26 @@ def check(simfolder):
                     screen_name = utils.make_screen_name(simfolder, host, cpu)
                     if "finished_%s" % screen_name in fin:
                         finished[host].append(cpu)
+                        found_jobs += 1
                     if screen_name in run:
                         running[host].append(cpu)
+                        found_jobs += 1
                     if "No sockets found" in run:
                         print "No sockets found on host %s..." % hostname
             else:
                 print "[Nicessa] Cannot make connection to host %d" % host
                 #return False
     print
-    print "[Nicessa] Finished cpus:"
-    for host in finished.keys():
-        print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(finished[host]))
-    print "[Nicessa] Still running cpus:"
-    for host in running.keys():
-        print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(running[host]))
+    if found_jobs == 0:
+        print '[Nicessa] Could not find any running or finished jobs for this simulation.\n\
+                Maybe you ran only a subsimulation? In that case, please use the "--simulations" option together with "--check" (or "--results").'
+    else:
+        print "[Nicessa] Finished cpus:"
+        for host in finished.keys():
+            print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(finished[host]))
+        print "[Nicessa] Still running cpus:"
+        for host in running.keys():
+            print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(running[host]))
     return True
 
 
@@ -243,7 +250,7 @@ def get_results(simfolder, do_wait=True):
     :param boolean do_wait: True if regular checks should be done until all data is available (default is True)
     '''
     print '*' * 80
-    print "[Nicessa] getting results ... "
+    print "[Nicessa] Looking for results ... "
 
     remote_conf = utils.get_host_conf(simfolder)
     hosts_done = dict.fromkeys(xrange(1, utils.num_hosts(simfolder)+1), False)
@@ -279,9 +286,9 @@ def get_results(simfolder, do_wait=True):
                         # check for status by looking for the marker files this host should generate
                         res = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
                         # TODO: this is no good when we get the results on a different computer than we started from
-                        #relevant_subsims = [subsim for subsim in utils.get_simulation_names(conf) if osp.exists("%s/conf/%s/%s" % (simfolder, subsim, host))]
+                        #relevant_subsims = [subsim for subsim in utils.get_subsimulation_names(conf) if osp.exists("%s/conf/%s/%s" % (simfolder, subsim, host))]
                         if 'data' in res and reduce(lambda x, y: x and y, \
-                                             map(res.__contains__, ["finished_%s" % utils.make_screen_name(simfolder,host, cpu) for cpu in xrange(1, working_cpus_per_host[host]+1)])):
+                                             map(res.__contains__, ["finished_%s" % utils.make_screen_name(simfolder, host, cpu) for cpu in xrange(1, working_cpus_per_host[host]+1)])):
                             scp_client = scp.SCPClient(ssh_client._transport)
                             try:
                                 print "[Nicessa] contacting %s - compressing ... " % hostname ,
