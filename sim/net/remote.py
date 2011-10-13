@@ -129,7 +129,8 @@ def run_remotely(simfolder, conf):
         # send everything needed of the simulation to run batches to the host in one go
         needed += " conf"
         needed += " nicessa.conf"
-        needed += " %s" % (conf.get('control', 'executable'))
+        # user should specify this in remote.conf, since  control->executable can contain any command, not only a filename
+        #needed += " %s" % (conf.get('control', 'executable'))
         if remote_conf.has_option('code', 'files'):
             for f in [f for f in remote_conf.get('code', 'files').split(',') if f is not ""]:
                 needed += " %s" %f
@@ -157,7 +158,13 @@ def run_remotely(simfolder, conf):
             scp_client.put("_nicessa_bundle.tar.gz", remote_path="%s/%s" % (path, folder))
             time.sleep(2)
             initializing = "cd %s/%s; tar -zxf _nicessa_bundle.tar.gz;" % (path, folder)
-            log = open("log%d" % host, 'w')
+            logdir = 'deploy-logs'
+            if not os.path.exists(logdir):
+                os.mkdir(logdir)
+            else:
+                for logf in os.listdir(logdir):
+                    os.remove('%s/%s' % (logdir, logf))
+            log = open('%s/log%d' % (logdir, host), 'w')
             log.write(ssh(ssh_clients[host], "%s ./cmd_%d; rm cmd_%d;" % (initializing, host, host)))
             log.flush()
             log.close()
