@@ -11,7 +11,7 @@ import os
 import os.path as osp
 import re
 from ConfigParser import ConfigParser
-from ConfigParser import NoOptionError, NoSectionError
+from ConfigParser import NoOptionError, NoSectionError, ParsingError
 try:
 	import argparse
 except ImportError:
