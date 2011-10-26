@@ -111,8 +111,9 @@ def run_remotely(simfolder, conf):
         screening = ""
         for cpu in xrange(1, working_cpus_per_host[host]+1):
             if osp.exists("%s/conf/%d/%d" % (simfolder, host, cpu)):
-                screening += "rm finished_%i_%i; ./screener.py screen_host_%i_cpu_%i './starter.py . %i %i; touch finished_%i_%i;exit;'; " \
-                    % (host, cpu, host, cpu, host, cpu, host, cpu)
+                screen_name = utils.make_screen_name(simfolder, host, cpu)
+                screening += "rm finished_%s; ./screener.py %s './starter.py . %i %i; touch finished_%s;exit;'; " \
+                    % (screen_name, screen_name, host, cpu, screen_name)
 
         #  --- local file shuffling
         if not folder == ".":
@@ -128,7 +129,8 @@ def run_remotely(simfolder, conf):
         # send everything needed of the simulation to run batches to the host in one go
         needed += " conf"
         needed += " nicessa.conf"
-        needed += " %s" % (conf.get('control', 'executable'))
+        # user should specify this in remote.conf, since  control->executable can contain any command, not only a filename
+        #needed += " %s" % (conf.get('control', 'executable'))
         if remote_conf.has_option('code', 'files'):
             for f in [f for f in remote_conf.get('code', 'files').split(',') if f is not ""]:
                 needed += " %s" %f
@@ -156,7 +158,13 @@ def run_remotely(simfolder, conf):
             scp_client.put("_nicessa_bundle.tar.gz", remote_path="%s/%s" % (path, folder))
             time.sleep(2)
             initializing = "cd %s/%s; tar -zxf _nicessa_bundle.tar.gz;" % (path, folder)
-            log = open("log%d" % host, 'w')
+            logdir = 'deploy-logs'
+            if not os.path.exists(logdir):
+                os.mkdir(logdir)
+            else:
+                for logf in os.listdir(logdir):
+                    os.remove('%s/%s' % (logdir, logf))
+            log = open('%s/log%d' % (logdir, host), 'w')
             log.write(ssh(ssh_clients[host], "%s ./cmd_%d; rm cmd_%d;" % (initializing, host, host)))
             log.flush()
             log.close()
@@ -200,6 +208,7 @@ def check(simfolder):
         finished[host] = []
         running[host] = []
     remote_conf = utils.get_host_conf(simfolder)
+    found_jobs = 0
 
     print "[Nicessa] Checking hosts: ",
     sys.stdout.flush()
@@ -214,22 +223,29 @@ def check(simfolder):
                 fin = ssh(ssh_client, 'cd %s/%s; ls finished_*;' % (path, simfolder))
                 run = ssh(ssh_client, 'screen -ls;')
                 for cpu in xrange(1, working_cpus_per_host[host]+1):
-                    if "finished_%d_%d" % (host, cpu) in fin:
+                    screen_name = utils.make_screen_name(simfolder, host, cpu)
+                    if "finished_%s" % screen_name in fin:
                         finished[host].append(cpu)
-                    if "screen_host_%d_cpu_%d" % (host, cpu) in run:
+                        found_jobs += 1
+                    if screen_name in run:
                         running[host].append(cpu)
+                        found_jobs += 1
                     if "No sockets found" in run:
                         print "No sockets found on host %s..." % hostname
             else:
                 print "[Nicessa] Cannot make connection to host %d" % host
                 #return False
     print
-    print "[Nicessa] Finished cpus:"
-    for host in finished.keys():
-        print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(finished[host]))
-    print "[Nicessa] Still running cpus:"
-    for host in running.keys():
-        print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(running[host]))
+    if found_jobs == 0:
+        print '[Nicessa] Could not find any running or finished jobs for this simulation.\n\
+                Maybe you ran only a subsimulation? In that case, please use the "--simulations" option together with "--check" (or "--results").'
+    else:
+        print "[Nicessa] Finished cpus:"
+        for host in finished.keys():
+            print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(finished[host]))
+        print "[Nicessa] Still running cpus:"
+        for host in running.keys():
+            print " %.27s:\t%s" % (remote_conf.get("host%i" % host, "name").ljust(24), str(running[host]))
     return True
 
 
@@ -241,7 +257,7 @@ def get_results(simfolder, do_wait=True):
     :param boolean do_wait: True if regular checks should be done until all data is available (default is True)
     '''
     print '*' * 80
-    print "[Nicessa] getting results ... "
+    print "[Nicessa] Looking for results ... "
 
     remote_conf = utils.get_host_conf(simfolder)
     hosts_done = dict.fromkeys(xrange(1, utils.num_hosts(simfolder)+1), False)
@@ -277,9 +293,9 @@ def get_results(simfolder, do_wait=True):
                         # check for status by looking for the marker files this host should generate
                         res = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
                         # TODO: this is no good when we get the results on a different computer than we started from
-                        #relevant_subsims = [subsim for subsim in utils.get_simulation_names(conf) if osp.exists("%s/conf/%s/%s" % (simfolder, subsim, host))]
+                        #relevant_subsims = [subsim for subsim in utils.get_subsimulation_names(conf) if osp.exists("%s/conf/%s/%s" % (simfolder, subsim, host))]
                         if 'data' in res and reduce(lambda x, y: x and y, \
-                                             map(res.__contains__, ["finished_%s_%i" % (host, cpu) for cpu in xrange(1, working_cpus_per_host[host]+1)])):
+                                             map(res.__contains__, ["finished_%s" % utils.make_screen_name(simfolder, host, cpu) for cpu in xrange(1, working_cpus_per_host[host]+1)])):
                             scp_client = scp.SCPClient(ssh_client._transport)
                             try:
                                 print "[Nicessa] contacting %s - compressing ... " % hostname ,
@@ -331,7 +347,7 @@ def show_screen(simfolder, host, cpu, lines=50):
     :param int cpu: index of cpu
     :returns: True if successful, False otherwise
     '''
-    screen_name = 'screen_host_%i_cpu_%i' % (host, cpu)
+    screen_name = utils.make_screen_name(simfolder, host, cpu)
     remote_conf = utils.get_host_conf(simfolder)
     host_name = remote_conf.get("host%i" % host, "name")
     ssh_client = _get_ssh_client(remote_conf, host)
@@ -427,9 +443,9 @@ def clean_states(simfolder, host):
     cpus = utils.cpus_per_host(simfolder)[host]
     # clean up marker files
     for cpu in xrange(1, cpus+1):
-        clean += 'rm finished_%i_%i;' % (host, cpu)
+        clean += 'rm finished_%s;' % utils.make_screen_name(simfolder, host, cpu)
     # kill old screens by name
-    pattern = '|'.join(["screen_host_%i_cpu_%i" % (host, cpu) for cpu in xrange(1, cpus+1)])
+    pattern = '|'.join([utils.make_screen_name(simfolder, host, cpu) for cpu in xrange(1, cpus+1)])
     clean += "kill `ps aux | awk '/%s/{print $2}'`;" % pattern
     return clean
 

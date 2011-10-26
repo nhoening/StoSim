@@ -60,8 +60,8 @@ def run(simfolder):
     from sim.net import starter
 
     print '*' * 80
-    sim_name = utils.ensure_name(simfolder)
-    print "Running simulation %s" % utils.get_pretty_simulation_name("%s/simulation.conf" % simfolder, sim_name)
+    simfolder_name = utils.ensure_name(simfolder)
+    print "Running simulation %s" % utils.get_simulation_name("%s/simulation.conf" % simfolder, simfolder_name)
     print '*' * 80
     print;
 
@@ -274,7 +274,7 @@ def list_data(simfolder):
         :returns: True if successful, False otherwise
     """
     print "[Nicessa] The configurations and number of runs made so far:\n"
-    for sim in utils.get_simulation_names(utils.get_main_conf(simfolder)):
+    for sim in utils.get_subsimulation_names(utils.get_main_conf(simfolder)):
         print "%s" % sim
         # get a list w/ relevant params
         cp = ConfigParser()

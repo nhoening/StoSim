@@ -9,8 +9,9 @@ utils
 import sys
 import os
 import os.path as osp
+import re
 from ConfigParser import ConfigParser
-from ConfigParser import NoOptionError, NoSectionError
+from ConfigParser import NoOptionError, NoSectionError, ParsingError
 try:
 	import argparse
 except ImportError:
@@ -56,7 +57,12 @@ def check_conf(simfolder):
         print "[Nicessa] Cannot find nicessa.conf in the folder '%s' - Exiting..." % simfolder
         sys.exit(2)
 
-    if not conf.has_section('control'):
+    if not conf.has_section('meta') or not conf.has_option('meta', 'name'):
+        print "[NICESSA] You need to tell me a name for this simulation. \
+            Please define an option called 'name' in a section called 'meta'."
+        sys.exit(2)
+
+    if not conf.has_section('control') or not conf.has_option('control', 'executable'):
         print "[NICESSA] You need to tell me what script to execute. \
             Please define an option called 'executable' in a section called 'control'."
         sys.exit(2)
@@ -131,7 +137,35 @@ def get_host_conf(simfolder):
     return conf
 
 
-def get_simulation_names(conf):
+def make_screen_name(simfolder, host, cpu):
+    ''' make a screen name, out of:
+          * the name of main simulation, cleaned of all special chars
+          * host number
+          * cpu number
+        One special case (until we implement better job distribution):
+        If you run only one subsimulation, its name is used.
+
+        :param string simfolder: relative path to simfolder
+        :param number hostr: host number
+        :param numer cpu: cpu numer
+        :returns: a screen name
+    '''
+    nicessa_conf = get_main_conf(simfolder)
+    sim_name = ''
+    subsims = []
+    if nicessa_conf.has_option('simulations', 'configs'):
+        subsims = nicessa_conf.get('simulations', 'configs').split(',')
+    if len(subsims) == 1:
+        sub_conf = ConfigParser()
+        sub_conf.read('%s/%s.conf' % (simfolder, subsims[0]))
+        sim_name = sub_conf.get('meta', 'name')
+    if sim_name == '':
+        sim_name = nicessa_conf.get('meta', 'name')
+    rx = re.compile('\W+')
+    return 'screen_%s_%s_%s' % (rx.sub('_', sim_name).strip(), str(host), str(cpu))
+
+
+def get_subsimulation_names(conf):
     ''' get of simulation names.
 
         :param ConfigParser conf: main configuration
@@ -143,7 +177,7 @@ def get_simulation_names(conf):
     return sim_names
 
 
-def get_pretty_simulation_name(conf_filename, fallback):
+def get_simulation_name(conf_filename, fallback):
     ''' The user can give a pretty name to the simulation under [meta], this function gets it.
 
         :param string conf_filename: name of the config file for the simulation

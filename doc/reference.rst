@@ -207,7 +207,7 @@ List here files that your simulation needs to run, apart from the executable.
 Nicessa will copy all of it to the host via scp.
 
 :files:
-    Files that should be copied
+    Files that should be copied. This includes your executable script.
 :folders:
     Folders that should be copied
 
