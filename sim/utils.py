@@ -219,7 +219,6 @@ def num_hosts(simfolder):
     if not is_remote(simfolder):
         return 1
     remote_conf = get_host_conf(simfolder)
-    # 4 rows per host in host conf
     hosts = 0
     if remote_conf.has_section('host0'):
         print '[NICESSA] Please number your hosts starting with 1. Ignoring host0 ...'
@@ -256,6 +255,9 @@ def working_cpus_per_host(simfolder):
         return cpus_per_host(simfolder)
     d = dict.fromkeys(xrange(1, num_hosts(simfolder)+1), 0)
     for host in d.keys():
+        #TODO: this relies on the conf directory not having changed since the run was started ...
+        #      there should be a better way, probably saving a session
+        #      state somewhere ...
         if os.path.exists('%s/conf/%d' % (simfolder, host)):
             d[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
     return d
