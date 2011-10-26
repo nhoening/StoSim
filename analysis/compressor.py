@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 '''
 compressor
@@ -66,27 +67,30 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
                     if not d.has_key(x):
                         d[x] = []
                     try:
-                        # we assume that y values are nueric! Also,other
+                        # we assume that y values are numeric! Also,other
                         # errors might happen here when file is corrupted
                         d[x].append(float(s[int(yCol)-1]))
                     except Exception, e:
                         print "ERROR"
 
-    # compute mean and standard deviation and write to target file
+    # compute mean and standard deviation/error and write to target file
     keys = d.keys()
     keys.sort()
     for x in keys:
         # mean
         sum = 0.0
-        for y in d[x]: sum += y
+        for y in d[x]:
+            sum += y
         mean = sum / float(len(d[x]))
-        # sample standard deviation
+        # standard deviation (std) or standard error (ste)
+        # On the difference between them, see the very readable intro at
+        # http://ww1.cpa-apc.org:8080/publications/archives/PDF/1996/Oct/strein2.pdf
         std = 0.0
         for y in d[x]:
             std += math.pow(y - mean, 2)
-        std /= len(d[x])
+        std /= len(d[x])-1
         std = math.sqrt(std)
-        #std /= math.sqrt(len(d[x])) # this would give the standard error of the mean
+        ste = std / math.sqrt(len(d[x])) # we're not using this, #40 should give a configurable choice
         out.write('%s %f %f\n' % (str(x), mean, std))
 
     out.close()
