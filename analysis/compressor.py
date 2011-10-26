@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 '''
 compressor
@@ -70,15 +71,18 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
     for x in keys:
         # -- mean
         sum = 0.0
-        for y in d[x]: sum += y
+        for y in d[x]:
+            sum += y
         mean = sum / float(len(d[x]))
-        # -- sample standard deviation
+        # -- standard deviation (std) or standard error (ste)
+        #    On the difference between them, see the very readable intro at
+        #    http://ww1.cpa-apc.org:8080/publications/archives/PDF/1996/Oct/strein2.pdf
         std = 0.0
         for y in d[x]:
             std += math.pow(y - mean, 2)
-        std /= len(d[x])
+        std /= len(d[x])-1
         std = math.sqrt(std)
-        #std /= math.sqrt(len(d[x])) # this would give the standard error of the mean
+        ste = std / math.sqrt(len(d[x])) # we're not using this, #40 should give a configurable choice
         out.write('%s %f %f\n' % (str(x), mean, std))
 
     out.close()

@@ -314,10 +314,13 @@ def _check_data(simfolder, more=False):
         :param boolean more: when True, new data will simply be added to existing data
     """
     if osp.exists("%s/data" % simfolder) and len(os.listdir('%s/data' % simfolder)) > 0:
-       if not more:
-            print '[Nicessa] I found older log data (in %s/data). Remove? [y/N]' % simfolder
-            if raw_input().lower() == 'y':
+        if not more:
+            if '-d' in sys.argv:
                 rmtree('%s/data' % simfolder)
+            else:
+                print '[Nicessa] I found older log data (in %s/data). Remove? [y/N]' % simfolder
+                if raw_input().lower() == 'y':
+                    rmtree('%s/data' % simfolder)
 
 
 def _prepare_dirs(simfolder, limit_to={}, more=False):
