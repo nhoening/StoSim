@@ -56,7 +56,7 @@ def run(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     '''
-    from sim import setup, utils
+    from sim import utils
     from sim.net import starter
 
     print '*' * 80

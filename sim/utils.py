@@ -109,7 +109,7 @@ def get_main_conf(simfolder):
         conf.set('simulations', 'configs', ','.join(args.simulations))
     # then set all the params from subconfs
     if conf.has_section('simulations'):
-        for c in conf.get('simulations', 'configs').split(','):
+        for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
             if not osp.exists("%s/%s.conf" % (simfolder, c)):
                 print "[Nicessa] Warning: The file %s.conf does not exist!" % c
             else:
