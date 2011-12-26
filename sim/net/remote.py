@@ -184,8 +184,6 @@ def run_remotely(simfolder, conf):
                     os.chdir('..')
         # --- end local file shuffling
 
-
-
     print "[Nicessa] deployed simulation on %i host(s)" % (used_hosts)
     return True
 

@@ -251,5 +251,6 @@ def create(conf, simfolder, limit_to={}, more=False):
                 main_conf.flush()
                 jobindex += 1
 
-            main_conf.close()
+            if cpuloads[cpu] > 0:
+                main_conf.close()
 

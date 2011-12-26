@@ -102,26 +102,14 @@ def get_main_conf(simfolder):
         if not conf.has_option(sec, opt):
             conf.set(sec, opt, default)
 
-    # overwrite simulation-configs
-    # first see if there are some passed as params (then we use those)
     args = read_args()
     if args.simulations:
         conf.set('simulations', 'configs', ','.join(args.simulations))
-    # then set all the params from subconfs
-    if conf.has_section('simulations'):
-        for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
-            if not osp.exists("%s/%s.conf" % (simfolder, c)):
-                print "[Nicessa] Warning: The file %s.conf does not exist!" % c
-            else:
-                subconf = ConfigParser()
-                subconf.read('%s/%s.conf' % (simfolder, c))
-                for p in subconf.options('params'):
-                    if conf.has_option('params', p):
-                        both = conf.get('params', p).split(',')
-                        both.extend(subconf.get('params', p).split(','))
-                        conf.set('params', p, ','.join(set(both)))
-                    else:
-                        conf.set('params', p, subconf.get('params', p))
+    for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
+        if not osp.exists("%s/%s.conf" % (simfolder, c)):
+            print "[Nicessa] Warning: The file %s.conf does not exist!" % c
+
+
     return conf
 
 

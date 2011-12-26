@@ -79,6 +79,9 @@ def run(simfolder):
 
 def run_more(simfolder):
     """ let the user make more runs on current config, in addition to the given data
+        TODO: problematic when param values are only relevant for one subconf. Then, setup.create
+              gets confused (it helps to set the --sim option in this case. Will get fixed anyway when
+              we revamp the job distribution?)
 
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
@@ -86,6 +89,19 @@ def run_more(simfolder):
     from sim import utils
     simfolder = simfolder.strip('/')
     conf = utils.get_main_conf(simfolder)
+
+    # to get all choices, gather all param values from eventual subconfs together
+    if conf.has_section('simulations'):
+        for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
+            subconf = ConfigParser()
+            subconf.read('%s/%s.conf' % (simfolder, c))
+            for p in subconf.options('params'):
+                if conf.has_option('params', p):
+                    both = conf.get('params', p).split(',')
+                    both.extend(subconf.get('params', p).split(','))
+                    conf.set('params', p, ','.join(set(both)))
+                else:
+                    conf.set('params', p, subconf.get('params', p))
 
     print "[Nicessa] Let's make %d more run(s)! Please tell me on which configurations.\n" % conf.getint('control', 'runs') \
           + "Enter any parameter values you want to narrow down to, nothing otherwise."
@@ -97,8 +113,8 @@ def run_more(simfolder):
         if len(params) <= 1:
             continue # no need to narrow down
         while not selected:
-            print "<%s> ? (out of [%s])" % (o, conf.get('params', o))
             choice = []
+            print "<%s> ? (out of [%s])" % (o, conf.get('params', o))
             for selection in raw_input().split(','):
                 selected = True
                 if selection == "":
@@ -348,7 +364,6 @@ if __name__ == "__main__":
     args = utils.read_args()
 
     utils.check_conf(args.folder)
-    conf = utils.get_main_conf(args.folder)
 
     # if nothing special is selected, do standard program
     if args.run == args.results == args.check == args.ttests == args.more \
