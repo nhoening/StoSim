@@ -105,10 +105,10 @@ def get_main_conf(simfolder):
     args = read_args()
     if args.simulations:
         conf.set('simulations', 'configs', ','.join(args.simulations))
-    for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
-        if not osp.exists("%s/%s.conf" % (simfolder, c)):
-            print "[Nicessa] Warning: The file %s.conf does not exist!" % c
-
+    if conf.has_section('simulations'):
+        for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
+            if not osp.exists("%s/%s.conf" % (simfolder, c)):
+                print "[Nicessa] Warning: The file %s.conf does not exist!" % c
 
     return conf
 
