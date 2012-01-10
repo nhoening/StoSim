@@ -130,10 +130,10 @@ def get_host_conf(simfolder):
 def make_screen_name(simfolder, host, cpu):
     ''' make a screen name, out of:
           * the name of main simulation, cleaned of all special chars
+          * used conf files
           * host number
           * cpu number
         One special case (until we implement better job distribution):
-        If you run only one subsimulation, its name is used.
 
         :param string simfolder: relative path to simfolder
         :param number hostr: host number
@@ -141,18 +141,32 @@ def make_screen_name(simfolder, host, cpu):
         :returns: a screen name
     '''
     nicessa_conf = get_main_conf(simfolder)
-    sim_name = ''
+    sim_name = nicessa_conf.get('meta', 'name')
+    conf_name = 'main'
     subsims = []
     if nicessa_conf.has_option('simulations', 'configs'):
         subsims = nicessa_conf.get('simulations', 'configs').split(',')
-    if len(subsims) == 1:
-        sub_conf = ConfigParser()
-        sub_conf.read('%s/%s.conf' % (simfolder, subsims[0]))
-        sim_name = sub_conf.get('meta', 'name')
-    if sim_name == '':
-        sim_name = nicessa_conf.get('meta', 'name')
+    if len(subsims) > 0:
+        conf_name = '_'.join(subsims)
     rx = re.compile('\W+')
-    return 'screen_%s_%s_%s' % (rx.sub('_', sim_name).strip(), str(host), str(cpu))
+    return 'screen_%s_%s_%s_%s' % (rx.sub('_', sim_name).strip(), conf_name, str(host), str(cpu))
+
+
+def make_simdir_name(simfolder):
+    '''
+    Nake the name for a simulation dir from the name of conf files
+    [This and make_screen_name need overhaul and a common approach when
+    a better job distribution is implenented]
+    '''
+    nicessa_conf = get_main_conf(simfolder)
+    sim_name = 'main'
+    subsims = []
+    if nicessa_conf.has_option('simulations', 'configs'):
+        subsims = nicessa_conf.get('simulations', 'configs').split(',')
+    if len(subsims) > 0:
+        sim_name = '_'.join(subsims)
+    return sim_name
+
 
 
 def get_subsimulation_names(conf):

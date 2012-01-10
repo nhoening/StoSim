@@ -75,7 +75,7 @@ def run_remotely(simfolder, conf):
             print "[Nicessa] Host %d is not configured!" % host
             return False
 
-        path = remote_conf.get("host%i" % host, "path")
+        path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
         # ------------- clean host (we want to be sure to use fresh code)
         # do this on all hosts before anything is run (e.g. they could operate on the same home dir)
         cleaning = "mkdir -p %s/%s;" % (path, folder)
@@ -149,7 +149,7 @@ def run_remotely(simfolder, conf):
         Popen("tar -cf _nicessa_bundle.tar %s; gzip -f _nicessa_bundle.tar;" % (needed), shell=True).wait()
 
         # ------------ here we actually connect and do all these things online
-        path = remote_conf.get("host%i" % host, "path")
+        path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
         if ssh_clients[host] is None:
             return False
         try:
@@ -217,7 +217,7 @@ def check(simfolder):
             sys.stdout.flush()
             ssh_client = _get_ssh_client(remote_conf, host)
             if ssh_client:
-                path = remote_conf.get("host%i" % host, "path")
+                path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
                 fin = ssh(ssh_client, 'cd %s/%s; ls finished_*;' % (path, simfolder))
                 run = ssh(ssh_client, 'screen -ls;')
                 for cpu in xrange(1, working_cpus_per_host[host]+1):
@@ -287,7 +287,7 @@ def get_results(simfolder, do_wait=True):
                 ssh_client = _get_ssh_client(remote_conf, host)
                 if ssh_client:
                     try:
-                        path = remote_conf.get("host%i" % host, "path")
+                        path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
                         # check for status by looking for the marker files this host should generate
                         res = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
                         # TODO: this is no good when we get the results on a different computer than we started from
@@ -357,7 +357,7 @@ def show_screen(simfolder, host, cpu, lines=50):
             return False
 
     scp_client = scp.SCPClient(ssh_client._transport)
-    path = remote_conf.get("host%i" % host, "path")
+    path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
     print "[Nicessa] getting screen log from %s ... " % host_name
     try:
         scp_client.get("%s/%s/screenlogs/%s.log" % (path, simfolder, screen_name), local_path='%s' % simfolder)
