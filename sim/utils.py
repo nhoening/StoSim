@@ -133,7 +133,7 @@ def make_screen_name(simfolder, host, cpu):
           * used conf files
           * host number
           * cpu number
-        One special case (until we implement better job distribution):
+        One special case (until we implement a session management):
 
         :param string simfolder: relative path to simfolder
         :param number hostr: host number
@@ -156,7 +156,7 @@ def make_simdir_name(simfolder):
     '''
     Nake the name for a simulation dir from the name of conf files
     [This and make_screen_name need overhaul and a common approach when
-    a better job distribution is implenented]
+    a session management is implenented]
     '''
     nicessa_conf = get_main_conf(simfolder)
     sim_name = 'main'
