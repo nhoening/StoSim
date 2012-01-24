@@ -329,7 +329,8 @@ def _check_data(simfolder, more=False):
 
         :param boolean more: when True, new data will simply be added to existing data
     """
-    if osp.exists("%s/data" % simfolder) and len(os.listdir('%s/data' % simfolder)) > 0:
+    if osp.exists("%s/data" % simfolder) and\
+        len([f for f in os.listdir('%s/data' % simfolder) if not f.startswith('.')]) > 0:
         if not more:
             if '-d' in sys.argv:
                 rmtree('%s/data' % simfolder)
