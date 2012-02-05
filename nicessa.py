@@ -367,8 +367,8 @@ if __name__ == "__main__":
     utils.check_conf(args.folder)
 
     # if nothing special is selected, do standard program
-    if args.run == args.results == args.check == args.ttests == args.more \
-                == args.list and args.showscreen is None and args.plots is None:
+    if args.run == args.results == args.check == args.ttests == args.more == args.kill\
+                == args.list == False and args.showscreen is None and args.plots is None:
         args.run = args.ttests = True
         args.plots = []
         if utils.is_remote(args.folder) or utils.cpus_per_host(args.folder)[1] > 1:
@@ -389,6 +389,10 @@ if __name__ == "__main__":
     elif args.showscreen:
         from sim.net import remote
         fine = remote.show_screen(args.folder, args.showscreen[0], args.showscreen[1])
+    elif args.kill:
+        from sim.net import remote
+        remote.kill_screens(args.folder)
+        fine = False
     if args.list:
         fine = list_data(args.folder)
 

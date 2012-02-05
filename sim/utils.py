@@ -37,8 +37,9 @@ def read_args():
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
     parser.add_argument('--ttests', action='store_true', help='Run T-tests (needs Gnu R installed).')
     parser.add_argument('--showscreen', metavar="INDEX", nargs=2, type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
-    parser.add_argument('-k', action='store_true', help='keep tmp analysis files')
-    parser.add_argument('-d', action='store_true', help='delete old data withoput asking')
+    parser.add_argument('--kill', action='store_true', help='Kill all screens that currently run the main simulation or specific set of subsimulations.')
+    parser.add_argument('-k', action='store_true', help='keep tmp analysis files.')
+    parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')
 
     return parser.parse_args()
 
@@ -133,40 +134,32 @@ def make_screen_name(simfolder, host, cpu):
           * used conf files
           * host number
           * cpu number
-        One special case (until we implement a session management):
 
         :param string simfolder: relative path to simfolder
         :param number hostr: host number
         :param numer cpu: cpu numer
         :returns: a screen name
     '''
-    nicessa_conf = get_main_conf(simfolder)
-    sim_name = nicessa_conf.get('meta', 'name')
-    conf_name = 'main'
-    subsims = []
-    if nicessa_conf.has_option('simulations', 'configs'):
-        subsims = nicessa_conf.get('simulations', 'configs').split(',')
-    if len(subsims) > 0:
-        conf_name = '_'.join(subsims)
-    rx = re.compile('\W+')
-    return 'screen_%s_%s_%s_%s' % (rx.sub('_', sim_name).strip(), conf_name, str(host), str(cpu))
+    simdir_name = make_simdir_name(simfolder)
+    return 'screen_%s_%s_%s' % (simdir_name, str(host), str(cpu))
 
 
 def make_simdir_name(simfolder):
     '''
-    Nake the name for a simulation dir from the name of conf files
+    Nake the name for a simulation dir from the simulation name and the name of conf files
     [This and make_screen_name need overhaul and a common approach when
     a session management is implenented]
+
+    :param string simfolder: relative path to simfolder
     '''
     nicessa_conf = get_main_conf(simfolder)
-    sim_name = 'main'
-    subsims = []
-    if nicessa_conf.has_option('simulations', 'configs'):
-        subsims = nicessa_conf.get('simulations', 'configs').split(',')
-    if len(subsims) > 0:
-        sim_name = '_'.join(subsims)
-    return sim_name
-
+    sim_name = nicessa_conf.get('meta', 'name')
+    simdir_name = 'main'
+    subsims = get_subsimulation_names(nicessa_conf)
+    if subsims != ['']:
+        simdir_name = '_'.join(subsims)
+    rx = re.compile('\W+')
+    return '%s_%s' % (rx.sub('_', sim_name).strip(), simdir_name)
 
 
 def get_subsimulation_names(conf):
@@ -176,8 +169,11 @@ def get_subsimulation_names(conf):
         :returns: a list with names, if no subsimulations are configured, the list will have an empty string as only element
     '''
     sim_names = ['']
-    if 'simulations' in conf.sections() and conf.get('simulations', 'configs') != '':
+    if 'simulations' in conf.sections() \
+            and conf.has_option('simulations', 'configs')\
+            and conf.get('simulations', 'configs') != '':
         sim_names = conf.get('simulations', 'configs').split(',')
+    sim_names = [s.strip() for s in sim_names]
     return sim_names
 
 

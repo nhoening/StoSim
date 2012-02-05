@@ -20,12 +20,13 @@ import scp
 from sim import utils
 
 
-def ssh(client, cmd):
+def ssh(client, cmd, ignore=[]):
     '''
     Run cmd on remote client (retry if connection fails), show errors (if we care about them)
 
     :params paramiko.SSHClient client:
     :params string cmd:
+    :params string ignore: Error messages to ignore for this cmd
     :returns: stdout from host (minus some things we consider irrelevant)
     '''
     done = False
@@ -38,6 +39,7 @@ def ssh(client, cmd):
     err = stderr.read()
     dontcare_snippets = ['xset:', 'cannot remove', 'cannot access finished_*',\
                          'are the same file', 'finished_*: No such']
+    dontcare_snippets.extend(ignore)
     err_out = ""
     for e_line in err.split('\n'):
         yell_it = True
@@ -46,9 +48,9 @@ def ssh(client, cmd):
                 yell_it = False
         if yell_it and e_line != "":
             err_out += '%s\n' % e_line
-    if err_out != "":
+    if err_out.strip() != "":
         print "[Nicessa] Error while doing stuff on server: %s" % (err_out)
-    return "[Nicessa] Log from remotely executing %s:\n\n\n%s" % (cmd, stdout.read())
+    return "[Nicessa] Log from remotely executing [%s]:\n\n\n%s" % (cmd, stdout.read())
 
 
 def run_remotely(simfolder, conf):
@@ -190,9 +192,11 @@ def run_remotely(simfolder, conf):
 
 def check(simfolder):
     '''
-    Performs a check to find out which portions of the exeriment are already done.
-    For this, it looks at the marker files when a job is done.
-    Prints out results.
+    Performs a check on the status of the simulations.
+    For this, it looks at the marker files a job creates when it is done and the names
+    of currently running screens.
+    It prints out the contents of the first search as finished and the second as still running.
+    If no jobs are finished or running, it prints a message.
 
     :param string simfolder: relative path to simfolder
     :returns: True if successful, False otherwise
@@ -218,7 +222,7 @@ def check(simfolder):
             ssh_client = _get_ssh_client(remote_conf, host)
             if ssh_client:
                 path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
-                fin = ssh(ssh_client, 'cd %s/%s; ls finished_*;' % (path, simfolder))
+                fin = ssh(ssh_client, 'cd %s/%s; ls finished_*;' % (path, simfolder), ignore=['No such file'])
                 run = ssh(ssh_client, 'screen -ls;')
                 for cpu in xrange(1, working_cpus_per_host[host]+1):
                     screen_name = utils.make_screen_name(simfolder, host, cpu)
@@ -228,15 +232,12 @@ def check(simfolder):
                     if screen_name in run:
                         running[host].append(cpu)
                         found_jobs += 1
-                    if "No sockets found" in run:
-                        print "No sockets found on host %s..." % hostname
             else:
                 print "[Nicessa] Cannot make connection to host %d" % host
-                #return False
     print
     if found_jobs == 0:
         print '[Nicessa] Could not find any running or finished jobs for this simulation.\n\
-                Maybe you ran only a subsimulation? In that case, please use the "--simulations" option together with "--check" (or "--results").'
+                Maybe I am checking for the wrong set of simulations? In that case, please use the "--simulations" option together with "--check" (or "--results").'
     else:
         print "[Nicessa] Finished cpus:"
         for host in finished.keys():
@@ -376,6 +377,38 @@ def show_screen(simfolder, host, cpu, lines=50):
     else:
         print '[Nicessa] Couldn\'t download the screen log for cpu %i on %s.' % (cpu, host_name)
     return True
+
+
+def kill_screens(simfolder):
+    '''
+    Kill all screens that currently run the main simulation or the specified set of simulations.
+
+    :param string simfolder: relative path to simfolder
+    '''
+    conf = utils.get_main_conf(simfolder)
+    hosts = utils.num_hosts(simfolder)
+    remote_conf = utils.get_host_conf(simfolder)
+    working_cpus_per_host = utils.working_cpus_per_host(simfolder)
+
+    print "[Nicessa] Killing screens for simulations (%s) on hosts: "\
+            % ','.join(utils.get_subsimulation_names(conf)),
+    sys.stdout.flush()
+    for host in xrange(1, hosts+1):
+        if working_cpus_per_host[host] > 0:
+            hostname = remote_conf.get("host%i" % host, "name")
+            path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
+            print "%s (host-nr:%d, cpus:%d)  " % (hostname, host, working_cpus_per_host[host]),
+            sys.stdout.flush()
+            ssh_client = _get_ssh_client(remote_conf, host)
+            if ssh_client:
+                killed = ssh(ssh_client, "ps -ef | grep '%s' | awk '{print $2}' | xargs kill -9"\
+                                  % utils.make_simdir_name(simfolder),
+                                  ignore=['usage: kill', 'kill ', 'No Sockets found', 'No such process'])
+                time.sleep(1)
+                ssh(ssh_client, 'screen -wipe')
+                ssh(ssh_client, 'cd %s; rm -r *' % path)
+                sys.stdout.flush()
+    print '[Nicessa] Done.'
 
 
 def _get_ssh_client(remote_conf, host):
