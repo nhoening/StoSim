@@ -389,9 +389,14 @@ def kill_screens(simfolder):
     hosts = utils.num_hosts(simfolder)
     remote_conf = utils.get_host_conf(simfolder)
     working_cpus_per_host = utils.working_cpus_per_host(simfolder)
+    sims = ','.join(utils.get_subsimulation_names(conf))
 
-    print "[Nicessa] Killing screens for simulations (%s) on hosts: "\
-            % ','.join(utils.get_subsimulation_names(conf)),
+    print '[Nicessa] Kill all screens running simulations (%s)? [y/N]' % sims
+    if not raw_input().lower() == 'y':
+        print '[Nicessa] I did nothing.'
+        return
+
+    print "[Nicessa] Killing screens on hosts: "
     sys.stdout.flush()
     for host in xrange(1, hosts+1):
         if working_cpus_per_host[host] > 0:
