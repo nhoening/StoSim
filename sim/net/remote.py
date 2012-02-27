@@ -81,6 +81,7 @@ def run_remotely(simfolder, conf):
         # ------------- clean host (we want to be sure to use fresh code)
         # do this on all hosts before anything is run (e.g. they could operate on the same home dir)
         if not check_data(simfolder, host):
+            print '[Nicessa] Aborting.'
             return False
         cleaning = "mkdir -p %s/%s;" % (path, folder)
         togo = "data conf nicessa.conf %s bgscreen screener.py starter.py _nicessa_bundle.tar.gz" \
@@ -272,8 +273,10 @@ def check_data(simfolder, host):
             if len([f for f in data.split('\n') if not f == '' and not f.startswith('.')\
                                                    and not f.startswith('[Nicessa]')]) > 0:
                 print '[Nicessa] On host %s, I found older log data (in %s/data). Remove? [y/N]' % (hostname, path)
-                if raw_input().lower() == 'n':
+                if not raw_input().lower() == 'y':
                     return False
+                else:
+                    return True
             else:
                 return True
         else:
