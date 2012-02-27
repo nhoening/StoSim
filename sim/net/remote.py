@@ -67,6 +67,16 @@ def run_remotely(simfolder, conf):
     working_cpus_per_host = utils.working_cpus_per_host(folder)
     ssh_clients = {} # we login twice to each if it has work
 
+    if not folder == ".":
+        os.chdir(folder)
+
+    logdir = 'deploy-logs'
+    if not os.path.exists(logdir):
+        os.mkdir(logdir)
+    else:
+        for logf in os.listdir(logdir):
+            os.remove('%s/%s' % (logdir, logf))
+
     print "[Nicessa] Preparing hosts ..."
     for host in [h for h in xrange(1, num_hosts+1) if working_cpus_per_host[h] > 0]:
         ssh_clients[host] = _get_ssh_client(remote_conf, host)
@@ -121,9 +131,6 @@ def run_remotely(simfolder, conf):
                     % (screen_name, screen_name, host, cpu, screen_name)
 
         #  --- local file shuffling
-        if not folder == ".":
-            os.chdir(folder)
-
         # all host-side screen calls go in a script file, so screener.py can quietly make sure they all start without me waiting
         cmd = open("cmd_%d" % host, 'w')
         cmd.write(screening)
@@ -163,12 +170,6 @@ def run_remotely(simfolder, conf):
             scp_client.put("_nicessa_bundle.tar.gz", remote_path="%s/%s" % (path, folder))
             time.sleep(2)
             initializing = "cd %s/%s; tar -zxf _nicessa_bundle.tar.gz;" % (path, folder)
-            logdir = 'deploy-logs'
-            if not os.path.exists(logdir):
-                os.mkdir(logdir)
-            else:
-                for logf in os.listdir(logdir):
-                    os.remove('%s/%s' % (logdir, logf))
             log = open('%s/log%d' % (logdir, host), 'w')
             log.write(ssh(ssh_clients[host], "%s ./cmd_%d; rm cmd_%d;" % (initializing, host, host)))
             log.flush()
@@ -182,12 +183,12 @@ def run_remotely(simfolder, conf):
         os.remove("cmd_%d" % (host))
         for c in copied_here:
             os.remove("%s" % c)
-
-        if not folder == ".":
-            for sf in folder.split("/"):
-                if sf != '':
-                    os.chdir('..')
         # --- end local file shuffling
+
+    if not folder == ".":
+        for sf in folder.split("/"):
+            if sf != '':
+                os.chdir('..')
 
     print "[Nicessa] deployed simulation on %i host(s)" % (used_hosts)
     return True
