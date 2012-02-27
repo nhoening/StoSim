@@ -80,6 +80,8 @@ def run_remotely(simfolder, conf):
         path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
         # ------------- clean host (we want to be sure to use fresh code)
         # do this on all hosts before anything is run (e.g. they could operate on the same home dir)
+        if not check_data(simfolder, host):
+            return False
         cleaning = "mkdir -p %s/%s;" % (path, folder)
         togo = "data conf nicessa.conf %s bgscreen screener.py starter.py _nicessa_bundle.tar.gz" \
                 % (conf.get('control', 'executable'))
@@ -190,7 +192,7 @@ def run_remotely(simfolder, conf):
     return True
 
 
-def check(simfolder):
+def check_states(simfolder):
     '''
     Performs a check on the status of the simulations.
     For this, it looks at the marker files a job creates when it is done and the names
@@ -248,6 +250,40 @@ def check(simfolder):
     return True
 
 
+def check_data(simfolder, host):
+    '''
+    Performs a check on existing data, ask for confirmation to overwrite it.
+
+    :param string simfolder: relative path to simfolder
+    :param string host: host nr
+    :returns: True if no data or data can be overwritten, False otherwise
+    '''
+    conf = utils.get_main_conf(simfolder)
+    hosts = utils.num_hosts(simfolder)
+    remote_conf = utils.get_host_conf(simfolder)
+
+    hostname = remote_conf.get("host%i" % host, "name")
+    ssh_client = _get_ssh_client(remote_conf, host)
+    if ssh_client:
+        path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
+        dirs = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
+        if 'data' in [d for d in dirs.split('\n') if not d.startswith('[Nicessa]') and not d == '']:
+            data = ssh(ssh_client, 'cd %s/%s/data; ls' % (path, simfolder))
+            if len([f for f in data.split('\n') if not f == '' and not f.startswith('.')\
+                                                   and not f.startswith('[Nicessa]')]) > 0:
+                print '[Nicessa] On host %s, I found older log data (in %s/data). Remove? [y/N]' % (hostname, path)
+                if raw_input().lower() == 'n':
+                    return False
+            else:
+                return True
+        else:
+            return True
+    else:
+        print "[Nicessa] Cannot make connection to host %d" % host
+        return False
+    return True
+
+
 def get_results(simfolder, do_wait=True):
     '''
     Copy result logs from the remote host(s) if they are all available for the whole job.
@@ -276,6 +312,10 @@ def get_results(simfolder, do_wait=True):
     else:
         check_interval = 10
     first_time_done = False
+
+    # TODO: if all hosts have the same path, ask if they use the same
+    # shared home directory, meaning that contacting one host is enough.
+    # If user confirms, throw out all hosts  but oone from the hosts_done list
 
     while not all_done:
         for host in hosts_done.keys():

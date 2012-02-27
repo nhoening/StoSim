@@ -385,7 +385,7 @@ if __name__ == "__main__":
         fine = run(args.folder)
     elif args.check:
         from sim.net import remote
-        fine = remote.check(args.folder)
+        fine = remote.check_states(args.folder)
     elif args.showscreen:
         from sim.net import remote
         fine = remote.show_screen(args.folder, args.showscreen[0], args.showscreen[1])
