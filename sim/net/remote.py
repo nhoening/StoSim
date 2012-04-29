@@ -267,7 +267,12 @@ def check_data(simfolder, host):
     hostname = remote_conf.get("host%i" % host, "name")
     ssh_client = _get_ssh_client(remote_conf, host)
     if ssh_client:
-        path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
+        host_path = remote_conf.get("host%i" % host, "path")
+        sim_dir = utils.make_simdir_name(simfolder)
+        host_path_dirs = ssh(ssh_client, 'cd %s; ls' % host_path)
+        if not sim_dir in host_path_dirs:
+            return True
+        path = '%s/%s' % (host_path, sim_dir)
         dirs = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
         if 'data' in [d for d in dirs.split('\n') if not d.startswith('[Nicessa]') and not d == '']:
             data = ssh(ssh_client, 'cd %s/%s/data; ls' % (path, simfolder))
