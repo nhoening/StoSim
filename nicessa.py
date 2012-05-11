@@ -324,7 +324,7 @@ def list_data(simfolder):
 
 # ---------------------------------------------------------------------------------------------------
 
-def _check_data(simfolder, more=False):
+def _assure_writable(simfolder, more=False):
     """ check if old data is lying around, ask if it can go
 
         :param boolean more: when True, new data will simply be added to existing data
@@ -340,8 +340,8 @@ def _check_data(simfolder, more=False):
                     rmtree('%s/data' % simfolder)
 
 
-def _prepare_dirs(simfolder, limit_to={}, more=False):
-    """ ensure that output directories exist, fill config directory with all subconfigs we want
+def _prepare(simfolder, limit_to={}, more=False):
+    """ ensure that data directory exist, fill config directory with all subconfigs we want
         limit_to can contain parameter settings we want to limit ourselves to (this is in case we add more data)
 
         :param string simfolder: relative path to simfolder
@@ -380,8 +380,8 @@ if __name__ == "__main__":
         fine = run_more(args.folder)
     elif args.run:
         if not utils.is_remote(args.folder):
-            _check_data(args.folder, more=args.more)
-        _prepare_dirs(args.folder)
+            _assure_writable(args.folder, more=args.more)
+        _prepare(args.folder)
         fine = run(args.folder)
     elif args.check:
         from sim.net import remote
@@ -401,8 +401,8 @@ if __name__ == "__main__":
             from sim.net import remote
             # create confs (again) so we know what we expect to find on which host
             if not args.run:
-                _check_data(args.folder, more=args.more)
-                _prepare_dirs(args.folder, more=args.more)
+                _assure_writable(args.folder, more=args.more)
+                _prepare(args.folder, more=args.more)
             remote.get_results(args.folder, do_wait=args.run)
 
         if args.plots is not None:
