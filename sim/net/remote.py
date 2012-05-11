@@ -55,7 +55,7 @@ def ssh(client, cmd, ignore=[]):
 
 def run_remotely(simfolder, conf):
     '''
-    Runs simulation as it was setup on remote hosts
+    Run the simulation on remote hosts. Reads parameterisation and remote setup from the conf-directory. 
 
     :param string simfolder: relative path to simfolder
     :param ConfigParser conf: main config
@@ -127,8 +127,9 @@ def run_remotely(simfolder, conf):
         for cpu in xrange(1, working_cpus_per_host[host]+1):
             if osp.exists("%s/conf/%d/%d" % (simfolder, host, cpu)):
                 screen_name = utils.make_screen_name(simfolder, host, cpu)
-                screening += "rm finished_%s; ./screener.py %s './starter.py . %i %i; touch finished_%s;exit;'; " \
-                    % (screen_name, screen_name, host, cpu, screen_name)
+                nice_level = utils.get_nice_level(simfolder, host)
+                screening += "rm finished_%s; ./screener.py %s 'nice -n %d ./starter.py . %i %i; touch finished_%s;exit;'; " \
+                    % (screen_name, screen_name, nice_level, host, cpu, screen_name)
 
         #  --- local file shuffling
         # all host-side screen calls go in a script file, so screener.py can quietly make sure they all start without me waiting
@@ -258,7 +259,7 @@ def check_data(simfolder, host):
 
     :param string simfolder: relative path to simfolder
     :param string host: host nr
-    :returns: True if no data or data can be overwritten, False otherwise
+    :returns: True if no data found or if data can be overwritten, False otherwise
     '''
     conf = utils.get_main_conf(simfolder)
     hosts = utils.num_hosts(simfolder)
@@ -267,14 +268,17 @@ def check_data(simfolder, host):
     hostname = remote_conf.get("host%i" % host, "name")
     ssh_client = _get_ssh_client(remote_conf, host)
     if ssh_client:
+        # first look if simulation directory exists yet
         host_path = remote_conf.get("host%i" % host, "path")
         sim_dir = utils.make_simdir_name(simfolder)
         host_path_dirs = ssh(ssh_client, 'cd %s; ls' % host_path)
         if not sim_dir in host_path_dirs:
             return True
+        # if so, look in simulation folder for 'data' dir
         path = '%s/%s' % (host_path, sim_dir)
         dirs = ssh(ssh_client, 'cd %s/%s; ls' % (path, simfolder))
         if 'data' in [d for d in dirs.split('\n') if not d.startswith('[Nicessa]') and not d == '']:
+            # check if 'data' dir has (non-hidden) content
             data = ssh(ssh_client, 'cd %s/%s/data; ls' % (path, simfolder))
             if len([f for f in data.split('\n') if not f == '' and not f.startswith('.')\
                                                    and not f.startswith('[Nicessa]')]) > 0:

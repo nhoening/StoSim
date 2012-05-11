@@ -3,7 +3,7 @@ utils
 =====
 '''
 
-#TODO: maybe there can be two utils, one for sim, one for analysis?
+#TODO: maybe there should be two utils, one for sim, one for analysis?
 
 
 import sys
@@ -15,7 +15,7 @@ from ConfigParser import NoOptionError, NoSectionError, ParsingError
 try:
 	import argparse
 except ImportError:
-	print("[Nicessa] Import error: You need Python 2.7+ unless you have the argparse module installed independently.")
+	print("[Nicessa] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside yur local directory.")
 	sys.exit(1)
 
 
@@ -127,6 +127,19 @@ def get_host_conf(simfolder):
     conf.read("%s/remote.conf" % simfolder)
     return conf
 
+def get_nice_level(simfolder, host):
+    ''' get the nice level to use for this host, defaults to 9 if none is configured
+
+        :param string simfolder: relative path to simfolder
+        :param number hostr: host number
+        :returns: the nice level (a number)
+    '''
+    nl = 9
+    remote_conf = get_host_conf(simfolder)
+    if remote_conf.has_section('host%d' % host):
+        if remote_conf.has_option('host%d' % host, 'nice'):
+            nl = remote_conf.getint('host%d' % host, 'nice')
+    return nl
 
 def make_screen_name(simfolder, host, cpu):
     ''' make a screen name, out of:
