@@ -241,8 +241,8 @@ def make_plots(simfolder, plot_nrs=[]):
                             if not key in d.keys():
                                 d[key] = param[1].strip()
                     # making sure all necessary plot attributes are there
-                    if (d.has_key('_name') and d.has_key('_ycol') and
-                        d.has_key('_type')):
+                    if ('_name' in d.keys()and '_ycol' in d.keys() and
+                        '_type' in d.keys()):
                         plot_confs.append(d)
                     else:
                         print '''
@@ -267,7 +267,8 @@ def run_ttests(simfolder):
     '''
     from analysis import harvester, tester
 
-    c = ConfigParser(); c.read('%s/nicessa.conf' % (simfolder))
+    c = ConfigParser()
+    c.read('%s/nicessa.conf' % (simfolder))
     delim = utils.get_delimiter(c)
 
     relevant_confs = utils.get_relevant_confs(simfolder)
@@ -275,11 +276,11 @@ def run_ttests(simfolder):
     # tell about what we'll do if we have at least one test
     for c in relevant_confs:
         if c.has_section("ttest1"):
-            print;
+            print
             print '*' * 80
             print "[Nicessa] Running T-tests ..."
             print '*' * 80
-            print;
+            print
             break
     else:
         print "[Nicessa] No T-tests specified"
@@ -288,7 +289,7 @@ def run_ttests(simfolder):
         i = 1
 
         while c.has_section("ttest%i" % i):
-            print "Test %s:" % c.get('ttest%i' % i,'name').strip('"')
+            print "Test %s:" % c.get('ttest%i' % i, 'name').strip('"')
             if not (c.has_option("ttest%i" % i, "set1") and
                     c.has_option("ttest%i" % i, "set2")):
                 print "[Nicessa] T-test %i is missing one or both"\
@@ -325,7 +326,7 @@ def list_data(simfolder):
         print '-' * charlen
         print "|",
         for p in params:
-            print "  %s  |" % p ,
+            print "  %s  |" % p,
         print "| runs |"
         print '-' * charlen
         # now show how much we have in each relevant dir
@@ -337,12 +338,13 @@ def list_data(simfolder):
             print "|",
             this_params = cp.options('params')
             for p in params:
-                print "  %s|" % cp.get('params', p).ljust(len(p) + 2) ,
+                print "  %s|" % cp.get('params', p).ljust(len(p) + 2),
             print "| %s |" % str(utils.runs_in_folder(simfolder, dir)).rjust(4)
             print '-' * charlen
     return True
 
 # -----------------------------------------------------------------------------
+
 
 def _assure_writable(simfolder, more=False):
     """ check if old data is lying around, ask if it can go
@@ -381,7 +383,6 @@ def _prepare(simfolder, limit_to={}, more=False):
 
     conf = utils.get_main_conf(simfolder)
     setup.create(conf, simfolder, limit_to=limit_to, more=more)
-
 
 
 if __name__ == "__main__":
