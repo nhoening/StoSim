@@ -12,7 +12,9 @@ utils
 #    Notes:
 #    - They should make the original ConfigParser available as conf.cp 
 #    - get_main_conf could maybe go to __init__
-#    
+# 3. All functions in nicessa.py could go in one of those subfiles, thus making
+#    that mode readable as well. 
+# 4. While doing this, look out for PEP8 compatibility
 
 import sys
 import os
