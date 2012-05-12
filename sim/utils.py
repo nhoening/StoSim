@@ -3,8 +3,16 @@ utils
 =====
 '''
 
-#TODO: maybe there should be two utils, one for sim, one for analysis?
-
+#TODO: refactor this module:
+# 1. make this a submodule, maybe residing in the main dir, then three files:
+#    sim.py, remote.py and analysis.py (the latters would have at least decode_search_from_confstr)
+# 2. There should be classes (as own files?) to represent the two major confs: nicessa.conf and 
+#    remote.conf. This would make code cleaner. Instantiate them with the
+#    location of the conf and then put all access and check functions in them
+#    Notes:
+#    - They should make the original ConfigParser available as conf.cp 
+#    - get_main_conf could maybe go to __init__
+#    
 
 import sys
 import os
@@ -255,8 +263,6 @@ def cpus_per_host(simfolder):
         remote_conf.read("%s/remote.conf" % simfolder)
         for i in xrange(1, hosts+1):
             cpus_per_host[i] = remote_conf.getint("host%d" % i, "cpus")
-    #else:
-    #    cpus_per_host[0] = 1 # poor guy gets everything either way, so this need not be true
     return cpus_per_host
 
 
