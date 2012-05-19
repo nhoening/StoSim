@@ -64,6 +64,9 @@ def run_remotely(simfolder, conf):
     folder = simfolder
     remote_conf = utils.get_host_conf(simfolder)
     num_hosts = utils.num_hosts(simfolder)
+    if remote_conf.has_option('communication', 'shared-home'):
+        if remote_conf.getboolean('communication', 'shared-home'):
+            num_hosts = 1
     working_cpus_per_host = utils.working_cpus_per_host(folder)
     ssh_clients = {} # we login twice to each if it has work
 
@@ -217,6 +220,9 @@ def check_states(simfolder):
     remote_conf = utils.get_host_conf(simfolder)
     found_jobs = 0
 
+    # TODO: if shared-home is set to 1, we could save us some time (only connect
+    # to one host), but here, the development time does not justify the reward,
+    # I think.
     print "[Nicessa] Checking hosts: ",
     sys.stdout.flush()
     for host in xrange(1, hosts+1):
@@ -315,21 +321,20 @@ def get_results(simfolder, do_wait=True):
         if os.path.exists('%s/conf/%d' % (simfolder, host)):
             working_cpus_per_host[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
     all_done = False
-    if remote_conf.has_option('communication', 'wait'):
+    if remote_conf.has_option('communication', 'wait-for'):
         if do_wait:
-            waiting = remote_conf.getint('communication', 'wait')
+            waiting = remote_conf.getint('communication', 'wait-for')
             print "[Nicessa] waiting for %d seconds ... " % waiting
             time.sleep(waiting)
-    if remote_conf.has_option('communication', 'check'):
-        check_interval = remote_conf.getint('communication', 'check')
+    if remote_conf.has_option('communication', 'check-every'):
+        check_interval = remote_conf.getint('communication', 'check-every')
     else:
         check_interval = 10
     first_time_done = False
 
-    # TODO: if all hosts have the same path, ask if they use the same
-    # shared home directory, meaning that contacting one host is enough.
-    # If user confirms, throw out all hosts  but oone from the hosts_done list
-
+    if remote_conf.has_option('communication', 'shared-home'):
+        if remote_conf.getboolean('communication', 'shared-home'):
+            hosts_done = {1: False}
     while not all_done:
         for host in hosts_done.keys():
             if working_cpus_per_host[host] == 0:

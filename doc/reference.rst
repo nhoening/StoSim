@@ -219,7 +219,7 @@ Nicessa will copy all of it to the host via scp.
 You can tell Nicessa to wait for results to finish.
 These settings are in seconds.
 
-:wait:
+:wait-for:
     wait this long before making any check, defaults to 0
-:check:
+:check-every:
     then check every x seconds if the server is done, defaults to 10
