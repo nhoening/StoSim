@@ -64,9 +64,6 @@ def run_remotely(simfolder, conf):
     folder = simfolder
     remote_conf = utils.get_host_conf(simfolder)
     num_hosts = utils.num_hosts(simfolder)
-    if remote_conf.has_option('communication', 'shared-home'):
-        if remote_conf.getboolean('communication', 'shared-home'):
-            num_hosts = 1
     working_cpus_per_host = utils.working_cpus_per_host(folder)
     ssh_clients = {} # we login twice to each if it has work
 
@@ -138,14 +135,16 @@ def run_remotely(simfolder, conf):
         # all host-side screen calls go in a script file, so screener.py can quietly make sure they all start without me waiting
         cmd = open("cmd_%d" % host, 'w')
         cmd.write(screening)
-        cmd.flush(); cmd.close()
+        cmd.flush()
+        cmd.close()
         Popen("chmod +x cmd_%d;" % host, shell=True).wait();
         needed = " cmd_%d" % host
 
         # send everything needed of the simulation to run batches to the host in one go
         needed += " conf"
         needed += " nicessa.conf"
-        # user should specify this in remote.conf, since  control->executable can contain any command, not only a filename
+        # user should specify to copy this in remote.conf, since  control->executable can
+        # contain any command, not only a filename
         #needed += " %s" % (conf.get('control', 'executable'))
         if remote_conf.has_option('code', 'files'):
             for f in [f for f in remote_conf.get('code', 'files').split(',') if f is not ""]:
