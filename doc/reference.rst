@@ -223,3 +223,5 @@ These settings are in seconds.
     wait this long before making any check, defaults to 0
 :check-every:
     then check every x seconds if the server is done, defaults to 10
+:shared-home:
+    set to 1 if all hosts work on a shared home directory with the same path. Then, Nicessa will only contact one host (host0) and respond faster.
