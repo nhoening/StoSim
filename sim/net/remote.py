@@ -333,7 +333,11 @@ def get_results(simfolder, do_wait=True):
 
     if remote_conf.has_option('communication', 'shared-home'):
         if remote_conf.getboolean('communication', 'shared-home'):
-            hosts_done = {1: False}
+            # check only the first who ran CPUs
+            for host in hosts_done.keys():
+                if working_cpus_per_host[host] > 0:
+                    hosts_done = {host: False}
+                    break
     while not all_done:
         for host in hosts_done.keys():
             if working_cpus_per_host[host] == 0:

@@ -224,4 +224,4 @@ These settings are in seconds.
 :check-every:
     then check every x seconds if the server is done, defaults to 10
 :shared-home:
-    set to 1 if all hosts work on a shared home directory with the same path. Then, Nicessa will only contact one host (host0) to get results.
+    set to 1 if all hosts work on a shared home directory with the same path. Then, Nicessa will only contact one host (the first in `remote.py` with work scheduled) to get results.
