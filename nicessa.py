@@ -352,17 +352,17 @@ def _assure_writable(simfolder, more=False):
         :param boolean more: when True, new data will simply be added
                              to existing data
     """
-    data_content = os.listdir('%s/data' % simfolder)
-    if osp.exists("%s/data" % simfolder) and\
-        len([f for f in data_content if not f.startswith('.')]) > 0:
-        if not more:
-            if '-d' in sys.argv:
-                rmtree('%s/data' % simfolder)
-            else:
-                print '[Nicessa] I found older log data (in %s/data).'\
-                      ' Remove? [y/N]' % simfolder
-                if raw_input().lower() == 'y':
+    if osp.exists("%s/data" % simfolder):
+        data_content = os.listdir('%s/data' % simfolder)
+        if len([f for f in data_content if not f.startswith('.')]) > 0:
+            if not more:
+                if '-d' in sys.argv:
                     rmtree('%s/data' % simfolder)
+                else:
+                    print '[Nicessa] I found older log data (in %s/data).'\
+                        ' Remove? [y/N]' % simfolder
+                    if raw_input().lower() == 'y':
+                        rmtree('%s/data' % simfolder)
 
 
 def _prepare(simfolder, limit_to={}, more=False):
