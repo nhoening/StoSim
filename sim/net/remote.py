@@ -315,10 +315,11 @@ def get_results(simfolder, do_wait=True):
     remote_conf = utils.get_host_conf(simfolder)
     hosts_done = dict.fromkeys(xrange(1, utils.num_hosts(simfolder)+1), False)
     working_cpus_per_host = utils.working_cpus_per_host(simfolder)
-    for host in hosts_done.keys():
-        working_cpus_per_host[host] = 0
-        if os.path.exists('%s/conf/%d' % (simfolder, host)):
-            working_cpus_per_host[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
+    # why do we need this?
+    #for host in hosts_done.keys():
+    #    working_cpus_per_host[host] = 0
+    #    if os.path.exists('%s/conf/%d' % (simfolder, host)):
+    #        working_cpus_per_host[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
     all_done = False
     if remote_conf.has_option('communication', 'wait-for'):
         if do_wait:
@@ -374,7 +375,6 @@ def get_results(simfolder, do_wait=True):
                                 print e
                             hosts_done[host] = True
                             print "done."
-                            ssh(ssh_client, 'cd %s/%s; %s' % (path, simfolder, clean_states(simfolder, host)))
                     except Exception, e:
                         print e
                     ssh_client.close()
@@ -393,6 +393,13 @@ def get_results(simfolder, do_wait=True):
             first_time_done = True
         if not all_done:
             time.sleep(check_interval)
+    if all_done: # clean all of them
+        for host in xrange(1, utils.num_hosts(simfolder)+1):
+            if working_cpus_per_host[host] > 0:
+                ssh_client = _get_ssh_client(remote_conf, host)
+                if ssh_client:
+                    path = '%s/%s' % (remote_conf.get("host%i" % host, "path"), utils.make_simdir_name(simfolder))
+                    ssh(ssh_client, 'cd %s/%s; %s' % (path, simfolder, clean_states(simfolder, host)))
     print "[Nicessa] Got all results."
     print '*' * 80
     print;
@@ -527,7 +534,8 @@ def _get_ssh_client(remote_conf, host):
 def clean_states(simfolder, host):
     '''
     Build commands which remove traces of any (former) Nicessa activity on one host:
-    clean running screens and files that are used to indicate states.
+    clean eventually still running screens and files that are used to indicate states.
+    Data and code are left intact.
     For files, we assume to be located in the data dir Nicessa uses in that host.
 
     :param string simfolder: relative path to simfolder
