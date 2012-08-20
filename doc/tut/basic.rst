@@ -40,7 +40,7 @@ name and who is the maintainer.
 ^^^^^^^^^^
 We then describe how it should be run. What code should it call, how often
 should each configuration run, and should we distribute the runs on other
-computers. Our simulation executable is main.py and we'll discuss it next.
+computers. Our simulation executable is `main.py` and we'll discuss it next.
 We run 5 times and are only doing it locally (we mention remote support in
 :ref:`sub_example`). We also note that we use the tab delimiter ('\\t') to
 separate between columns when we write log data (the default value is a 
@@ -49,6 +49,7 @@ comma, but the tab is also very common).
 .. literalinclude:: ../../examples/basic/nicessa.conf
     :lines: 14-22
 
+.. note:: Your executable will run under `/bin/sh`.
 
 [params]
 ^^^^^^^^
