@@ -117,6 +117,11 @@ def get_main_conf(simfolder):
 
     args = read_args()
     if args.simulations:
+        if not conf.has_section('simulations'):
+            print "[Nicessa] You cannot use the '--simulations' cmd line"\
+                  " parameter if you do not have the [simulations] section"\
+                  " in cessa.conf"
+            sys.exit(2)
         conf.set('simulations', 'configs', ','.join(args.simulations))
     if conf.has_section('simulations'):
         for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
