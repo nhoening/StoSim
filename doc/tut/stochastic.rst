@@ -49,6 +49,12 @@ seed for every one. Here are the first five:
 .. literalinclude:: ../../examples/stochastic/nicessa.conf
     :lines: 24-29
 
+The seed is passed to your executable as a third parameter. Have a look in 
+`the executable for this simulation
+<https://github.com/nhoening/Nicessa/raw/master/examples/stochastic/main.py>`_
+(near the bottom) to see how it uses the gets the seed and seeds the randomizer with it.
+
+
 .. note:: The length of a seed is up to you. Your program needs to handle it. 
           For instance, it might matter if you store it in an integer or a long variable.
 

@@ -16,7 +16,6 @@ import os.path as osp
 import sys
 from subprocess import Popen
 from socket import gethostname
-import random
 from ConfigParser import ConfigParser
 
 
@@ -83,8 +82,6 @@ def single(section, simfolder, uber_conf, config_file):
                 seed = uber_conf.get('seeds', str(run))
             except Exception, e:
                 print "[Nicessa] There is no seed specified for run %d" % run
-        else:
-            random.seed()
 
         logfile = "%s/log%d.dat" % (section_dirname, run)
         dat = open(logfile, 'w')
