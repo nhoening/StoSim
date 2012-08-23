@@ -96,9 +96,12 @@ def create(conf, simfolder, limit_to={}, more=False):
         os.makedirs(pdir)
         return pdir
 
-    def writeopt((opt, isint, sec), tosub=True):
+    def writeopt((opt, isint, sec), config=None, tosub=True):
         ''' helper function to copy values in conf file from meta and control section '''
-        right_conf = sim_conf.has_option(sec, opt) and sim_conf or conf
+        if config:
+            right_conf = config
+        else:
+            right_conf = sim_conf.has_option(sec, opt) and sim_conf or conf
         getter = isint and getattr(right_conf, 'getint') or getattr(right_conf, 'get')
         target_conf = tosub and sub_conf or main_conf
         target_conf.write('%s:%s\n' % (opt, getter(sec, opt)))
@@ -198,7 +201,7 @@ def create(conf, simfolder, limit_to={}, more=False):
                     main_conf.write('\n[seeds]\n')
                     num_seeds = len(conf.items('seeds'))
                     for dat in [(str(opt), isint, 'seeds') for (opt, isint) in zip(range(1, num_seeds+1), [1 for _ in range(num_seeds)])]:
-                        writeopt(dat, tosub=False)
+                        writeopt(dat, config=conf, tosub=False)
 
             # write as many confs as cpuloads prescribes for this cpu,
             # iterate over simulations while doing so (to even their
