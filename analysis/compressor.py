@@ -80,7 +80,10 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
         std = 0.0
         for y in d[x]:
             std += math.pow(y - mean, 2)
-        std /= len(d[x])-1
+        l = len(d[x])
+        if l > 1:
+            l -= 1
+        std /= l
         std = math.sqrt(std)
         ste = std / math.sqrt(len(d[x])) # we're not using this, #40 should give a configurable choice
         out.write('%s %f %f\n' % (str(x), mean, std))
