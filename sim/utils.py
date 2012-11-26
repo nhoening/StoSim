@@ -314,7 +314,9 @@ def get_relevant_confs(simfolder):
     if conf.has_section('simulations'):
         for subsim in conf.get('simulations', 'configs').split(','):
             c = ConfigParser()
-            c.read("%s/%s.conf" % (simfolder, subsim.strip()))
+            filename = subsim.strip()
+            c.read("%s/%s.conf" % (simfolder, filename))
+            c.set('meta', '_subconf-filename_', filename)
             relevant_confs.append(c)
     return relevant_confs
 

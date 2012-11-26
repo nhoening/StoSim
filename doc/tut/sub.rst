@@ -152,6 +152,11 @@ With all the data we have, we also should make some figures to look at -
 we'll use our parameter settings to plot different data sets, such that we can 
 meaningfully compare the outcomes of different settings.
 
+.. note:: We tell Nicessa about these figures in the subsimulation configuration file, as opposed to the main file ``nicessa.conf`` (we could also have
+          done that). If figures are described in subsimulations configs, Nicessa will select only the data that were generated within the settings of this
+          subsimulation when it creates these figures. I find that pretty convenient :)
+
+
 Figure 1 shows likelihood to cooperate of learners when the non-learners form a
 cooperative environment (``mean_coop:0.8``) and Figure 2 does this in a
 non-cooperative environment (``mean_coop:0.2``). Figure 3 shows payoffs of

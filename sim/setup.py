@@ -28,7 +28,7 @@ def create(conf, simfolder, limit_to={}, more=False):
     :param ConfigParser conf: main configuration
     :param string simfolder: relative path to simfolder
     :param dict limit_to: dict of configuration settings we should limit to (default is an empty dict)
-    :param boolean more: True if runs should be appended to existing data (default is False)
+        :param boolean more: True if runs should be appended to existing data (default is False)
     """
 
     # ---------------------------------------------------------------------------------------------
@@ -220,7 +220,7 @@ def create(conf, simfolder, limit_to={}, more=False):
                     if simindex == init_simindex: break
                     sim_name = simulations.keys()[simindex]
                 act_comb_values = comb_values[sim_name].pop()
-                sub_name = "%s_" % sim_name
+                sub_name = "sim%s_" % sim_name
                 for i in range(len(act_comb_values)):
                     sub_name += "%s%s" % (simulations[sim_name].keys()[i], act_comb_values[i])
                     if i < len(act_comb_values)-1:

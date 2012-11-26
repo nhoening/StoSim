@@ -240,6 +240,11 @@ def make_plots(simfolder, plot_nrs=[]):
                             key = param[0].strip()
                             if not key in d.keys():
                                 d[key] = param[1].strip()
+                    # add simulation file name, then we can select accordingly
+                    if c.has_option('meta', '_subconf-filename_'):
+                        scfn = c.get('meta', '_subconf-filename_')
+                        if scfn != '' and not 'sim' in d:
+                            d['sim'] = scfn
                     # making sure all necessary plot attributes are there
                     if ('_name' in d.keys()and '_ycol' in d.keys() and
                         '_type' in d.keys()):
