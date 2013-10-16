@@ -12,6 +12,8 @@ http://homepages.cwi.nl/~nicolas/nicessa/
 (If you have sphinx, you can also generate the documentation yourself by going
  into that directory and typing 'make html').
 
+TODO: assumption of shared home directory 
+
 Dependencies
 --------------------
 You need Python 2.7, or 2.6 if you install the argparse module locally (remote

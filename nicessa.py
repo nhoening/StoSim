@@ -20,6 +20,19 @@ A simulation folder will in the end contain the following dirs:
 This module is careful with imports since it might be used in another
 context (on a remote host) and if no remote support is needed, the user
 doesn't need paramiko
+
+
+TODO:
+* the data dir should not be in simfolder, but be configurable (user chooses a
+  place that is accessible from all places that execute simulations)
+* remove all remote/screen related features - not sure if we can replace them
+* the choice of job distribution is also configurable. Default is fjd, we also
+  have lisa (what type of cluster is that?). Would be nice if extra steps for
+  compatibility could be pluggable.
+  For both fjd and lisa, we need to write a job file. A template would be great.
+* How to tell fjd about hosts? have remote.conf here and let fjd accept a 
+  parameter for its location.
+* Throw out control things from remote.conf. 
 """
 
 '''
@@ -383,8 +396,8 @@ def _prepare(simfolder, limit_to={}, more=False):
     from sim import setup
     if not osp.exists("%s/data" % simfolder):
         os.mkdir('%s/data' % simfolder)
-    if osp.exists("%s/conf" % simfolder):
-        rmtree('%s/conf' % simfolder)
+    if not osp.exists("%s/jobs" % simfolder):
+        os.mkdir('%s/jobs' % simfolder)
 
     conf = utils.get_main_conf(simfolder)
     setup.create(conf, simfolder, limit_to=limit_to, more=more)
