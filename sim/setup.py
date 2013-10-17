@@ -3,6 +3,7 @@
 '''
 setup
 =====
+TODO: rename, to sthg like job_creator
 
 This module sets up the stage - with it, you can make a configuration file
 for each mix of parameter settings (for each job) that needs to be run.
