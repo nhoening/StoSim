@@ -18,10 +18,9 @@ import utils
 
 
 
-def create(conf, simfolder, limit_to={}, more=False):
+def create(main_conf, simfolder, limit_to={}, pbs=True, more=False):
     """
     Writes a conf file for each run that the parameters in conf suggest.
-    Also divides all runs of an simulation in groups with a main conf each, to run on different hosts.
 
     :param ConfigParser conf: main configuration
     :param string simfolder: relative path to simfolder
@@ -81,34 +80,36 @@ def create(conf, simfolder, limit_to={}, more=False):
 
     def write_option((opt, isint, sec), to_conf, sim_conf):
         ''' helper function to copy values in conf file from meta and control section '''
-        from_conf = sim_conf.has_option(sec, opt) and sim_conf or conf
+        from_conf = sim_conf.has_option(sec, opt) and sim_conf or main_conf
         getter = isint and getattr(from_conf, 'getint') or getattr(from_conf, 'get')
         to_conf.write('{}:{}\n'.format(opt, getter(sec, opt)))
 
-    def write_job(otpions, values, sim=''):
+    def write_job(values, sim='', run=1):
         '''
         Write a job conf with these values for this sim
         '''
-        # prepare a config file
-        conf_name = "sim{}_".format(sim)
+        job_name = "sim{}_".format(sim)
         for i in range(len(values)):
-            conf_name += "{}{}".format(options[i], values[i])
+            job_name += "{}{}".format(options[i], values[i])
             if i < len(values) - 1:
-                conf_name += "_"
-        job_conf = open('{}/jobs/{}.conf'.format(simfolder, conf_name), 'w')
+                job_name += "_"
+        job_conf_filename = '{}/jobs/{}_run{}.conf'.format(simfolder, job_name, run)
+        job_conf = open(job_conf_filename, 'w')
 
         # these meta sections settings are tricky - they might be overwritten 
         # per simulation and we might want to start where we left off
         sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim))
         job_conf.write('[meta]\n')
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
-            if conf.has_option('meta', opt):
+            if main_conf.has_option('meta', opt):
                 write_option(dat, job_conf, sim_conf)
-        job_conf.write('[control]\n')
-        for dat in [(opt, isint, 'control') for (opt, isint) in [('runs', 1), ('executable', 0)]]:
-            write_option(dat, job_conf, sim_conf)
+        
+        job_conf.write('\n[control]\n')
+        write_option(('executable', 0, 'control'), job_conf, sim_conf)
+        logfile = '{}/data/{}/log{}.dat'.format(simfolder, job_name, run)
+        job_conf.write('logfile: {}\n'.format(logfile))
         if more:
-            job_conf.write('start_run:%d\n' % (utils.runs_in_folder(simfolder, conf_name) + 1))
+            job_conf.write('start_run:{}\n'.format(utils.runs_in_folder(simfolder, job_name) + 1))
         job_conf.write('\n')
 
         # write param values
@@ -119,26 +120,40 @@ def create(conf, simfolder, limit_to={}, more=False):
         job_conf.flush()
         job_conf.close()
 
+        if pbs:
+            pbs_job = '''# Shell for the job:
+#PBS -S /bin/bash
+# request 1 node, {cores} cores
+#PBS -lnodes=1:cores{cores}
+# job requires at most n hours wallclock time
+#PBS -lwalltime={maxtime}
+
+{cmd} {logfile} {jobconf}'''.format(cmd=main_conf.get('control', 'executable'), cores=1, 
+                          maxtime='00:30:00', logfile=logfile,
+                          jobconf=job_conf_filename)
+            pbs_job_file = open('{}/jobs/{}_run{}.pbs'.format(simfolder, job_name, run), 'w')
+            pbs_job_file.write(pbs_job)
+            pbs_job_file.close()
 
     # ---------------------------------------------------------------------------------------------
     # now let's get going
 
     # get parameters from subsimulations: combine them with our normal params
     default_params = {}
-    for param in conf.options('params'):
-        default_params[param] = [v.strip() for v in conf.get('params', param).split(',')]
+    for param in main_conf.options('params'):
+        default_params[param] = [v.strip() for v in main_conf.get('params', param).split(',')]
     simulations = {'': default_params}
-    if 'simulations' in conf.sections() and conf.get('simulations', 'configs') != '':
+    if 'simulations' in main_conf.sections() and main_conf.get('simulations', 'configs') != '':
         simulations = {}
-        for sim in conf.get('simulations', 'configs').split(','):
+        for sim in main_conf.get('simulations', 'configs').split(','):
             sim = sim.strip()
             simulations[sim] = default_params.copy()
             sim_conf = ConfigParser()
-            sim_conf_name = "%s/%s.conf" % (simfolder, sim)
-            if not os.path.exists(sim_conf_name):
-                print "[NICESSA] Error: Can't find %s !" % sim_conf_name
+            sim_job_name = "%s/%s.conf" % (simfolder, sim)
+            if not os.path.exists(sim_job_name):
+                print "[NICESSA] Error: Can't find %s !" % sim_job_name
                 sys.exit()
-            sim_conf.read(sim_conf_name)
+            sim_conf.read(sim_job_name)
             if sim_conf.has_section('params'):
                 for param in sim_conf.options('params'):
                     simulations[sim][param] = [v.strip() for v in sim_conf.get('params', param).split(',')]
@@ -147,18 +162,19 @@ def create(conf, simfolder, limit_to={}, more=False):
     for sim in simulations:
         options, values = get_options_values(simulations[sim], limit_to)
         
-        if conf.has_section('seeds'):
+        if main_conf.has_section('seeds'):
             comb_options[sim].append('seed')
             simulations[sim]['seed'] = ''
         
         for _ in range(len(values)):
             # get a set of unique values 
             act_values = values.pop()
-            if conf.has_section('seeds'):
-                for index, seed in conf.items('seeds'): #TODO: only do for as many runs as requested, error if too few seeds
+            runs = main_conf.getint('control', 'runs')
+            for run in xrange(1, runs+1):
+                if main_conf.has_option('seeds', str(run)):
+                    seed = main_conf.get('seeds', str(run)) 
                     vals = [v for v in act_values]
                     vals.append(seed)
-                    print len(vals), vals
-                    write_job(options, vals, sim=sim)
-            else:
-                write_job(options, act_values, sim=sim)
+                    write_job(vals, sim=sim, run=run)
+                else:
+                    write_job(act_values, sim=sim, run=run)
