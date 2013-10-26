@@ -25,18 +25,20 @@ doesn't need paramiko
 TODO:
 * the data dir should not be in simfolder, but be configurable (user chooses a
   place that is accessible from all places that execute simulations)
-* remove all remote/screen related features - not sure if we can replace them
+* remove all remote/screen related features
 * the choice of job distribution is also configurable. Default is fjd, we also
   have lisa (what type of cluster is that?). Would be nice if extra steps for
   compatibility could be pluggable.
   For both fjd and lisa, we need to write a job file. A template would be great.
-* How to tell fjd about hosts? have remote.conf here and let fjd accept a 
-  parameter for its location.
-* Throw out control things from remote.conf. 
+* How to tell fjd about hosts? User can have remote.conf here and we copy it 
+  over to ~/.fjd it is
+* write setup.py and Manifest.im to make nicessa installable (script: nicessa)
+* Better name - stosi? parco? simmer?
+* Update docs
 """
 
 '''
-Copyright (c) 2012 Nicolas Höning
+Copyright (c) 2013 Nicolas Höning
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,7 +74,6 @@ def run(simfolder):
         :returns: True if successful, False otherwise
     '''
     from sim import utils
-    from sim.net import starter
 
     print '*' * 80
     folder_name = utils.ensure_name(simfolder)
@@ -87,12 +88,12 @@ def run(simfolder):
         utils.usage()
         return False
 
-    if utils.is_remote(simfolder) or utils.cpus_per_host(simfolder)[1] > 1:
-        from sim.net import remote
-        return remote.run_remotely(simfolder, utils.get_main_conf(simfolder))
-    else:
-        return starter.batch(simfolder, 1, 1)
+    # queue jobs on a PBS cluster (Torque, PBS Pro)
 
+    # or copy jobs to .fjd/<sim_name> and call fjd-recruiter and then, in
+    # a Unix screen, fjd-dispatcher
+
+ 
 
 def run_more(simfolder):
     """ let the user make more runs on current config,
@@ -384,8 +385,8 @@ def _assure_writable(simfolder, more=False):
 
 
 def _prepare(simfolder, limit_to={}, more=False):
-    """ ensure that data directory exist, fill config directory with all
-        subconfigs we want. limit_to can contain parameter settings we want
+    """ ensure that data and job directories exist, create jobs.
+        limit_to can contain parameter settings we want
         to limit ourselves to (this is in case we add more data)
 
         :param string simfolder: relative path to simfolder
@@ -396,8 +397,9 @@ def _prepare(simfolder, limit_to={}, more=False):
     from sim import setup
     if not osp.exists("%s/data" % simfolder):
         os.mkdir('%s/data' % simfolder)
-    if not osp.exists("%s/jobs" % simfolder):
-        os.mkdir('%s/jobs' % simfolder)
+    if osp.exists("%s/jobs" % simfolder):
+        rmtree('%s/jobs' % simfolder)
+    os.mkdir('%s/jobs' % simfolder)
 
     conf = utils.get_main_conf(simfolder)
     setup.create(conf, simfolder, limit_to=limit_to, more=more)
