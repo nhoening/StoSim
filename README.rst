@@ -1,14 +1,17 @@
+
+Currently refactoring - please do not yet install!
+
 What is this?
 --------------------
-Nicessa runs stochastic simulations.
+StoSim runs stochastic simulations.
 
-You write the actual simulation, but nicessa relieves you of:
+You write the actual simulation, but stosim relieves you of:
 - arranging runs for all combinations of your dependent variables
 - distributing workload on different machines
 - generating nice paper-ready plots and T-Tests from the results
 
 There are example simulations in the "example" folder and you can find extensive documentation at
-http://homepages.cwi.nl/~nicolas/nicessa/
+http://homepages.cwi.nl/~nicolas/stosim/
 (If you have sphinx, you can also generate the documentation yourself by going
  into that directory and typing 'make html').
 
@@ -27,9 +30,10 @@ For T-Tests, you need Gnu R installed.
 Running a simulation
 --------------------
 Place an experiment configuration and your simulation code in a folder of your choice (see basic example).
-Call ./experiment.py <path-to-your-experiment-folder>
+Call ./stosim.py --folder <path-to-your-experiment-folder>
+You can leave the --foler option away if stosim.conf is in the current directory.
 The results will be put in the "data" directory, in your folder 
-(but if you like the plotting capabilities of nicessa you might never look there).
+(but if you like the plotting capabilities of stosim you might never look there).
 
 
 Enjoy.

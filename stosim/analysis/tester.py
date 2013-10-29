@@ -43,7 +43,7 @@ def ttest(simfolder, c, i, delim):
                                      selector=d['_select']
                                     )
         else:
-            print '[NICESSA] Warning: Incomplete T-test specification for test %i in Experiment %s, dataset number %i. '\
+            print '[StoSim] Warning: Incomplete T-test specification for test %i in Experiment %s, dataset number %i. '\
                   'Specify at least _name and _col.' % (i, c.get('meta', 'name'), dset)
 
     # -- run test --
@@ -51,10 +51,10 @@ def ttest(simfolder, c, i, delim):
         if c.has_option('ttest%i' %i, 'custom-script'):
             custom_script = c.get('ttest%i' % i, 'custom-script')
             if not osp.exists(custom_script):
-                print "[Nicessa] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
+                print "[StoSim] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
                 print
                 return
-            print '[NICESSA] Using custom script at %s' % custom_script
+            print '[StoSim] Using custom script at %s' % custom_script
             Popen('cp %s %s/ttest.r' % (custom_script, tmp_dir), shell=True).wait()
         else:
             rscript = open('%s/ttest.r' % tmp_dir, 'w')

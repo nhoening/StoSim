@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
 '''
-setup
+job_creator
 =====
-TODO: rename, to sthg like job_creator
 
 This module sets up the stage - with it, you can make a configuration file
 for each mix of parameter settings (for each job) that needs to be run.
@@ -151,7 +150,7 @@ def create(main_conf, simfolder, limit_to={}, pbs=True, more=False):
             sim_conf = ConfigParser()
             sim_job_name = "%s/%s.conf" % (simfolder, sim)
             if not os.path.exists(sim_job_name):
-                print "[NICESSA] Error: Can't find %s !" % sim_job_name
+                print "[StoSim] Error: Can't find %s !" % sim_job_name
                 sys.exit()
             sim_conf.read(sim_job_name)
             if sim_conf.has_section('params'):

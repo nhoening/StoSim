@@ -32,7 +32,7 @@ TODO:
   For both fjd and lisa, we need to write a job file. A template would be great.
 * How to tell fjd about hosts? User can have remote.conf here and we copy it 
   over to ~/.fjd it is
-* write setup.py and Manifest.im to make nicessa installable (script: nicessa)
+* write setup.py and Manifest.im to make stosim installable (script: stosim)
 * Better name - stosi? parco? simmer?
 * Update docs
 """
@@ -73,7 +73,7 @@ def run(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     '''
-    from sim import utils
+    from stosim.sim import utils
 
     print '*' * 80
     folder_name = utils.ensure_name(simfolder)
@@ -83,12 +83,12 @@ def run(simfolder):
     print '*' * 80
     print
 
-    if not osp.exists("%s/nicessa.conf" % simfolder):
-        print "[Nicessa] %s/nicessa.conf does not exist!" % simfolder
+    if not osp.exists("%s/stosim.conf" % simfolder):
+        print "[StoSim] %s/stosim.conf does not exist!" % simfolder
         utils.usage()
         return False
 
-    # queue jobs on a PBS cluster (Torque, PBS Pro)
+    # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
 
     # or copy jobs to .fjd/<sim_name> and call fjd-recruiter and then, in
     # a Unix screen, fjd-dispatcher
@@ -106,7 +106,7 @@ def run_more(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     """
-    from sim import utils
+    from stosim.sim import utils
     simfolder = simfolder.strip('/')
     conf = utils.get_main_conf(simfolder)
 
@@ -125,7 +125,7 @@ def run_more(simfolder):
                     conf.set('params', p, subconf.get('params', p))
 
     print '''
-[Nicessa] Let's make %d more run(s)! Please tell me on which configurations.\n
+[StoSim] Let's make %d more run(s)! Please tell me on which configurations.\n
 Enter any parameter values you want to narrow down to, nothing otherwise."
 ''' % conf.getint('control', 'runs')
     sel_params = {}
@@ -164,8 +164,8 @@ def make_plots(simfolder, plot_nrs=[]):
         :param string simfolder: relative path to simfolder
         :param list plot_nrs: a list with plot indices. If empty, plot all
     """
-    from sim import utils
-    from analysis import plotter
+    from stosim.sim import utils
+    from stosim.analysis import plotter
 
     simfolder = simfolder.strip('/')
 
@@ -180,12 +180,12 @@ def make_plots(simfolder, plot_nrs=[]):
         if c.has_section("figure1"):
             print
             print '*' * 80
-            print "[Nicessa] creating plots ..."
+            print "[StoSim] creating plots ..."
             print '*' * 80
             print
             break
     else:
-        print "[Nicessa] No plots specified"
+        print "[StoSim] No plots specified"
 
     # Describe all options first.
     # These might be set in plot-settings (in each simulation config)
@@ -215,7 +215,7 @@ def make_plots(simfolder, plot_nrs=[]):
 
     general_settings = {}
     c = ConfigParser()
-    c.read('%s/nicessa.conf' % (simfolder))
+    c.read('%s/stosim.conf' % (simfolder))
     delim = utils.get_delimiter(c)
     for o, t in general_options.iteritems():
         get_opt_val(c, general_settings, 'plot-settings', o, t)
@@ -265,7 +265,7 @@ def make_plots(simfolder, plot_nrs=[]):
                         plot_confs.append(d)
                     else:
                         print '''
-[NICESSA] Warning: Incomplete graph specification in Experiment %s
+[StoSim] Warning: Incomplete graph specification in Experiment %s
 - for plot %i in figure %i. \n
 Specify at least _name and _ycol.''' % (c.get('meta', 'name'), j, i)
                     j += 1
@@ -284,10 +284,10 @@ def run_ttests(simfolder):
 
     :param string simfolder: relative path to simfolder
     '''
-    from analysis import harvester, tester
+    from stosim.analysis import harvester, tester
 
     c = ConfigParser()
-    c.read('%s/nicessa.conf' % (simfolder))
+    c.read('%s/stosim.conf' % (simfolder))
     delim = utils.get_delimiter(c)
 
     relevant_confs = utils.get_relevant_confs(simfolder)
@@ -297,12 +297,12 @@ def run_ttests(simfolder):
         if c.has_section("ttest1"):
             print
             print '*' * 80
-            print "[Nicessa] Running T-tests ..."
+            print "[StoSim] Running T-tests ..."
             print '*' * 80
             print
             break
     else:
-        print "[Nicessa] No T-tests specified"
+        print "[StoSim] No T-tests specified"
 
     for c in relevant_confs:
         i = 1
@@ -311,7 +311,7 @@ def run_ttests(simfolder):
             print "Test %s:" % c.get('ttest%i' % i, 'name').strip('"')
             if not (c.has_option("ttest%i" % i, "set1") and
                     c.has_option("ttest%i" % i, "set2")):
-                print "[Nicessa] T-test %i is missing one or both"\
+                print "[StoSim] T-test %i is missing one or both"\
                       " data set descriptions." % i
                 break
 
@@ -325,7 +325,7 @@ def list_data(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     """
-    print "[Nicessa] The configurations and number of runs made so far:\n"
+    print "[StoSim] The configurations and number of runs made so far:\n"
     for sim in utils.get_subsimulation_names(utils.get_main_conf(simfolder)):
         print "%s" % sim
         # get a list w/ relevant params from first-found config file
@@ -378,7 +378,7 @@ def _assure_writable(simfolder, more=False):
                 if '-d' in sys.argv:
                     rmtree('%s/data' % simfolder)
                 else:
-                    print '[Nicessa] I found older log data (in %s/data).'\
+                    print '[StoSim] I found older log data (in %s/data).'\
                         ' Remove? [y/N]' % simfolder
                     if raw_input().lower() == 'y':
                         rmtree('%s/data' % simfolder)
@@ -394,7 +394,7 @@ def _prepare(simfolder, limit_to={}, more=False):
                               when empty (default) all possible configs are run
         :param boolean more: when True, new data will simply be added
     """
-    from sim import setup
+    from stosim.sim import setup
     if not osp.exists("%s/data" % simfolder):
         os.mkdir('%s/data' % simfolder)
     if osp.exists("%s/jobs" % simfolder):
@@ -406,16 +406,15 @@ def _prepare(simfolder, limit_to={}, more=False):
 
 
 if __name__ == "__main__":
-    from sim import utils
+    from stosim.sim import utils
 
     args = utils.read_args()
 
     utils.check_conf(args.folder)
 
     # define standard program (if no options are set)
-    if (args.run == args.results == args.check == args.ttests == args.more\
-       == args.kill == args.list == False and
-       args.showscreen is None and args.plots is None):
+    if (args.run == args.results == args.ttests == args.more\
+       == args.list == False and args.plots is None):
         args.run = args.ttests = True
         args.plots = []
         cpus_on_host1 = utils.cpus_per_host(args.folder)[1]
@@ -431,28 +430,17 @@ if __name__ == "__main__":
             _assure_writable(args.folder, more=args.more)
         _prepare(args.folder)
         fine = run(args.folder)
-    elif args.check:
-        from sim.net import remote
-        fine = remote.check_states(args.folder)
-    elif args.showscreen:
-        from sim.net import remote
-        fine = remote.show_screen(args.folder, args.showscreen[0],
-                                               args.showscreen[1])
-    elif args.kill:
-        from sim.net import remote
-        remote.kill_screens(args.folder)
-        fine = False
+    
     if args.list:
         fine = list_data(args.folder)
 
     if fine:
         if args.results:
-            from sim.net import remote
             # create confs (again) so we know what we expect on which host
             if not args.run:
                 _assure_writable(args.folder, more=args.more)
                 _prepare(args.folder, more=args.more)
-            remote.get_results(args.folder, do_wait=args.run)
+            get_results(args.folder, do_wait=args.run)
 
         if args.plots is not None:
             make_plots(args.folder, plot_nrs=args.plots)
