@@ -29,12 +29,12 @@ if __name__ == '__main__':
     (2) the name of the conf file
     which are specific to this run.
     '''
-    # just open the log to be able to write
-    log = open(sys.argv[1], 'w')
 
     # open the conf file for this run with the standard Python way
     conf = ConfigParser()
-    conf.read(sys.argv[2])
+    conf.read(sys.argv[1])
+    # just open the log to be able to write
+    log = open(conf.get('control', 'logfile'), 'w')
 
     # The parameters from the conf for this run can be accessed like this
     max_step = conf.getint('params', 'steps')

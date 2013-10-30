@@ -17,7 +17,7 @@ import utils
 
 
 
-def create(main_conf, simfolder, limit_to={}, pbs=True, more=False):
+def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
     """
     Writes a conf file for each run that the parameters in conf suggest.
 
@@ -77,11 +77,11 @@ def create(main_conf, simfolder, limit_to={}, pbs=True, more=False):
 
         return comb_options, comb_values
 
-    def write_option((opt, isint, sec), to_conf, sim_conf):
+    def mk_option((opt, isint, sec), sim_conf):
         ''' helper function to copy values in conf file from meta and control section '''
         from_conf = sim_conf.has_option(sec, opt) and sim_conf or main_conf
         getter = isint and getattr(from_conf, 'getint') or getattr(from_conf, 'get')
-        to_conf.write('{}:{}\n'.format(opt, getter(sec, opt)))
+        return '{}:{}\n'.format(opt, getter(sec, opt))
 
     def write_job(values, sim='', run=1):
         '''
@@ -100,12 +100,16 @@ def create(main_conf, simfolder, limit_to={}, pbs=True, more=False):
         sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim))
         job_conf.write('[meta]\n')
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
-            if main_conf.has_option('meta', opt):
-                write_option(dat, job_conf, sim_conf)
+            #if main_conf.has_option('meta', opt):
+            job_conf.write(mk_option(dat, sim_conf))
         
         job_conf.write('\n[control]\n')
-        write_option(('executable', 0, 'control'), job_conf, sim_conf)
+        exe = mk_option(('executable', 0, 'control'), sim_conf)
+        exe = 'executable: {}{}\n'.format(simfolder, exe.split(':')[1].strip())
+        job_conf.write(exe) 
         logfile = '{}/data/{}/log{}.dat'.format(simfolder, job_name, run)
+        if not os.path.exists('{}/data/{}'.format(simfolder, job_name)):
+            os.mkdir('{}/data/{}'.format(simfolder, job_name))
         job_conf.write('logfile: {}\n'.format(logfile))
         if more:
             job_conf.write('start_run:{}\n'.format(utils.runs_in_folder(simfolder, job_name) + 1))
@@ -119,7 +123,7 @@ def create(main_conf, simfolder, limit_to={}, pbs=True, more=False):
         job_conf.flush()
         job_conf.close()
 
-        if pbs:
+        if scheduler == 'pbs':
             pbs_job = '''# Shell for the job:
 #PBS -S /bin/bash
 # request 1 node, {cores} cores

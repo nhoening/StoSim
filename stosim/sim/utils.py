@@ -27,7 +27,7 @@ from ConfigParser import NoOptionError, NoSectionError, ParsingError
 try:
 	import argparse
 except ImportError:
-	print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside yur local directory.")
+	print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
 	sys.exit(1)
 
 
@@ -110,7 +110,7 @@ def get_main_conf(simfolder):
     for (sec, opt, default) in\
             [('meta', 'name', 'A simulation run by StoSim'),\
              ('meta', 'maintainer', def_user),\
-             ('control', 'local', '1'),\
+             ('control', 'scheduler', 'fjd'),\
              ('control', 'runs', '1')]:
         if not conf.has_option(sec, opt):
             conf.set(sec, opt, default)
@@ -131,50 +131,21 @@ def get_main_conf(simfolder):
     return conf
 
 
-# TODO: can go
-def get_host_conf(simfolder):
-    """ get (optional) host conf
+def get_scheduler(simfolder):
+    """ get the scheduler (fjd or pbs)
 
         :param string simfolder: relative path to simfolder
-        :returns: ConfigParser object
+        :returns: srting scheduler
     """
-    if not osp.exists("%s/remote.conf" % simfolder):
-        print "[StoSim] WARNING: simulation is configured to not run locally, but the file remote.conf couldn't be found!"
-        sys.exit(1)
-    conf = ConfigParser()
-    conf.read("%s/remote.conf" % simfolder)
-    return conf
-
-# TODO: can go
-def get_nice_level(simfolder, host):
-    ''' get the nice level to use for this host, defaults to 9 if none is configured
-
-        :param string simfolder: relative path to simfolder
-        :param number hostr: host number
-        :returns: the nice level (a number)
-    '''
-    nl = 9
-    remote_conf = get_host_conf(simfolder)
-    if remote_conf.has_section('host%d' % host):
-        if remote_conf.has_option('host%d' % host, 'nice'):
-            nl = remote_conf.getint('host%d' % host, 'nice')
-    return nl
-
-# TODO: can go
-def make_screen_name(simfolder, host, cpu):
-    ''' make a screen name, out of:
-          * the name of main simulation, cleaned of all special chars
-          * used conf files
-          * host number
-          * cpu number
-
-        :param string simfolder: relative path to simfolder
-        :param number hostr: host number
-        :param numer cpu: cpu numer
-        :returns: a screen name
-    '''
-    simdir_name = make_simdir_name(simfolder)
-    return 'screen_%s_%s_%s' % (simdir_name, str(host), str(cpu))
+    stosim_conf = get_main_conf(simfolder)
+    if not stosim_conf.has_option('control', 'scheduler'):
+        scheduler = "fjd"
+    else:
+        scheduler = stosim_conf.get('control', 'scheduler')
+    if not scheduler in ('fjd', 'pbs'):
+        print("[StoSim] {} is not a valid scheduler.".format(scheduler))
+        scheduler = "fjd"
+    return scheduler
 
 
 def make_simdir_name(simfolder):
@@ -196,7 +167,7 @@ def make_simdir_name(simfolder):
 
 
 def get_subsimulation_names(conf):
-    ''' get of simulation names.
+    ''' get sub-simulation config names.
 
         :param ConfigParser conf: main configuration
         :returns: A list with names. If no subsimulations are configured, the list will have an empty string as only element
@@ -220,7 +191,7 @@ def get_simulation_name(conf_filename, fallback):
     conf = ConfigParser()
     conf.read(conf_filename)
     if conf.has_option('meta', 'name'):
-        return conf.get('meta', 'name')
+        return conf.get('meta', 'name').replace(' ', '_')
     else:
         return fallback
 
@@ -234,16 +205,6 @@ def ensure_name(simfolder):
     if simfolder == '.':
         simfolder = osp.abspath(osp.curdir).split('/')[-1:][0]
     return simfolder.strip('/')
-
-
-#TODO: can go
-def is_remote(simfolder):
-    '''
-        :returns: True if the user configured the simulation to be run remotely
-        :param string simfolder: relative path to simfolder
-    '''
-    conf = get_main_conf(simfolder)
-    return conf.get("control", "local") != "1"
 
 
 # TODO: can go

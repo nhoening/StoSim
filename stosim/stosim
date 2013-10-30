@@ -62,9 +62,13 @@ THE SOFTWARE.
 import os
 import os.path as osp
 import sys
-from shutil import rmtree
+from shutil import copy, rmtree
 from ConfigParser import ConfigParser
 from subprocess import Popen
+import fjd
+
+from stosim.sim import utils, job_creator
+from stosim.analysis import plotter
 
 
 def run(simfolder):
@@ -73,26 +77,34 @@ def run(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     '''
-    from stosim.sim import utils
-
-    print '*' * 80
+    print('*' * 80)
     folder_name = utils.ensure_name(simfolder)
-    sim_name = utils.get_simulation_name("%s/simulation.conf" %
+    sim_name = utils.get_simulation_name("%s/stosim.conf" %
             simfolder, folder_name)
-    print "Running simulation %s" % sim_name
-    print '*' * 80
-    print
+    print("Running simulation {}".format(sim_name))
+    print('*' * 80)
+    print('')
 
     if not osp.exists("%s/stosim.conf" % simfolder):
         print "[StoSim] %s/stosim.conf does not exist!" % simfolder
         utils.usage()
         return False
 
-    # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
-
-    # or copy jobs to .fjd/<sim_name> and call fjd-recruiter and then, in
-    # a Unix screen, fjd-dispatcher
-
+    scheduler = utils.get_scheduler(simfolder)
+    if scheduler == 'fjd':
+        # copy jobs to .fjd/<sim_name> and call fjd-recruiter and then, in
+        # a Unix screen, fjd-dispatcher
+        fjd_dir = fjd.utils.ensure_wdir(sim_name)
+        fjd.utils.empty_queues(sim_name)
+        for job in os.listdir("{}/jobs".format(simfolder)):
+            copy("{}/jobs/{}".format(simfolder, job),
+                 "{}/jobqueue".format(fjd_dir))
+        Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
+        Popen('fjd-dispatcher --project {}'.format(sim_name), shell=True).wait()
+        
+    elif scheduler == 'pbs':
+        # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
+        pass  # TODO: qjob
  
 
 def run_more(simfolder):
@@ -106,7 +118,6 @@ def run_more(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     """
-    from stosim.sim import utils
     simfolder = simfolder.strip('/')
     conf = utils.get_main_conf(simfolder)
 
@@ -124,10 +135,10 @@ def run_more(simfolder):
                 else:
                     conf.set('params', p, subconf.get('params', p))
 
-    print '''
-[StoSim] Let's make %d more run(s)! Please tell me on which configurations.\n
+    print('''
+[StoSim] Let's make {} more run(s)! Please tell me on which configurations.\n
 Enter any parameter values you want to narrow down to, nothing otherwise."
-''' % conf.getint('control', 'runs')
+'''.format(conf.getint('control', 'runs')))
     sel_params = {}
     for o in conf.options('params'):
         selected = False
@@ -136,7 +147,7 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
             continue  # no need to narrow down
         while not selected:
             choice = []
-            print "<%s> ? (out of [%s])" % (o, conf.get('params', o))
+            print("<{}> ? (out of [{}])".format((o, conf.get('params', o))))
             for selection in raw_input().split(','):
                 selected = True
                 if selection == "":
@@ -144,14 +155,14 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
                 elif selection in params:
                     choice.append(selection)
                 else:
-                    print "Sorry, %s is not a valid value." % selection
+                    print("Sorry, {} is not a valid value.".format(selection))
                     selected = False
         if len(choice) > 0:
             sel_params[o] = choice
         else:
-            print "No restriction chosen."
-    print "You selected: %s. Do this? [Y|n]\n(Remember that configuration and\
-           code should still be the same!)" % str(sel_params)
+            print("No restriction chosen.")
+    print("You selected: {}. Do this? [Y|n]\n(Remember that configuration and\
+           code should still be the same!)".format(str(sel_params)))
     if raw_input().lower() in ["", "y"]:
         _prepare_dirs(simfolder, limit_to=sel_params, more=True)
         return run(simfolder)
@@ -164,8 +175,6 @@ def make_plots(simfolder, plot_nrs=[]):
         :param string simfolder: relative path to simfolder
         :param list plot_nrs: a list with plot indices. If empty, plot all
     """
-    from stosim.sim import utils
-    from stosim.analysis import plotter
 
     simfolder = simfolder.strip('/')
 
@@ -178,14 +187,14 @@ def make_plots(simfolder, plot_nrs=[]):
     relevant_confs = utils.get_relevant_confs(simfolder)
     for c in relevant_confs:
         if c.has_section("figure1"):
-            print
-            print '*' * 80
-            print "[StoSim] creating plots ..."
-            print '*' * 80
-            print
+            print('')
+            print('*' * 80)
+            print("[StoSim] creating plots ...")
+            print('*' * 80)
+            print('')
             break
     else:
-        print "[StoSim] No plots specified"
+        print("[StoSim] No plots specified")
 
     # Describe all options first.
     # These might be set in plot-settings (in each simulation config)
@@ -215,7 +224,7 @@ def make_plots(simfolder, plot_nrs=[]):
 
     general_settings = {}
     c = ConfigParser()
-    c.read('%s/stosim.conf' % (simfolder))
+    c.read('{}/stosim.conf'.format((simfolder)))
     delim = utils.get_delimiter(c)
     for o, t in general_options.iteritems():
         get_opt_val(c, general_settings, 'plot-settings', o, t)
@@ -264,10 +273,10 @@ def make_plots(simfolder, plot_nrs=[]):
                         '_type' in d.keys()):
                         plot_confs.append(d)
                     else:
-                        print '''
+                        print('''
 [StoSim] Warning: Incomplete graph specification in Experiment %s
-- for plot %i in figure %i. \n
-Specify at least _name and _ycol.''' % (c.get('meta', 'name'), j, i)
+- for plot {} in figure {}. \n
+Specify at least _name and _ycol.'''.format((c.get('meta', 'name'), j, i)))
                     j += 1
                 plotter.plot(filepath='%s/data' % simfolder,
                              delim=delim,
@@ -287,7 +296,7 @@ def run_ttests(simfolder):
     from stosim.analysis import harvester, tester
 
     c = ConfigParser()
-    c.read('%s/stosim.conf' % (simfolder))
+    c.read('{}/stosim.conf'.format((simfolder)))
     delim = utils.get_delimiter(c)
 
     relevant_confs = utils.get_relevant_confs(simfolder)
@@ -295,11 +304,11 @@ def run_ttests(simfolder):
     # tell about what we'll do if we have at least one test
     for c in relevant_confs:
         if c.has_section("ttest1"):
-            print
-            print '*' * 80
-            print "[StoSim] Running T-tests ..."
-            print '*' * 80
-            print
+            print('')
+            print('*' * 80)
+            print("[StoSim] Running T-tests ...")
+            print('*' * 80)
+            print('')
             break
     else:
         print "[StoSim] No T-tests specified"
@@ -308,11 +317,11 @@ def run_ttests(simfolder):
         i = 1
 
         while c.has_section("ttest%i" % i):
-            print "Test %s:" % c.get('ttest%i' % i, 'name').strip('"')
+            print("Test {}:".format(c.get('ttest%i' % i, 'name').strip('"')))
             if not (c.has_option("ttest%i" % i, "set1") and
                     c.has_option("ttest%i" % i, "set2")):
-                print "[StoSim] T-test %i is missing one or both"\
-                      " data set descriptions." % i
+                print("[StoSim] T-test {} is missing one or both"\
+                      " data set descriptions.".format(i))
                 break
 
             tester.ttest(simfolder, c, i, delim)
@@ -325,7 +334,7 @@ def list_data(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise
     """
-    print "[StoSim] The configurations and number of runs made so far:\n"
+    print("[StoSim] The configurations and number of runs made so far:\n")
     for sim in utils.get_subsimulation_names(utils.get_main_conf(simfolder)):
         print "%s" % sim
         # get a list w/ relevant params from first-found config file
@@ -334,7 +343,7 @@ def list_data(simfolder):
         data_dirs = os.listdir("%s/data" % simfolder)
         sim_dirs = [d for d in data_dirs if d.startswith(sim)]
         if len(sim_dirs) == 0:
-            print "No runs found for simulation %s\n" % sim
+            print("No runs found for simulation {}\n".format(sim))
             continue
         first_dir = "%s/data/%s" % (simfolder, sim_dirs[0])
         confs = [f for f in os.listdir(first_dir) if f.endswith('.conf')]
@@ -342,24 +351,24 @@ def list_data(simfolder):
         cp.read("%s/%s" % (first_dir, first_cnf))
         params = cp.options('params')
         charlen = 1 + sum([len(p) + 6 for p in params]) + 9
-        print '-' * charlen
-        print "|",
+        print('-' * charlen)
+        print("|",)
         for p in params:
-            print "  %s  |" % p,
-        print "| runs |"
-        print '-' * charlen
+            print("  {}  |".format(p)),
+        print("| runs |")
+        print('-' * charlen)
         # now show how much we have in each relevant dir
         for dir in sim_dirs:
             cp = ConfigParser()
             path2dir = "%s/data/%s" % (simfolder, dir)
             cnf = [f for f in os.listdir(path2dir) if f.endswith('.conf')][0]
             cp.read("%s/%s" % (path2dir, cnf))
-            print "|",
+            print("|"),
             this_params = cp.options('params')
             for p in params:
-                print "  %s|" % cp.get('params', p).ljust(len(p) + 2),
-            print "| %s |" % str(utils.runs_in_folder(simfolder, dir)).rjust(4)
-            print '-' * charlen
+                print("  {}|".format(cp.get('params', p).ljust(len(p) + 2))),
+            print("| {} |".format(str(utils.runs_in_folder(simfolder, dir)).rjust(4)))
+            print('-' * charlen)
     return True
 
 # -----------------------------------------------------------------------------
@@ -378,8 +387,8 @@ def _assure_writable(simfolder, more=False):
                 if '-d' in sys.argv:
                     rmtree('%s/data' % simfolder)
                 else:
-                    print '[StoSim] I found older log data (in %s/data).'\
-                        ' Remove? [y/N]' % simfolder
+                    print('[StoSim] I found older log data (in {}/data).'\
+                        ' Remove? [y/N]'.format(simfolder))
                     if raw_input().lower() == 'y':
                         rmtree('%s/data' % simfolder)
 
@@ -394,7 +403,6 @@ def _prepare(simfolder, limit_to={}, more=False):
                               when empty (default) all possible configs are run
         :param boolean more: when True, new data will simply be added
     """
-    from stosim.sim import setup
     if not osp.exists("%s/data" % simfolder):
         os.mkdir('%s/data' % simfolder)
     if osp.exists("%s/jobs" % simfolder):
@@ -402,11 +410,10 @@ def _prepare(simfolder, limit_to={}, more=False):
     os.mkdir('%s/jobs' % simfolder)
 
     conf = utils.get_main_conf(simfolder)
-    setup.create(conf, simfolder, limit_to=limit_to, more=more)
+    job_creator.create(conf, simfolder, limit_to=limit_to, more=more)
 
 
 if __name__ == "__main__":
-    from stosim.sim import utils
 
     args = utils.read_args()
 
@@ -417,17 +424,13 @@ if __name__ == "__main__":
        == args.list == False and args.plots is None):
         args.run = args.ttests = True
         args.plots = []
-        cpus_on_host1 = utils.cpus_per_host(args.folder)[1]
-        if utils.is_remote(args.folder) or cpus_on_host1 > 1:
-            args.results = True
 
     # 'first-class' commands : only one of these at a time:
     fine = True
     if args.more:
         fine = run_more(args.folder)
     elif args.run:
-        if not utils.is_remote(args.folder):
-            _assure_writable(args.folder, more=args.more)
+        _assure_writable(args.folder, more=args.more)
         _prepare(args.folder)
         fine = run(args.folder)
     
