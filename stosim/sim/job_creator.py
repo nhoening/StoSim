@@ -95,6 +95,9 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
         job_conf_filename = '{}/jobs/{}_run{}.conf'.format(simfolder, job_name, run)
         job_conf = open(job_conf_filename, 'w')
 
+        if more:
+            run += utils.runs_in_folder(simfolder, job_name)
+
         # these meta sections settings are tricky - they might be overwritten 
         # per simulation and we might want to start where we left off
         sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim))
@@ -105,14 +108,15 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
         
         job_conf.write('\n[control]\n')
         exe = mk_option(('executable', 0, 'control'), sim_conf)
-        exe = 'executable: {}{}\n'.format(simfolder, exe.split(':')[1].strip())
+        exe = 'executable: {}/{}\n'.format(simfolder, exe.split(':')[1].strip().strip('./'))
         job_conf.write(exe) 
         logfile = '{}/data/{}/log{}.dat'.format(simfolder, job_name, run)
         if not os.path.exists('{}/data/{}'.format(simfolder, job_name)):
             os.mkdir('{}/data/{}'.format(simfolder, job_name))
         job_conf.write('logfile: {}\n'.format(logfile))
-        if more:
-            job_conf.write('start_run:{}\n'.format(utils.runs_in_folder(simfolder, job_name) + 1))
+        if main_conf.has_option('seeds', str(run)):
+            seed = main_conf.get('seeds', str(run)) 
+            job_conf.write('seed:{}\n'.format(seed)) 
         job_conf.write('\n')
 
         # write param values
@@ -165,19 +169,10 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
     for sim in simulations:
         options, values = get_options_values(simulations[sim], limit_to)
         
-        if main_conf.has_section('seeds'):
-            comb_options[sim].append('seed')
-            simulations[sim]['seed'] = ''
-        
         for _ in range(len(values)):
             # get a set of unique values 
             act_values = values.pop()
             runs = main_conf.getint('control', 'runs')
             for run in xrange(1, runs+1):
-                if main_conf.has_option('seeds', str(run)):
-                    seed = main_conf.get('seeds', str(run)) 
-                    vals = [v for v in act_values]
-                    vals.append(seed)
-                    write_job(vals, sim=sim, run=run)
-                else:
-                    write_job(act_values, sim=sim, run=run)
+                write_job(act_values, sim=sim, run=run)
+                

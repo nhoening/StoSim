@@ -41,15 +41,11 @@ def read_args():
                                                   Please visit http://homepages.cwi.nl/~nicolas/stosim')
     parser.add_argument('--folder', metavar='PATH', default='.', help='Path to simulation folder (this is where you keep your stosim.conf), defaults to "."')
     parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
-    parser.add_argument('--run', action='store_true', help='Only run, do not get (remote) results and do not analyse.')
-    parser.add_argument('--check', action='store_true', help='Check state on remote computers.')
-    parser.add_argument('--results', action='store_true', help='Get results from remote computers.')
+    parser.add_argument('--run', action='store_true', help='Only run, do not analyse.')
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
     parser.add_argument('--ttests', action='store_true', help='Run T-tests (needs Gnu R installed).')
-    parser.add_argument('--showscreen', metavar="INDEX", nargs=2, type=int, help='Show current output of a remote screen, e.g. "--show-screen 1 3" shows cpu 3 on host 1')
-    parser.add_argument('--kill', action='store_true', help='Kill all screens that currently run the main simulation or specific set of subsimulations.')
     parser.add_argument('-k', action='store_true', help='keep tmp analysis files.')
     parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')
 
@@ -135,7 +131,7 @@ def get_scheduler(simfolder):
     """ get the scheduler (fjd or pbs)
 
         :param string simfolder: relative path to simfolder
-        :returns: srting scheduler
+        :returns: string scheduler
     """
     stosim_conf = get_main_conf(simfolder)
     if not stosim_conf.has_option('control', 'scheduler'):
@@ -146,6 +142,20 @@ def get_scheduler(simfolder):
         print("[StoSim] {} is not a valid scheduler.".format(scheduler))
         scheduler = "fjd"
     return scheduler
+
+
+def get_jobtime(simfolder):
+    """ get the scheduler (fjd or pbs)
+
+        :param string simfolder: relative path to simfolder
+        :returns: int jobtime
+    """
+    stosim_conf = get_main_conf(simfolder)
+    if not stosim_conf.has_option('control', 'jobtime'):
+        jobtime = 5
+    else:
+        jobtime = stosim_conf.getfloat('control', 'jobtime')
+    return jobtime
 
 
 def make_simdir_name(simfolder):
@@ -205,58 +215,6 @@ def ensure_name(simfolder):
     if simfolder == '.':
         simfolder = osp.abspath(osp.curdir).split('/')[-1:][0]
     return simfolder.strip('/')
-
-
-# TODO: can go
-def num_hosts(simfolder):
-    ''' :returns: how many hosts will be used
-        :param string simfolder: relative path to simfolder
-    '''
-    if not is_remote(simfolder):
-        return 1
-    remote_conf = get_host_conf(simfolder)
-    hosts = 0
-    if remote_conf.has_section('host0'):
-        print '[StoSim] Please number your hosts starting with 1. Ignoring host0 ...'
-    while remote_conf.has_section('host%d' % (hosts+1)):
-        hosts += 1
-    if hosts == 0:
-        hosts = 1
-    return hosts
-
-
-# TODO can go
-def cpus_per_host(simfolder):
-    ''' :returns: a dict, mapping host indices to the number of cpus specified for them to be available
-        :param string simfolder: relative path to simfolder
-    '''
-    if not is_remote(simfolder):
-        return {1:1}
-    hosts = num_hosts(simfolder)
-    cpus_per_host = dict.fromkeys(xrange(1, hosts+1), 0)
-    if osp.exists("%s/remote.conf" % simfolder):
-        remote_conf = ConfigParser()
-        remote_conf.read("%s/remote.conf" % simfolder)
-        for i in xrange(1, hosts+1):
-            cpus_per_host[i] = remote_conf.getint("host%d" % i, "cpus")
-    return cpus_per_host
-
-
-# TODO: can go
-def working_cpus_per_host(simfolder):
-    ''' :returns: a dict, mapping host indices to the number of cpus that have been assigned work on them
-        :param string simfolder: relative path to simfolder
-    '''
-    if not os.path.exists('%s/conf' % simfolder):
-        return cpus_per_host(simfolder)
-    d = dict.fromkeys(xrange(1, num_hosts(simfolder)+1), 0)
-    for host in d.keys():
-        #TODO: this relies on the conf directory not having changed since the run was started ...
-        #      there should be a better way, probably saving a session
-        #      state somewhere ...
-        if os.path.exists('%s/conf/%d' % (simfolder, host)):
-            d[host] = len(os.listdir('%s/conf/%d' % (simfolder, host)))
-    return d
 
 
 def runs_in_folder(simfolder, fname):

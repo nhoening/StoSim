@@ -100,12 +100,13 @@ def run(simfolder):
             copy("{}/jobs/{}".format(simfolder, job),
                  "{}/jobqueue".format(fjd_dir))
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
-        Popen('fjd-dispatcher --project {}'.format(sim_name), shell=True).wait()
+        Popen('fjd-dispatcher --project {} --interval {}'\
+            .format(sim_name, utils.get_jobtime(simfolder)), shell=True).wait()
         
     elif scheduler == 'pbs':
         # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
         pass  # TODO: qjob
- 
+        # TODO: give jobtime to job_creator, so it can be in PBS file?
 
 def run_more(simfolder):
     """ let the user make more runs on current config,
@@ -147,7 +148,7 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
             continue  # no need to narrow down
         while not selected:
             choice = []
-            print("<{}> ? (out of [{}])".format((o, conf.get('params', o))))
+            print("<{}> ? (out of [{}])".format(o, conf.get('params', o)))
             for selection in raw_input().split(','):
                 selected = True
                 if selection == "":
@@ -161,10 +162,11 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
             sel_params[o] = choice
         else:
             print("No restriction chosen.")
-    print("You selected: {}. Do this? [Y|n]\n(Remember that configuration and\
-           code should still be the same!)".format(str(sel_params)))
+    print("You selected: {}. Do this? [Y|n]\n"\
+          "(Remember that configuration and code should still be the same!)"\
+                .format(str(sel_params)))
     if raw_input().lower() in ["", "y"]:
-        _prepare_dirs(simfolder, limit_to=sel_params, more=True)
+        _prepare(simfolder, limit_to=sel_params, more=True)
         return run(simfolder)
     return False
 
@@ -339,35 +341,27 @@ def list_data(simfolder):
         print "%s" % sim
         # get a list w/ relevant params from first-found config file
         # they should be the same
-        cp = ConfigParser()
         data_dirs = os.listdir("%s/data" % simfolder)
-        sim_dirs = [d for d in data_dirs if d.startswith(sim)]
+        sim_dirs = [d for d in data_dirs if d.startswith("sim{}".format(sim))]
         if len(sim_dirs) == 0:
             print("No runs found for simulation {}\n".format(sim))
             continue
-        first_dir = "%s/data/%s" % (simfolder, sim_dirs[0])
-        confs = [f for f in os.listdir(first_dir) if f.endswith('.conf')]
-        first_cnf = confs[0]
-        cp.read("%s/%s" % (first_dir, first_cnf))
-        params = cp.options('params')
+        main_conf = utils.get_main_conf(simfolder)
+        params = main_conf.options('params')
         charlen = 1 + sum([len(p) + 6 for p in params]) + 9
         print('-' * charlen)
-        print("|",)
+        print("|"),
         for p in params:
             print("  {}  |".format(p)),
         print("| runs |")
         print('-' * charlen)
         # now show how much we have in each relevant dir
-        for dir in sim_dirs:
-            cp = ConfigParser()
-            path2dir = "%s/data/%s" % (simfolder, dir)
-            cnf = [f for f in os.listdir(path2dir) if f.endswith('.conf')][0]
-            cp.read("%s/%s" % (path2dir, cnf))
+        for d in sim_dirs:
             print("|"),
-            this_params = cp.options('params')
             for p in params:
-                print("  {}|".format(cp.get('params', p).ljust(len(p) + 2))),
-            print("| {} |".format(str(utils.runs_in_folder(simfolder, dir)).rjust(4)))
+                v = d.split("_{}".format(p))[1].split("_")[0]
+                print("  {}|".format(v.ljust(len(p) + 2))),
+            print("| {} |".format(str(utils.runs_in_folder(simfolder, d)).rjust(4)))
             print('-' * charlen)
     return True
 
@@ -420,7 +414,7 @@ if __name__ == "__main__":
     utils.check_conf(args.folder)
 
     # define standard program (if no options are set)
-    if (args.run == args.results == args.ttests == args.more\
+    if (args.run == args.ttests == args.more\
        == args.list == False and args.plots is None):
         args.run = args.ttests = True
         args.plots = []
@@ -438,15 +432,7 @@ if __name__ == "__main__":
         fine = list_data(args.folder)
 
     if fine:
-        if args.results:
-            # create confs (again) so we know what we expect on which host
-            if not args.run:
-                _assure_writable(args.folder, more=args.more)
-                _prepare(args.folder, more=args.more)
-            get_results(args.folder, do_wait=args.run)
-
         if args.plots is not None:
             make_plots(args.folder, plot_nrs=args.plots)
-
         if args.ttests:
             run_ttests(args.folder)
