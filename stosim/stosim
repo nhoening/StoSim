@@ -338,7 +338,6 @@ def list_data(simfolder):
     """
     print("[StoSim] The configurations and number of runs made so far:\n")
     for sim in utils.get_subsimulation_names(utils.get_main_conf(simfolder)):
-        print "%s" % sim
         # get a list w/ relevant params from first-found config file
         # they should be the same
         data_dirs = os.listdir("%s/data" % simfolder)
@@ -348,6 +347,13 @@ def list_data(simfolder):
             continue
         main_conf = utils.get_main_conf(simfolder)
         params = main_conf.options('params')
+        if main_conf.has_option('simulations', 'configs'):
+            for sc in main_conf.get('simulations', 'configs').split(','):
+                sim_conf = ConfigParser()
+                sim_conf.read("{}/{}.conf".format(simfolder, sc.strip()))
+                if sim_conf.has_section('params'):
+                    params.extend(sim_conf.options('params'))
+        params = list(set(params))
         charlen = 1 + sum([len(p) + 6 for p in params]) + 9
         print('-' * charlen)
         print("|"),
