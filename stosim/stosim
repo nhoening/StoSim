@@ -120,21 +120,7 @@ def run_more(simfolder):
         :returns: True if successful, False otherwise
     """
     simfolder = simfolder.strip('/')
-    conf = utils.get_main_conf(simfolder)
-
-    # to get all choices, gather all param values from eventual subconfs
-    if conf.has_section('simulations'):
-        configs = conf.get('simulations', 'configs').split(',')
-        for c in [cf.strip() for cf in configs]:
-            subconf = ConfigParser()
-            subconf.read('%s/%s.conf' % (simfolder, c))
-            for p in subconf.options('params'):
-                if conf.has_option('params', p):
-                    both = conf.get('params', p).split(',')
-                    both.extend(subconf.get('params', p).split(','))
-                    conf.set('params', p, ','.join(set(both)))
-                else:
-                    conf.set('params', p, subconf.get('params', p))
+    conf = utils.get_combined_conf(simfolder)
 
     print('''
 [StoSim] Let's make {} more run(s)! Please tell me on which configurations.\n
@@ -144,8 +130,10 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
     for o in conf.options('params'):
         selected = False
         params = [p.strip() for p in conf.get('params', o).split(',')]
-        if len(params) <= 1:
-            continue  # no need to narrow down
+        if len(params) == 1:
+            print("<{}> has only one value:".format(o))
+            print(params[0])
+            continue
         while not selected:
             choice = []
             print("<{}> ? (out of [{}])".format(o, conf.get('params', o)))
@@ -338,6 +326,7 @@ def list_data(simfolder):
     """
     print("[StoSim] The configurations and number of runs made so far:\n")
     for sim in utils.get_subsimulation_names(utils.get_main_conf(simfolder)):
+        print("Simulation: {}".format(sim))
         # get a list w/ relevant params from first-found config file
         # they should be the same
         data_dirs = os.listdir("%s/data" % simfolder)
@@ -345,15 +334,8 @@ def list_data(simfolder):
         if len(sim_dirs) == 0:
             print("No runs found for simulation {}\n".format(sim))
             continue
-        main_conf = utils.get_main_conf(simfolder)
-        params = main_conf.options('params')
-        if main_conf.has_option('simulations', 'configs'):
-            for sc in main_conf.get('simulations', 'configs').split(','):
-                sim_conf = ConfigParser()
-                sim_conf.read("{}/{}.conf".format(simfolder, sc.strip()))
-                if sim_conf.has_section('params'):
-                    params.extend(sim_conf.options('params'))
-        params = list(set(params))
+        conf = utils.get_combined_conf(simfolder)
+        params = conf.options('params')
         charlen = 1 + sum([len(p) + 6 for p in params]) + 9
         print('-' * charlen)
         print("|"),

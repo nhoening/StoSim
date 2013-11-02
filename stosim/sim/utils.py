@@ -126,6 +126,31 @@ def get_main_conf(simfolder):
 
     return conf
 
+def get_combined_conf(simfolder):
+    ''' 
+        Make a configuration with all used params and their values - this 
+        means we gathe all param values from eventual subconfs,
+        next to stosim.conf
+        
+        :param string simfolder: relative path to simfolder
+        :returns: ConfigParser combined conf
+
+    '''
+    conf = get_main_conf(simfolder)
+    if conf.has_section('simulations'):
+        configs = conf.get('simulations', 'configs').split(',')
+        for c in [cf.strip() for cf in configs]:
+            subconf = ConfigParser()
+            subconf.read('{}/{}.conf'.format(simfolder, c))
+            for p in subconf.options('params'):
+                if conf.has_option('params', p):
+                    both = conf.get('params', p).split(',')
+                    both.extend(subconf.get('params', p).split(','))
+                    conf.set('params', p, ','.join(set(both)))
+                else:
+                    conf.set('params', p, subconf.get('params', p))
+    return conf
+
 
 def get_scheduler(simfolder):
     """ get the scheduler (fjd or pbs)
