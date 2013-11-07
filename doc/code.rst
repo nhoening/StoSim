@@ -2,10 +2,10 @@
     :members:
 
 ===================
-nicessa
+stosim
 ===================
 
-.. automodule:: nicessa
+.. automodule:: stosim
     :members:
 
 ===================
@@ -13,23 +13,10 @@ sim
 ===================
 Assisting code to support other code and prepare simulations
 
-.. automodule:: sim.setup
+.. automodule:: sim.job_creator
     :members:
 .. automodule:: sim.utils 
     :members:
-
-===================
-sim.net
-===================
-Code used to run simulations, also on remote computers
-
-.. automodule:: sim.net.remote 
-    :members:
-.. automodule:: sim.net.starter 
-    :members:
-.. automodule:: sim.net.screener 
-    :members:
-
 
 ===================
 analysis

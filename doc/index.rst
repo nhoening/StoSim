@@ -1,27 +1,26 @@
-Welcome to Nicessa's documentation!
+Welcome to StoSim's documentation!
 ====================================
 
-NICESSA is a light-weight framework for parameterised simulations. The researcher provides the simulation itself (written in the language of his/her choice), 
+StoSim is a light-weight framework for parameterised simulations. The researcher provides the simulation itself (written in the language of his/her choice), 
 but the framework relieves him/her of many generalisable technical tasks in 
 
   * configuring the simulation
   * executing many runs
   * and analysing the results
 
-Nicessa should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on several cpus in the network. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with Nicessa is to read a set of parameters from a config file and write its output into a file which Nicessa provides.
+StoSim should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on several cpus in the network. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with StoSim is to read a set of parameters from a config file and write its output into a file which StoSim provides.
 
 .. image:: img/wrapping.png
     :align: center
 
-But Nicessa also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which Nicessa generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
+But StoSim also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which StoSim generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
 
-Nicessa stands for "**\ N**\ on-\ **i**\ ntrusive **c**\ ombinatorial **e**\ xecution of **s**\ tochastic **s**\ imulations and their **A**\ nalysis".
-It is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). Find the `code at github <https://github.com/nhoening/Nicessa/>`_ (click `here <https://github.com/nhoening/Nicessa/zipball/master>`_ to grab the latest version as a zip-archive). It makes use of open-source industry standards like Gnuplot and Gnu R.
-While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.assembla.com/spaces/nicessa/tickets>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
+StoSim is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). Find the `code at github <https://github.com/nhoening/stosim/>`_ (click `here <https://github.com/nhoening/stosim/zipball/master>`_ to grab the latest version as a zip-archive). It makes use of open-source industry standards like Gnuplot and Gnu R.
+While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.assembla.com/spaces/stosim/tickets>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
 
 Please contact `Nicolas Honing <nicolas@cwi.nl>`_ with any questions or problems.
 
-There also is a `PDF version <Nicessa.pdf>`_ of this documentation
+There also is a `PDF version <StoSim.pdf>`_ of this documentation
 
 ******************
 Narrative contents
@@ -39,7 +38,7 @@ Narrative contents
     qa/depend.rst
 
 
-.. image:: img/nicessa-workflows.png
+.. image:: img/stosim-workflows.png
     :align: center
 ..    :scale: 40%
 

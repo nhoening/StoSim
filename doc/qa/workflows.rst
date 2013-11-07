@@ -4,7 +4,7 @@
 The Workflows
 =================
 
-Nicessas workflow can be described as the concatenation of two smaller workflows: 
+StoSims workflow can be described as the concatenation of two smaller workflows: 
 Simulations are first being executed and then analysed (see Figure below). 
 Several sub-simulations can be described, with each of them performing one execution 
 workflow and as many analysis workflows as needed.
@@ -12,29 +12,29 @@ workflow and as many analysis workflows as needed.
 We'll describe both of them here in detail. If you really need to get started,
 head right over to :ref:`get`, :ref:`usage` and :ref:`basic_example`.
 
-.. figure:: ../img/nicessa-workflows.png
+.. figure:: ../img/stosim-workflows.png
     :align: center
     :scale: 40%
 
-    The workflows of Nicessa: Execution and Analysis
+    The workflows of StoSim: Execution and Analysis
 
 Execution
 ------------
 
 The object of the execution workflow is one *configuration*, which is one of the possible combination of parameter settings. 
-You describe your simulation to Nicessa by listing all parameters and the possible settings for them. 
+You describe your simulation to StoSim by listing all parameters and the possible settings for them. 
 In addition, you point it to an executable which starts a run of her simulation. 
-Nicessa will create one configuration file for every possible combination of these settings. 
+StoSim will create one configuration file for every possible combination of these settings. 
 
-For each configuration, Nicessa will call the executable ``n`` times with each of these configuration files, 
+For each configuration, StoSim will call the executable ``n`` times with each of these configuration files, 
 where ``n`` can be set by you as well. For every ``n``, a fixed seed can be provided, to ensure reproducibility 
 of randomised results. In addition to the configuration file, the executable receives the name of a log file, 
 to write result data into. It is assumed that log data is numeric and in tabular form.
 
-If you have several CPUs available (on possibly more than one computer), Nicessa will *distribute* the configuration 
+If you have several CPUs available (on possibly more than one computer), StoSim will *distribute* the configuration 
 files among them, so that they will be *running* in parallel. When all runs have finished, all result files will be 
 *collected* in one local folder. The control over the location and naming of log files makes the analysis workflow 
-of NICESSA possible, because it indexes all log files with the parameter settings under which they have been created.
+of StoSim possible, because it indexes all log files with the parameter settings under which they have been created.
 
 It is possible to extend the 'database' of log files by repeating the execution workflow, adding more runs for a 
 selectable subset of all configurations.
@@ -52,7 +52,7 @@ from each file in the sliced subset (e.g. maximal value of the column) or averag
 and standard deviations can be calculated. 
 
 The result is finally *analysed* graphically with Gnuplot or statistically 
-with the Gnu R package. Out of the box, Nicessa supports line plots with error bars and scatter plots (several analysis 
+with the Gnu R package. Out of the box, StoSim supports line plots with error bars and scatter plots (several analysis 
 workflows can be conducted that each result in one plot on the same figure) and T-Tests. 
 You can configure as many analyses as you need and it is possible to write custom gnuplot 
 and R scripts and link them into the workflow.

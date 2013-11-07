@@ -5,17 +5,18 @@ Setting up a basic simulation
 
 Summary
 -------
-In this example, we see how to make Nicessa run a simulation (a simple random
+In this example, we see how to make StoSim run a simulation (a simple random
 walk) and generate plots from the resulting data.
 This example (like the others) can be found in the ``example`` folder of 
-nicessa - I made comments in the code files when appropriate, especially for 
+StoSim - I made comments in the code files when appropriate, especially for 
 this ``basic`` example.
 
 The two important things to look at are the 
-`configuration file <https://github.com/nhoening/Nicessa/raw/master/examples/basic/nicessa.conf>`_ and the 
-`simulation executable <https://github.com/nhoening/Nicessa/raw/master/examples/basic/main.py>`_.
+`configuration file <https://github.com/nhoening/stosim/raw/master/examples/basic/stosim.conf>`_ and the 
+`simulation executable <https://github.com/nhoening/stosim/raw/master/examples/basic/main.py>`_.
 
-Ah, what the heck. I'll explain the most important steps here :)
+I'll explain the most important steps here:
+
 The basic example is a really simple simulation. We only want to simulate a random walk,
 run it several times and then plot the average outcome as well as maxima and
 minima for each run.
@@ -32,7 +33,7 @@ configuration settings at :ref:`main_reference`.
 We first take the opportunity to note some general information about our simulation:
 name and who is the maintainer.
 
-.. literalinclude:: ../../examples/basic/nicessa.conf
+.. literalinclude:: ../../examples/basic/stosim.conf
     :lines: 6-11
 
 
@@ -46,7 +47,7 @@ We run 5 times and are only doing it locally (we mention remote support in
 separate between columns when we write log data (the default value is a 
 comma, but the tab is also very common).
 
-.. literalinclude:: ../../examples/basic/nicessa.conf
+.. literalinclude:: ../../examples/basic/stosim.conf
     :lines: 14-22
 
 .. note:: Your executable will run under `/bin/sh`.
@@ -54,11 +55,11 @@ comma, but the tab is also very common).
 [params]
 ^^^^^^^^
 Then, we can add parameters specific to our simulation. That is, we mention 
-parameters that will be used by the executable and tell Nicessa to pass them 
+parameters that will be used by the executable and tell StoSim to pass them 
 on. This is simple in this case, 
 we only specify how long our simulation should run: 500 timesteps. 
 
-.. literalinclude:: ../../examples/basic/nicessa.conf
+.. literalinclude:: ../../examples/basic/stosim.conf
     :lines: 24-28
 
 
@@ -79,19 +80,19 @@ There is also a complete reference on settings for :ref:`plot_reference`.
 
 The Executable
 --------------
-Then, we need an executable. All your executable needs to do is read a configuration file Nicessa hands it
-and write its output into a file which Nicessa names. That is **all** there is
-to know about Nicessa as far as your executable is concerned!
+Then, we need an executable. All your executable needs to do is read a configuration file StoSim hands it
+and write its output into a file which StoSim names. That is **all** there is
+to know about StoSim as far as your executable is concerned!
 
 Below is the Python file from the basic example - it uses a lot of comments to explain what it is doing.
 
 .. note:: Note that the executable doesn't have to be a Python script. All you need to provide is any 
           code that is executable (e.g. a Java, C or Perl script) and have it write its logs to the file 
-          with the name provided by Nicessa. 
+          with the name provided by StoSim. 
 
 .. literalinclude:: ../../examples/basic/main.py
 
-.. note:: Note that we use the tab (\\t) here to separate values, just as we told Nicessa above.
+.. note:: Note that we use the tab (\\t) here to separate values, just as we told StoSim above.
 
 .. note:: Note also that you can write comments in the logs (here: first line).
           Be sure to indicate comments with a starting '#'
@@ -101,12 +102,12 @@ Below is the Python file from the basic example - it uses a lot of comments to e
 Using the data - Making Plots
 ------------------------------
 
-So we have now an simulation and it gets run by nicessa and it writes to log files. What do we do with them? Let's make
-nice graphs! Nicessa organizes all its log files in the ``data`` folder. For each configuration, log files are put into a subfolder whose name
+So we have now an simulation and it gets run by stosim and it writes to log files. What do we do with them? Let's make
+nice graphs! StoSim organizes all its log files in the ``data`` folder. For each configuration, log files are put into a subfolder whose name
 contains all parameter settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
-``_steps500``, containing five log files (Why five? We told Nicessa to run each setting five times in the configuration).
+``_steps500``, containing five log files (Why five? We told StoSim to run each setting five times in the configuration).
 
-.. note:: Note that currently, Nicessa overwrites the data directory when it runs. You should backup big chunks of data when rerunning would be expensive.
+.. note:: Note that currently, StoSim overwrites the data directory when it runs. You should backup big chunks of data when rerunning would be expensive.
           You can also use the ``--more`` command to add to your current data collection (see the example :ref:`stochastic_example`).
 
 
@@ -121,9 +122,9 @@ configuration.
 
 The first four settings are of purely cosmetic nature, while the fifth is
 really interesting when we discuss line plots below - in essence, we're telling
-Nicessa here not to draw vertical error bars.
+StoSim here not to draw vertical error bars.
 
-.. literalinclude:: ../../examples/basic/nicessa.conf
+.. literalinclude:: ../../examples/basic/stosim.conf
     :lines: 30-37
 
 
@@ -136,7 +137,7 @@ We set the ``xcol`` to 1, since we wrote the step number in column 1 and the val
 
 .. note:: Note that all plots in each figure use the same x-axis.
 
-.. literalinclude:: ../../examples/basic/nicessa.conf
+.. literalinclude:: ../../examples/basic/stosim.conf
     :lines: 38-49
 
 There can be many figures, each having one or more plots (numerate the options consistently, i.e. figure1, figure2, figure3 and plot1, plot2, plot3).
@@ -145,16 +146,16 @@ Settings per plot
 ^^^^^^^^^^^^^^^^^^
 
 Now pay attention to the plots descriptions, where each dataset which is plotted on the figure is described.
-Nicessa can do two kinds of plots for you, line- and scatterplots, both of which are used in the example below.
+StoSim can do two kinds of plots for you, line- and scatterplots, both of which are used in the example below.
 
-.. literalinclude:: ../../examples/basic/nicessa.conf
+.. literalinclude:: ../../examples/basic/stosim.conf
     :lines: 50-
 
 Settings to narrow down data
 """""""""""""""""""""""""""""
 
 For each plot, you can specify name-value pairs (where the names refer to parameter names from the
-``params`` section (see above). With this, you narrow down the dataset used for making the plot and this is also why Nicessa puts all parameter settings 
+``params`` section (see above). With this, you narrow down the dataset used for making the plot and this is also why StoSim puts all parameter settings 
 in the data folder names containing the log files, so it can easily pick the ones it needs to collect data from. 
 
 In the current example figure, we have only one parameter (``steps``) with only one setting (``500``) - we could add ``steps:500`` to the plot descriptions but that would still 
@@ -163,14 +164,14 @@ we plot data from all five files we generated.
 The next example (see :ref:`sub_example`) is a little bit more sophisticated in this regard.
 
 
-Nicessa-specific settings
+StoSim-specific settings
 """"""""""""""""""""""""""
 
-In addition to that, there are nicessa-specific settings per plot (to set them
+In addition to that, there are stosim-specific settings per plot (to set them
 apart from parameters, they all start with an underscore). 
 
   * ``_name`` (Required) Each plot needs a name to identify it on the figure.
-  * ``_type`` (Required) Nicessa currently supports two plot types - line and scatter. We'll
+  * ``_type`` (Required) StoSim currently supports two plot types - line and scatter. We'll
     use both of them in a minute. 
   * ``_ycol`` (Required) This number indicates which column of your log files should be plotted on the y-axis. We wrote the values in column 2,
     so we take column 2 here as the y xolumn. 
@@ -181,30 +182,30 @@ apart from parameters, they all start with an underscore).
 Selecting type and data
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Nicessa supports two types of plots and they both differ in their approach to
+StoSim supports two types of plots and they both differ in their approach to
 data selection and preparation.
 
-If you tell nicessa to produce a ``line`` plot, it will average over all log files that are in matched data-folders
+If you tell stosim to produce a ``line`` plot, it will average over all log files that are in matched data-folders
 and show the averages on a line.
 While doing so, it can automatically add error bars to the plot, showing the standard deviation in the data. This is
 the ``use-y-errorbars`` - setting which is for this example set to 0 (meaning
 no, where 1 would mean yes).
 
-If you tell Nicessa to produce a ``scatter`` plot, it will merely put all <x,y> data points on the figure. The interesting
+If you tell StoSim to produce a ``scatter`` plot, it will merely put all <x,y> data points on the figure. The interesting
 part is that you may want to select certain data points instead of plotting all
 of them (we already produce 5 * 500 = 25000 points in this example). We use the
-optional ``_select``  directive here to say that for each run Nicessa made on our
+optional ``_select``  directive here to say that for each run StoSim made on our
 simulation, we want to select only one value - the maximal number which the
-random walk encountered and also the minimal (before you ask, Nicessa currently
+random walk encountered and also the minimal (before you ask, StoSim currently
 has ``max-x``, ``max-y``, ``min-x``, ``min-y`` and ``last``. More are possible
 and I certainly want custome selectors).
 
 
 Let's now run the simulation with
     
-    ``$ python nicessa.py --folder examples/basic/``
+    ``$ stosim --folder examples/basic/``
 
-This is what I see on the terminal (on my PC, I made ``nicessa`` an alias for ``python <path/to/>nicessa.py``):
+This is what I see on the terminal (on my PC, I made ``stosim`` an alias for ``python <path/to/>stosim.py``):
 
 .. figure:: ../img/basic_run.png
     :align: center
@@ -229,5 +230,5 @@ Feel free to play with it. One could increase the number of runs to see the effe
 the line. We will do that when we return to the random-walk example to discuss
 :ref:`stochastic_example`.
 
-This concludes the first tutorial - I hope it helped a little to explain how to use Nicessa.
+This concludes the first tutorial - I hope it helped a little to explain how to use StoSim.
  

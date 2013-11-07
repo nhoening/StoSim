@@ -13,28 +13,10 @@ The functions all expect the name of the simulation folder which should
 have a file called simulation.conf in it.
 A simulation folder will in the end contain the following dirs:
 
-  * conf (configurations for batches of needed computations)
+  * jobs (configurations files for all needed jobs)
   * data (all log files)
   * plots (generated PDFs)
 
-This module is careful with imports since it might be used in another
-context (on a remote host) and if no remote support is needed, the user
-doesn't need paramiko
-
-
-TODO:
-* the data dir should not be in simfolder, but be configurable (user chooses a
-  place that is accessible from all places that execute simulations)
-* remove all remote/screen related features
-* the choice of job distribution is also configurable. Default is fjd, we also
-  have lisa (what type of cluster is that?). Would be nice if extra steps for
-  compatibility could be pluggable.
-  For both fjd and lisa, we need to write a job file. A template would be great.
-* How to tell fjd about hosts? User can have remote.conf here and we copy it 
-  over to ~/.fjd it is
-* write setup.py and Manifest.im to make stosim installable (script: stosim)
-* Better name - stosi? parco? simmer?
-* Update docs
 """
 
 '''
@@ -92,16 +74,19 @@ def run(simfolder):
 
     scheduler = utils.get_scheduler(simfolder)
     if scheduler == 'fjd':
-        # copy jobs to .fjd/<sim_name> and call fjd-recruiter and then, in
-        # a Unix screen, fjd-dispatcher
         fjd_dir = fjd.utils.ensure_wdir(sim_name)
         fjd.utils.empty_queues(sim_name)
         for job in os.listdir("{}/jobs".format(simfolder)):
             copy("{}/jobs/{}".format(simfolder, job),
                  "{}/jobqueue".format(fjd_dir))
+        if os.path.exists('{}/remote.conf'.format(simfolder)):
+            copy('{}/remote.conf'.format(simfolder), fjd_dir)
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
         Popen('fjd-dispatcher --project {} --interval {}'\
             .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+        # when recruiter got remote.conf, clean up in fjd dir
+        if os.path.exists('{}/remote.conf'.format(simfolder)):
+            os.remove('{}/remote.conf'.format(fjd_dir))
         
     elif scheduler == 'pbs':
         # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)

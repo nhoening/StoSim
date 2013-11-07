@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Nicessa documentation build configuration file, created by
+# StoSim documentation build configuration file, created by
 # sphinx-quickstart on Sat Jan  1 02:59:39 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Nicessa'
+project = u'StoSim'
 copyright = u'2011, Nicolas Höning'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -167,7 +167,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Nicessadoc'
+htmlhelp_basename = 'StoSimdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -181,7 +181,7 @@ htmlhelp_basename = 'Nicessadoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Nicessa.tex', u'Nicessa Documentation',
+  ('index', 'StoSim.tex', u'StoSim Documentation',
    u'Nicolas Höning', 'manual'),
 ]
 
@@ -214,6 +214,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'nicessa', u'Nicessa Documentation',
+    ('index', 'stosim', u'StoSim Documentation',
      [u'Nicolas Höning'], 1)
 ]
