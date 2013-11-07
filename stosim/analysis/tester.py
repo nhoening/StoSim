@@ -10,8 +10,8 @@ import os.path as osp
 from shutil import rmtree
 from subprocess import Popen
 
-from sim import utils
-from analysis import harvester
+from stosim.sim import utils
+from stosim.analysis import harvester
 
 
 def ttest(simfolder, c, i, delim):

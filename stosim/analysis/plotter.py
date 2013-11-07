@@ -11,8 +11,8 @@ import os.path as osp
 from subprocess import Popen
 from shutil import rmtree
 
-import compressor
-import harvester
+from stosim.analysis import compressor
+from stosim.analysis import harvester
 
 
 with_names = False # if to have title in PDF
