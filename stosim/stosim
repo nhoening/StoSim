@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding:iso-8859-1
 
 """
@@ -101,12 +101,13 @@ def run(simfolder):
                  "{}/jobqueue".format(fjd_dir))
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
         Popen('fjd-dispatcher --project {} --interval {}'\
-            .format(sim_name, utils.get_jobtime(simfolder)), shell=True).wait()
+            .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
         
     elif scheduler == 'pbs':
         # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
         pass  # TODO: qjob
-        # TODO: give jobtime to job_creator, so it can be in PBS file?
+        # TODO: give exp. max. jobtime to job_creator, so it can be in PBS file?
+        # utils.get_jobtime(Simfolder)
 
 def run_more(simfolder):
     """ let the user make more runs on current config,

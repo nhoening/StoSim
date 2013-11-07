@@ -169,17 +169,33 @@ def get_scheduler(simfolder):
     return scheduler
 
 
-def get_jobtime(simfolder):
-    """ get the scheduler (fjd or pbs)
+def get_interval(simfolder):
+    """ get the interval for FJD  workers and disoatchers to check the queue,
+        in seconds (fractions of seconds are allowed).
 
         :param string simfolder: relative path to simfolder
-        :returns: int jobtime
+        :returns: float interval
     """
     stosim_conf = get_main_conf(simfolder)
-    if not stosim_conf.has_option('control', 'jobtime'):
-        jobtime = 5
+    if not stosim_conf.has_option('control', 'fjd-interval'):
+        interval = .2
     else:
-        jobtime = stosim_conf.getfloat('control', 'jobtime')
+        interval = stosim_conf.getfloat('control', 'fjd-interval')
+    return interval
+
+
+def get_jobtime(simfolder):
+    """ get the expected maximal jobtime for PBS jobs,
+        the format is HH:MM:SS
+
+        :param string simfolder: relative path to simfolder
+        :returns: string jobtime
+    """
+    stosim_conf = get_main_conf(simfolder)
+    if not stosim_conf.has_option('control', 'pbs-jobtime'):
+        jobtime = '00:05:00'
+    else:
+        jobtime = stosim_conf.getfloat('control', 'pbs-jobtime')
     return jobtime
 
 
