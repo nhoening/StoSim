@@ -1,11 +1,8 @@
-.. automodule:: experiment 
-    :members:
-
 ===================
-nicessa
+stosim
 ===================
 
-.. automodule:: nicessa
+.. automodule:: stosim
     :members:
 
 ===================
@@ -13,23 +10,10 @@ sim
 ===================
 Assisting code to support other code and prepare simulations
 
-.. automodule:: sim.setup
+.. automodule:: stosim.sim.job_creator
     :members:
-.. automodule:: sim.utils 
+.. automodule:: stosim.sim.utils 
     :members:
-
-===================
-sim.net
-===================
-Code used to run simulations, also on remote computers
-
-.. automodule:: sim.net.remote 
-    :members:
-.. automodule:: sim.net.starter 
-    :members:
-.. automodule:: sim.net.screener 
-    :members:
-
 
 ===================
 analysis
@@ -40,13 +24,13 @@ We collect values from the whole data set, be it whole files which are
 averaged or just selected values from files. The one result file will be
 plotted or is input to a T-Test.
 
-.. automodule:: analysis.harvester 
+.. automodule:: stosim.analysis.harvester 
     :members:
-.. automodule:: analysis.compressor 
+.. automodule:: stosim.analysis.compressor 
     :members:
-.. automodule:: analysis.plotter
+.. automodule:: stosim.analysis.plotter
     :members:
-.. automodule:: analysis.tester
+.. automodule:: stosim.analysis.tester
     :members:
 
 

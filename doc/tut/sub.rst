@@ -23,13 +23,13 @@ four parameter settings and here, we do not want all of the possible combination
 between the two dilemmas (4*4=16). We want only two combinations - 
 the two dilemmas.
 
-To describe subsimulations, you can have some more ``.conf`` files next to ``nicessa.conf``, one for each simulation.
+To describe subsimulations, you can have some more ``.conf`` files next to ``stosim.conf``, one for each simulation.
 In those, you can specify parameter settings that only hold in those simulations. Subsimulations inherit
-settings from the main configuration `nicessa.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/nicessa.conf>`_ and their settings overwrite
+settings from the main configuration `stosim.conf <https://github.com/nhoening/StoSim/raw/master/examples/subsim/stosim.conf>`_ and their settings overwrite
 settings there. The *subsim* example mentions its subsimulations in
-``nicessa.conf`` in a section called ``[simulations]``, like so:
+``stosim.conf`` in a section called ``[simulations]``, like so:
 
-.. literalinclude:: ../../examples/subsim/nicessa.conf
+.. literalinclude:: ../../examples/subsim/stosim.conf
 
 .. note:: We als have some more parameter settings than in the basic example.
           ``n`` is the number of agents, ``ratio_learning`` indicates how many agents
@@ -37,7 +37,7 @@ settings there. The *subsim* example mentions its subsimulations in
           ``mean_coop`` is the mean likelihood to cooperate of the
           (non-learning) agents.
           Have a look in `the executable for this simulation
-          <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/main.py>`_ to see what the simulation is doing
+          <https://github.com/nhoening/StoSim/raw/master/examples/subsim/main.py>`_ to see what the simulation is doing
           exactly. Basically, we are interested in the likelihood to
           cooperate which the learning agents will arrive at (they start
           at around 0.5).
@@ -48,8 +48,8 @@ settings there. The *subsim* example mentions its subsimulations in
 
 
 In this case, we need to provide the configuration files
-`sim1.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/sim1.conf>`_ and 
-`sim2.conf <https://github.com/nhoening/Nicessa/raw/master/examples/subsim/sim2.conf>`_. Note that we left out the
+`sim1.conf <https://github.com/nhoening/StoSim/raw/master/examples/subsim/sim1.conf>`_ and 
+`sim2.conf <https://github.com/nhoening/StoSim/raw/master/examples/subsim/sim2.conf>`_. Note that we left out the
 ``.conf``-extension when we mentioned them.
 
 In the subsimulations, we define a unique subset of settings in their own ``[params]`` - section.
@@ -71,13 +71,13 @@ And here is ``sim2.conf``:
     :lines: 1-9
 
 To make it clear: It does not appear any different to your executable if a parameter setting is defined in one configuration file 
-or the other. If you specified a comma-separated list of parameter values in ``nicessa.conf`` or in a sub-simulation config file, 
+or the other. If you specified a comma-separated list of parameter values in ``stosim.conf`` or in a sub-simulation config file, 
 your executable code will get one config file with all parameters available in
 the ``params`` section (the configuration file for each setting is also put into the subfolder in the ``data`` dir). 
 You only need to know that settings in the sub-simulation config files (here: ``sim1.conf`` and ``sim2.conf``) overwrite
-the general settings in the main configuration file (``nicessa.conf``).
+the general settings in the main configuration file (``stosim.conf``).
 
-This is one of the ways in which I believe Nicessa makes your life easier :)
+This is one of the ways in which I believe StoSim makes your life easier :)
 
 
 Running
@@ -85,64 +85,32 @@ Running
 
 Let's run this thing. This is the output I get::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/subsim$ nicessa --run
+
+
+    nic@fidel:/media/data/projects/stosim/trunk/examples/subsim$ stosim --run
     ********************************************************************************
     Running simulation Subsimulation Example
     ********************************************************************************
 
-    ********************************************************************************
-    [Nicessa] Running jobs on cpu 1 of server fidel
+    [fjd-recruiter] Hired 1 workers in project "Sub-simulation_Example".
+    [fjd-dispatcher] Started on project "Sub-simulation_Example"
+    [fjd-dispatcher] Found 1 job(s) and 1 free worker(s).....
+    [fjd-dispatcher] No (more) jobs.
+    [fjd-recruiter] Fired 1 workers in project "Sub-simulation_Example".
 
-    [Nicessa] Processing 1/12 
-    (section sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3)
-    . . . . . . . . . . . . . . . . . . . .
-    [Nicessa] Processing 2/12 
-    (section sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5)
-    . . . . . . . . . . . . . . . . . . . .
-    [Nicessa] Processing 3/12 
-    (section sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5)
-    . . . . . . . . . . . . . . . . . . . .
-    [Nicessa] Processing 4/12 
-    (section sim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5)
-    . . . . . . . . . . . . . . . . . . . .
-    [Nicessa] Processing 5/12 
-    (section sim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5)
-    . . . . . . . . . . . . . . . . . . . .
-    [Nicessa] Processing 6/12 
-    (section sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5)
-    . . . . . . . . . . . . . . . . . . . .
-    [Nicessa] Processing 7/12 
-    (section sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3)
-    . . . . . . . . . . . . . . . . . . . .                                  
-    [Nicessa] Processing 8/12                                                  
-    (section sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3)
-    . . . . . . . . . . . . . . . . . . . .                        
-    [Nicessa] Processing 9/12                                                          
-    (section sim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5)
-    . . . . . . . . . . . . . . . . . . . .  
-    [Nicessa] Processing 10/12 
-    (section sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3) 
-    . . . . . . . . . . . . . . . . . . . .                      
-    [Nicessa] Processing 11/12                                                                                        
-    (section sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)  
-    . . . . . . . . . . . . . . . . . . . .            
-    [Nicessa] Processing 12/12                                                                                                           
-    (section sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3)       
-    . . . . . . . . . . . . . . . . . . . .                                                                                                
-    ********************************************************************************   
-
-You will have noticed that the name of each configuration is outputted and for every run on it there is a dot.
+The second fjd-dispatcher line changes as it goes on. In the beginning it had 240 jobs.
+If you use the pbs scheduler, your output looks different.
 
 Afterwards, you'll find that the subfolders of the ``examples/subsim/data`` directory will now also carry the simulation name.
 This is the listing of that directory after the simulation is run::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/subsim$ ls data
-    sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3  sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5
-    sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3  sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5
-    sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3     sim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5
-    sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3  sim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5
-    sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3  sim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5
-    sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3     sim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5
+    nic@fidel:/media/data/projects/stosim/trunk/examples/subsim$ ls data
+    simsim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3  simsim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5
+    simsim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3  simsim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5
+    simsim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3     simsim2_mean_coop0.2_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5
+    simsim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning0.25_pd_p1_pd_s0_pd_r3  simsim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning0.25_pd_p1_pd_s0_pd_r5
+    simsim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning0.75_pd_p1_pd_s0_pd_r3  simsim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning0.75_pd_p1_pd_s0_pd_r5
+    simsim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3     simsim2_mean_coop0.8_n100_epochs200_pd_t10_ratio_learning1_pd_p1_pd_s0_pd_r5
 
 
 Plotting with reduced data-sets
@@ -152,8 +120,8 @@ With all the data we have, we also should make some figures to look at -
 we'll use our parameter settings to plot different data sets, such that we can 
 meaningfully compare the outcomes of different settings.
 
-.. note:: We tell Nicessa about these figures in the subsimulation configuration file, as opposed to the main file ``nicessa.conf`` (we could also have
-          done that). If figures are described in subsimulations configs, Nicessa will select only the data that were generated within the settings of this
+.. note:: We tell StoSim about these figures in the subsimulation configuration file, as opposed to the main file ``stosim.conf`` (we could also have
+          done that). If figures are described in subsimulations configs, StoSim will select only the data that were generated within the settings of this
           subsimulation when it creates these figures. I find that pretty convenient :)
 
 

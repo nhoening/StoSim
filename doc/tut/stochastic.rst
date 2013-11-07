@@ -6,7 +6,7 @@ Using stochastic features
 Summary
 -------
 In this example, we revisit the example from :ref:`sub_example`, only now we look
-at all the features Nicessa offers for stochastic simulations.
+at all the features StoSim offers for stochastic simulations.
 We now set the number of runs to 5. Then, we will look at error-bars in line
 plots, fixing a seed for each run for repeatability, performing T-Tests
 and adding more runs to the database (as well as checking the database).
@@ -18,8 +18,8 @@ First, let's add error-bars to the line graphs, so we can see how
 much variance is in the data. There is two configuration settings
 that are of interest for this:
 
-.. literalinclude:: ../../examples/stochastic/nicessa.conf
-    :lines: 36-38
+.. literalinclude:: ../../examples/stochastic/stosim.conf
+    :lines: 37-39
 
 
 First, we say that we indeed want to see error-bars and then we
@@ -46,12 +46,12 @@ simulation, for repeatability of your randomised results.
 In this example, we do five runs, so we provide a distinct
 seed for every one. Here are the first five:
 
-.. literalinclude:: ../../examples/stochastic/nicessa.conf
-    :lines: 24-29
+.. literalinclude:: ../../examples/stochastic/stosim.conf
+    :lines: 25-30
 
-The seed is passed to your executable as a third parameter. Have a look in 
+The seed is written into the job configuration which is passed to your executable. Have a look in 
 `the executable for this simulation
-<https://github.com/nhoening/Nicessa/raw/master/examples/stochastic/main.py>`_
+<https://github.com/nhoening/StoSim/raw/master/examples/stochastic/main.py>`_
 (near the bottom) to see how it uses the gets the seed and seeds the randomizer with it.
 
 
@@ -65,16 +65,16 @@ A T-Test is configured much like a Figure, only it is simpler.
 In the first sub-simulation, we saw that payoff was bigger in the 
 cooperative scenario. Let's put that to a T-Test:
 
-.. literalinclude:: ../../examples/stochastic/nicessa.conf
-    :lines: 40-43
+.. literalinclude:: ../../examples/stochastic/stosim.conf
+    :lines: 41-44
 
 Here is the output of the Gnu R T-Test, which confirms our hypothesis
 that the difference is significant::
 
-  nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --ttests
+  nic@fidel:/media/data/projects/stosim/trunk/examples/stochastic$ stosim --ttests
 
   ********************************************************************************
-  [Nicessa] Running T-tests ...
+  [StoSim] Running T-tests ...
   ********************************************************************************
 
   Test payoff_coop_vs_noncoop:
@@ -97,15 +97,15 @@ that the difference is significant::
 Adding more runs
 ----------------
 Sometimes you might want to add a couple of runs, to add statistical
-weight to the results. That is quite easy in Nicessa. The following session 
+weight to the results. That is quite easy in StoSim. The following session 
 shows how to use the ``--list`` and ``--more`` commands to see how
 many runs you have and add more. Here, I had only made runs for simulation 2
-(``nicessa --simulations=sim2``) and I add another 5 runs (note that
+(``stosim --simulations=sim2``) and I add another 5 runs (note that
 I now have 10 runs for some of the configurations, so I'd better also
 have 10 seeds)::
 
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --list
-    [Nicessa] The configurations and number of runs made so far:
+    nic@fidel:/media/data/projects/stosim/trunk/examples/stochastic$ stosim --list
+    [StoSim] The configurations and number of runs made so far:
 
     sim1
     No runs found for simulation sim1
@@ -126,8 +126,8 @@ have 10 seeds)::
     --------------------------------------------------------------------------------------------------------
     |   0.8        |   100|   200     |   5     |   1               |   1     |   1     |   5     | |    5 |
     --------------------------------------------------------------------------------------------------------
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --more
-    [Nicessa] Let's make 5 more runs! Please tell me on which configurations.
+    nic@fidel:/media/data/projects/stosim/trunk/examples/stochastic$ stosim --more
+    [StoSim] Let's make 5 more runs! Please tell me on which configurations.
     Enter any parameter values you want to narrow down to, nothing otherwise.
     ratio_learning ? (out of [0.25,0.75,1])
     1
@@ -142,23 +142,23 @@ have 10 seeds)::
     ********************************************************************************
 
     ********************************************************************************
-    [Nicessa] Running jobs on cpu 1 of server fidel
+    [StoSim] Running jobs on cpu 1 of server fidel
 
-    [Nicessa] Processing 1/4 
+    [StoSim] Processing 1/4 
     (section sim1_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)
     . . . . .
-    [Nicessa] Processing 2/4 
+    [StoSim] Processing 2/4 
     (section sim2_mean_coop0.2_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
     . . . . .
-    [Nicessa] Processing 3/4 
+    [StoSim] Processing 3/4 
     (section sim1_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s0_pd_r3)
     . . . . .
-    [Nicessa] Processing 4/4 
+    [StoSim] Processing 4/4 
     (section sim2_mean_coop0.8_n100_epochs200_pd_t5_ratio_learning1_pd_p1_pd_s1_pd_r5)
     . . . . .
     ********************************************************************************
-    nic@fidel:/media/data/projects/nicessa/trunk/examples/stochastic$ nicessa --list
-    [Nicessa] The configurations and number of runs made so far:
+    nic@fidel:/media/data/projects/stosim/trunk/examples/stochastic$ stosim --list
+    [StoSim] The configurations and number of runs made so far:
 
     sim1
     --------------------------------------------------------------------------------------------------------

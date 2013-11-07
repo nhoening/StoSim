@@ -11,8 +11,8 @@ import os.path as osp
 from subprocess import Popen
 from shutil import rmtree
 
-import compressor
-import harvester
+from stosim.analysis import compressor
+from stosim.analysis import harvester
 
 
 with_names = False # if to have title in PDF
@@ -65,7 +65,7 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
     :param list plots: list of plot descriptions, defaults to empty list
     '''
 
-    print '[Nicessa] Preparing %s: ' % outfile_name ,
+    print '[StoSim] Preparing %s: ' % outfile_name ,
 
     # make sure tmp dir exists
     if not os.path.exists(tmp_dir):
@@ -87,13 +87,13 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
     # handle errors
     init_plots_num = len(plots)
     if len(failed) > 0:
-        print "[Nicessa] WARNING: Selectors %s didn't match any folders!" % ','.join(failed)
+        print "[StoSim] WARNING: Selectors %s didn't match any folders!" % ','.join(failed)
         for fail in failed:
             for p in plots:
                 if p['_name'] == fail:
                     plots.remove(p)
     if len(failed) == init_plots_num:
-        print "[Nicessa] In fact, no selectors of this figure matched anything. Aborting ..."
+        print "[StoSim] In fact, no selectors of this figure matched anything. Aborting ..."
         print
         return
 
@@ -113,10 +113,10 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
     # ---- plot the results ----
     if custom_script != "":
         if not osp.exists(custom_script):
-            print "[Nicessa] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
+            print "[StoSim] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
             print
             return
-        print '[Nicessa] Using custom script at %s' % custom_script
+        print '[StoSim] Using custom script at %s' % custom_script
         Popen('cp %s %s/plot.gnu' % (custom_script, tmp_dir), shell=True).wait()
     else:
         e = ''
@@ -174,7 +174,7 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
         gnuf.close()
 
     # generate PDF and maybe show it
-    print '[Nicessa] Plotting %s' % outfile_name
+    print '[StoSim] Plotting %s' % outfile_name
     Popen('cd %s; gnuplot plot.gnu; epstopdf %s.eps; cd ..' % (tmp_dir, name), shell=True).wait()
     Popen('cp %s/%s.pdf %s' % (tmp_dir, name, outfile_name), shell=True).wait()
     print

@@ -14,7 +14,7 @@ examples, mostly the :ref:`basic_example`.
 
 Main configuration
 ------------------------
-These are the settings you can make in ``nicessa.conf`` or
+These are the settings you can make in ``stosim.conf`` or
 in subsimulation configurations (see :ref:`sub_example`).
 
 meta
@@ -34,9 +34,9 @@ control
     Which script to call for each run (**M**)
 :runs:
     How often the same configuration should be run, defaults to 1
-:local:
-    If local is 1, we run on localhost, otherwise (if 0), we run remotely. Then, you will need to provide 
-    a remote.conf file (see 'remote' reference further down), defaults to 1
+:scheduler:
+    The job scheduler to use. Either 'fjd' (default - uses locally available CPUs, see
+    https://pypi.python.org/pypi/fjd) or 'pbs', the most-used cluster environment.
 :delimiter:
     the delimiter your simulation uses to separate values in its logs,
     defaults to comma (,) if you leave this setting away
@@ -138,7 +138,7 @@ First, these are the system-specific settings you can/need to set:
 In addition, you can narrow down your data set for this plot by giving some
 settings for your parameters (e.g. ``param_1:value_a``).
 
-Nicessa has to parse the ``plot<j>`` string, so if you really want to use ``,`` or ``:`` in a name or value, escape it with ``\``.  
+StoSim has to parse the ``plot<j>`` string, so if you really want to use ``,`` or ``:`` in a name or value, escape it with ``\``.  
 
 
 tests
@@ -171,7 +171,7 @@ First, these are the system-specific settings you can/need to set:
 
 In addition, you can narrow down your data set for this test by specifying some parameter settings.
 
-Nicessa has to parse the ``set<j>`` string, so if you really want to use ``,`` or ``:`` in a name or value, escape it with ``\``.  
+StoSim has to parse the ``set<j>`` string, so if you really want to use ``,`` or ``:`` in a name or value, escape it with ``\``.  
 
 
 .. _remote_reference:
@@ -179,9 +179,8 @@ Nicessa has to parse the ``set<j>`` string, so if you really want to use ``,`` o
 Remote computer configuration
 -----------------------------
 
-These settings should be in a file called ``remote.conf``.
-See :ref:`remote_example` on a tutorial for how to execute
-simulations remotely.
+These settings would be in a file called ``remote.conf`` if you are using fjd
+as scheduler (see above) and want to use other computers than your own.
 
 host<i>
 ^^^^^^^^^^^
@@ -189,12 +188,7 @@ Settings for computer <i> (start counting i at 1)
 
 :name:
     Hostname (**M**)
-:path:
-    Path from users' home dir to where the simulation should be copied and take
-    place (**M**)
-:user:
-    Username to log in with (**M**)
-:cpus:
+:workers:
     Number of cpus to be used on this server (**M**)
 :nice:
     Level of niceness the jobs on this host should have (see Unix nice). Defaults to 9.
@@ -202,26 +196,3 @@ Settings for computer <i> (start counting i at 1)
 There is no password setting as it is not secure to write those down. To ease your life, `here are a couple tips <http://blogs.perl.org/users/smylers/2011/08/ssh-productivity-tips.html>`_.
 You can set up RSA keys to connect with the hosts, keep connections alive for several hours 
 (only OpenSSH >= 5.6) or simply have one SSH connection open somewhere and let SSH share it.
-
-[code]
-^^^^^^^
-List here files that your simulation needs to run, apart from the executable.
-Nicessa will copy all of it to the host via scp.
-
-:files:
-    Files that should be copied. This includes your executable script.
-:folders:
-    Folders that should be copied
-
-
-[communication]
-^^^^^^^^^^^^^^^
-You can tell Nicessa to wait for results to finish.
-These settings are in seconds.
-
-:wait-for:
-    wait this long before making any check, defaults to 0
-:check-every:
-    then check every x seconds if the server is done, defaults to 10
-:shared-home:
-    set to 1 if all hosts work on a shared home directory with the same path. Then, Nicessa will only contact one host (the first in `remote.py` with work scheduled) to get results.

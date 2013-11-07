@@ -1,0 +1,8 @@
+# Describe on which remote computers (hosts) to run this simulation.
+# This is a separate file so you can keep your credentials apart from the project conf.
+# The first two options (name and workers) are mandatory for each host.
+[host1]
+name: ssh.cwi.nl
+workers: 2
+nice: 5
+

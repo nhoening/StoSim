@@ -130,9 +130,7 @@ class World(object):
 
 if __name__ == '__main__':
     conf = ConfigParser()
-    conf.read(sys.argv[2])
-    # use the seed we configured for whatever run number I am doing now
-    if len(sys.argv) > 3:
-        random.seed(sys.argv[3])
-    w = World(open(sys.argv[1], 'w'), conf)
+    conf.read(sys.argv[1])
+    random.seed(conf.get('control', 'seed'))
+    w = World(open(conf.get('control', 'logfile'), 'w'), conf)
     w.run()
