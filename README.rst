@@ -1,6 +1,4 @@
 
-Currently refactoring - please do not yet install!
-
 What is this?
 --------------------
 StoSim runs stochastic simulations.
