@@ -35,7 +35,7 @@ long_description = read('README.rst')
 setup(
     name='stosim',
     version=find_version('stosim', '__init__.py'),
-    url='http://github.com/nhoening/stosim/',
+    url='http://homepages.cwi.nl/~nicolas/stosim/',
     license='Apache Software License',
     author='Nicolas Höning',
     tests_require=[],
