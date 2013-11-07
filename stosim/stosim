@@ -94,6 +94,9 @@ def run(simfolder):
         # TODO: give exp. max. jobtime to job_creator, so it can be in PBS file?
         # utils.get_jobtime(Simfolder)
 
+    return True
+
+
 def run_more(simfolder):
     """ let the user make more runs on current config,
         in addition to the given data

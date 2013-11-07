@@ -198,14 +198,14 @@ optional ``_select``  directive here to say that for each run StoSim made on our
 simulation, we want to select only one value - the maximal number which the
 random walk encountered and also the minimal (before you ask, StoSim currently
 has ``max-x``, ``max-y``, ``min-x``, ``min-y`` and ``last``. More are possible
-and I certainly want custome selectors).
+and I certainly want custom selectors).
 
 
 Let's now run the simulation with
     
     ``$ stosim --folder examples/basic/``
 
-This is what I see on the terminal (on my PC, I made ``stosim`` an alias for ``python <path/to/>stosim.py``):
+This is what I see on the terminal:
 
 .. figure:: ../img/basic_run.png
     :align: center
