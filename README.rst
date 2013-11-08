@@ -3,13 +3,15 @@ What is this?
 --------------------
 StoSim runs stochastic simulations.
 
-You write the actual simulation, but stosim relieves you of:
+You write the actual simulation, but StoSim relieves you of:
 - Arranging runs for all combinations of your dependent variables.
 - Distributing workload across several CPUS, even on different machines. The latter works in a local environment with shared home directories or on a PBS cluster.
 - Generating nice paper-ready plots and T-Tests from the results.
 
-There are example simulations in the "example" folder and you can find extensive documentation at
+You can find extensive documentation at
 http://homepages.cwi.nl/~nicolas/stosim/
+
+Example simulations are in the "example" folder - see code at Github: https://github.com/nhoening/stosim (the examples are discussed in tutorials in the documentation).
 
 
 Dependencies
@@ -25,7 +27,10 @@ For T-Tests, you need Gnu R installed.
 Running a simulation
 --------------------
 Place an experiment configuration and your simulation code in a folder of your choice (see basic example).
-Call ./stosim.py --folder <path-to-your-experiment-folder>
+Call::
+
+    stosim --folder <path-to-your-experiment-folder>
+
 You can leave the --folder option away if stosim.conf is in the current directory.
 The results will be put in the "data" directory, in your folder 
 (but if you like the plotting capabilities of StoSim you might never have to look there).

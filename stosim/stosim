@@ -387,7 +387,6 @@ def _prepare(simfolder, limit_to={}, more=False):
 if __name__ == "__main__":
 
     args = utils.read_args()
-
     utils.check_conf(args.folder)
 
     # define standard program (if no options are set)
