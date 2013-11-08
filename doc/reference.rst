@@ -48,8 +48,8 @@ control
     nodes efficiently. The format is HH:MM:SS. The default is 00:05:00, so for
     long jobs, you probably want to increase this.
 :delimiter:
-    the delimiter your simulation uses to separate values in its logs,
-    defaults to comma (,) if you leave this setting away
+    the delimiter your simulation uses to separate values in its log files,
+    defaults to a comma (,) if you leave this setting away
 
 params
 ^^^^^^^
