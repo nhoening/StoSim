@@ -43,7 +43,7 @@ setup(
     author_email='iam@nicolashoening.de',
     description='Stochastic Simulations',
     long_description=long_description,
-    packages=['stosim'],
+    packages=['stosim', 'stosim.sim', 'stosim.analysis'],
     include_package_data=True,
     platforms='Unix',
     classifiers = [
