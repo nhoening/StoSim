@@ -37,6 +37,16 @@ control
 :scheduler:
     The job scheduler to use. Either 'fjd' (default - uses locally available CPUs, see
     https://pypi.python.org/pypi/fjd) or 'pbs', the most-used cluster environment.
+:fjd-interval:
+    If you are using the fjd scheduler, you can tell the workers how often to
+    check for new jobs. The default is a fraction of a second, so if you have long jobs,
+    you could increase the interval and thus relieve your CPUs from all the queue
+    checking.
+:pbs-jobtime:
+    If you are using a PBS scheduler (cluster), you should tell the cluster scheduler
+    the maximal time you expect a job to last, which will enable it to allocate
+    nodes efficiently. The format is HH:MM:SS. The default is 00:05:00, so for
+    long jobs, you probably want to increase this.
 :delimiter:
     the delimiter your simulation uses to separate values in its logs,
     defaults to comma (,) if you leave this setting away
