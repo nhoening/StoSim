@@ -11,7 +11,6 @@ for each mix of parameter settings (for each job) that needs to be run.
 import sys
 import os
 from ConfigParser import ConfigParser
-from shutil import rmtree
 
 import utils
 
