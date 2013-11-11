@@ -32,6 +32,10 @@ control
 ^^^^^^^^
 :executable:
     Which script to call for each run (**M**)
+    This should be just the name of the script and nothing else. StoSim will
+    assume it is accessible relative to the simulation folder (per default in 
+    '.'). If your code has to be called in a more difficult way (e.g. "java -jar ..."),
+    simply make a simple bash script to contain that and name the script as your executable.
 :runs:
     How often the same configuration should be run, defaults to 1
 :scheduler:
