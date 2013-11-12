@@ -16,7 +16,7 @@ import utils
 
 
 
-def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
+def create(main_conf, simfolder, limit_to={}, more=False):
     """
     Writes a conf file for each run that the parameters in conf suggest.
 
@@ -102,12 +102,11 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
         sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim))
         job_conf.write('[meta]\n')
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
-            #if main_conf.has_option('meta', opt):
             job_conf.write(mk_option(dat, sim_conf))
-        
+
         job_conf.write('\n[control]\n')
         exe = mk_option(('executable', 0, 'control'), sim_conf)
-        exe = 'executable: {}/{}\n'.format(simfolder, exe.split(':')[1].strip().strip('./'))
+        exe = 'executable: {}/{}\n'.format(os.path.abspath(simfolder), exe.split(':')[1].strip().strip('./'))
         job_conf.write(exe) 
         logfile = '{}/data/{}/log{}.dat'.format(simfolder, job_name, run)
         if not os.path.exists('{}/data/{}'.format(simfolder, job_name)):
@@ -126,17 +125,19 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
         job_conf.flush()
         job_conf.close()
 
+        scheduler=utils.get_scheduler(simfolder)
         if scheduler == 'pbs':
             pbs_job = '''# Shell for the job:
 #PBS -S /bin/bash
-# request 1 node, {cores} cores
-#PBS -lnodes=1:cores{cores}
+# request 1 node, {cores} core(s)
+#PBS -lnodes=1:cores{cores}:ppn={ppn}
 # job requires at most n hours wallclock time
 #PBS -lwalltime={maxtime}
 
-{cmd} {logfile} {jobconf}'''.format(cmd=main_conf.get('control', 'executable'), cores=1, 
-                          maxtime='00:30:00', logfile=logfile,
-                          jobconf=job_conf_filename)
+cd {path2sim}
+{cmd} {jobconf}'''.format(cmd=main_conf.get('control', 'executable'), cores=8, # the PBS cluster I know only has 8,12&16 core machines
+                          path2sim=os.path.abspath(simfolder), ppn=1, # processes per node, so far we assume there is only one
+                          maxtime=utils.get_jobtime(simfolder), jobconf=job_conf_filename)
             pbs_job_file = open('{}/jobs/{}_run{}.pbs'.format(simfolder, job_name, run), 'w')
             pbs_job_file.write(pbs_job)
             pbs_job_file.close()

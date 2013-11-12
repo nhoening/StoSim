@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python2.7
 # -*- coding:iso-8859-1
 
 """
@@ -74,6 +74,7 @@ def run(simfolder):
 
     scheduler = utils.get_scheduler(simfolder)
     if scheduler == 'fjd':
+        # queue jobs in FJD scheduler (schedules local CPUs)
         fjd_dir = fjd.utils.ensure_wdir(sim_name)
         fjd.utils.empty_queues(sim_name)
         for job in os.listdir("{}/jobs".format(simfolder)):
@@ -87,12 +88,11 @@ def run(simfolder):
         # when recruiter got remote.conf, clean up in fjd dir
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             os.remove('{}/remote.conf'.format(fjd_dir))
-        
+
     elif scheduler == 'pbs':
         # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
-        pass  # TODO: qjob
-        # TODO: give exp. max. jobtime to job_creator, so it can be in PBS file?
-        # utils.get_jobtime(Simfolder)
+        for job in [j for j in os.listdir('{}/jobs'.format(simfolder)) if j.endswith('.pbs')]:
+            Popen('qsub {}'.format('{}/jobs/{}'.format(simfolder, job)), shell=True).wait()
 
     return True
 

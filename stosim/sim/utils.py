@@ -65,7 +65,7 @@ def check_conf(simfolder):
         sys.exit(2)
 
     if not osp.exists("%s/stosim.conf" % simfolder):
-        print "[StoSim] Cannot find stosim.conf in the folder '%s' - Exiting..." % simfolder
+        print "[StoSim] I can not find stosim.conf in the folder '%s' - Exiting..." % simfolder
         sys.exit(2)
 
     if not conf.has_section('meta') or not conf.has_option('meta', 'name'):
@@ -195,7 +195,7 @@ def get_jobtime(simfolder):
     if not stosim_conf.has_option('control', 'pbs-jobtime'):
         jobtime = '00:05:00'
     else:
-        jobtime = stosim_conf.getfloat('control', 'pbs-jobtime')
+        jobtime = stosim_conf.get('control', 'pbs-jobtime')
     return jobtime
 
 
