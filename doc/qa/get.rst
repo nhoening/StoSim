@@ -9,11 +9,11 @@ StoSim lives on the `Python Package index <http://www.pypi.org>`_, so you can in
 
 Then you should have the ``stosim`` command available and you are done.
 
-If you don't have the privileges, you might try
+If you don't have the necessary privileges, you might try
 
     ``pip install stosim --user``
 
-and add ``~/.local/bin`` to your PATH (``export PATH=~/.local/bin:\$PATH``).
+and add ``~/.local/bin`` to your PATH (``export PATH=~/.local/bin:$PATH``).
 
 If you don't have pip, maybe you can do
 
@@ -32,7 +32,7 @@ Do this to install the source:
 
     ``cd stosim; python setup.py develop``
 
-You do not need to install StoSim if you get the source (but take care of the :ref:`depend`).
+For completeness: You do not need to install StoSim if you get the source (but take care of the :ref:`depend`).
 All you need to use it is call ``stosim.py``, which lies in the main folder.
 However, my projects are always located somewhere else, so to make my life easier I use to make a shortcut 
 to ``stosim.py`` in my ``~/.bashrc`` file (or ``~/.profile`` on Mac): 
