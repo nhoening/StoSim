@@ -47,7 +47,7 @@ setup(
     include_package_data=True,
     platforms='Unix',
     classifiers = [
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
         'Environment :: Console',

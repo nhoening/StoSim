@@ -47,6 +47,7 @@ import sys
 from shutil import copy, rmtree
 from ConfigParser import ConfigParser
 from subprocess import Popen
+import signal
 import fjd
 
 from stosim.sim import utils, job_creator
@@ -60,9 +61,8 @@ def run(simfolder):
         :returns: True if successful, False otherwise
     '''
     print('*' * 80)
-    folder_name = utils.ensure_name(simfolder)
-    sim_name = utils.get_simulation_name("%s/stosim.conf" %
-            simfolder, folder_name)
+    sim_name = utils.get_simulation_name("{}/stosim.conf".format(simfolder),
+                                         fallback=utils.ensure_name(simfolder))
     print("Running simulation {}".format(sim_name))
     print('*' * 80)
     print('')
@@ -74,6 +74,12 @@ def run(simfolder):
 
     scheduler = utils.get_scheduler(simfolder)
     if scheduler == 'fjd':
+        fjd_is_still_there = [True]  # if user quits fjd, we should stop using it
+        def signal_handler(signal, frame):
+            ''' gently exiting, e.g. when CTRL-C was pressed.  '''
+            fjd_is_still_there[0] = False
+        signal.signal(signal.SIGINT, signal_handler)
+
         # queue jobs in FJD scheduler (schedules local CPUs)
         fjd_dir = fjd.utils.ensure_wdir(sim_name)
         fjd.utils.empty_queues(sim_name)
@@ -83,8 +89,9 @@ def run(simfolder):
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             copy('{}/remote.conf'.format(simfolder), fjd_dir)
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
-        Popen('fjd-dispatcher --project {} --interval {}'\
-            .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+        if fjd_is_still_there[0]:
+            Popen('fjd-dispatcher --project {} --interval {}'\
+                .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
         # when recruiter got remote.conf, clean up in fjd dir
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             os.remove('{}/remote.conf'.format(fjd_dir))
@@ -93,6 +100,22 @@ def run(simfolder):
         # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
         for job in [j for j in os.listdir('{}/jobs'.format(simfolder)) if j.endswith('.pbs')]:
             Popen('qsub {}'.format('{}/jobs/{}'.format(simfolder, job)), shell=True).wait()
+
+    return True
+
+
+def check(simfolder):
+    """
+    Check status of simulation
+    """
+    scheduler = utils.get_scheduler(simfolder)
+    sim_name = utils.get_simulation_name("{}/stosim.conf".format(simfolder),
+                                         fallback=utils.ensure_name(simfolder))
+    if scheduler == 'fjd':
+        Popen('fjd-dispatcher --project {} --interval {}'\
+            .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+    elif scheduler == 'pbs':
+        Popen('showq -u {}'.format(), shell=True).wait()
 
     return True
 
@@ -393,18 +416,19 @@ if __name__ == "__main__":
     if (args.run == args.ttests == args.more\
        == args.list == False and args.plots is None):
         args.run = args.ttests = True
-        args.plots = []
+        #args.plots = []
 
-    # 'first-class' commands : only one of these at a time:
+    # do these if they are given:
     fine = True
-    if args.more:
+    if args.check:
+        fine = check(args.folder)
+    elif args.more:
         fine = run_more(args.folder)
     elif args.run:
         _assure_writable(args.folder, more=args.more)
         _prepare(args.folder)
         fine = run(args.folder)
-    
-    if args.list:
+    elif args.list:
         fine = list_data(args.folder)
 
     if fine:

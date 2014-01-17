@@ -25,10 +25,10 @@ import re
 from ConfigParser import ConfigParser
 from ConfigParser import ParsingError
 try:
-	import argparse
+    import argparse
 except ImportError:
-	print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
-	sys.exit(1)
+    print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
+    sys.exit(1)
 
 
 
@@ -42,6 +42,7 @@ def read_args():
     parser.add_argument('--folder', metavar='PATH', default='.', help='Path to simulation folder (this is where you keep your stosim.conf), defaults to "."')
     parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
     parser.add_argument('--run', action='store_true', help='Only run, do not analyse.')
+    parser.add_argument('--check', action='store_true', help='Check status of simulations.')
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
@@ -232,7 +233,7 @@ def get_subsimulation_names(conf):
     return sim_names
 
 
-def get_simulation_name(conf_filename, fallback):
+def get_simulation_name(conf_filename, fallback='.'):
     ''' The user can give a pretty name to the simulation under [meta], this function returns it.
 
         :param string conf_filename: name of the config file for the simulation
