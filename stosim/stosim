@@ -80,7 +80,8 @@ def run(simfolder):
     # prepare all jobs to be run by FJD
     fjd_dir = fjd.utils.ensure_wdir(sim_name)
     fjd.utils.empty_queues(sim_name)
-    for job in os.listdir("{}/jobs".format(simfolder)):
+    for job in [j for j in os.listdir("{}/jobs".format(simfolder))\
+                if j.endswith('.conf')]:
         copy("{}/jobs/{}".format(simfolder, job),
              "{}/jobqueue".format(fjd_dir))
 
