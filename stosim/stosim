@@ -54,6 +54,12 @@ from stosim.sim import utils, job_creator
 from stosim.analysis import plotter, tester
 
 
+we_exited = [False]  # this helps us to stop using FJD if the user quit
+def signal_handler(signal, frame):
+    ''' gently exiting, e.g. when CTRL-C was pressed in FJD.  '''
+    we_exited[0] = True
+
+
 def run(simfolder):
     ''' The main function to start running simulations
 
@@ -82,16 +88,10 @@ def run(simfolder):
     scheduler = utils.get_scheduler(simfolder)
     if scheduler == 'fjd':
         # let FJD handle it in local network (default: only local PC)
-        fjd_is_still_there = [True]  # if user quits fjd, we should stop using it
-        def signal_handler(signal, frame):
-            ''' gently exiting, e.g. when CTRL-C was pressed.  '''
-            fjd_is_still_there[0] = False
-        signal.signal(signal.SIGINT, signal_handler)
-
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             copy('{}/remote.conf'.format(simfolder), fjd_dir)
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
-        if fjd_is_still_there[0]:
+        if not we_exited[0]:
             Popen('fjd-dispatcher --project {} --end_on_empty_queue --interval {}'\
                 .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
         # when recruiter got remote.conf, clean up in fjd dir
@@ -208,7 +208,7 @@ def make_plots(simfolder, plot_nrs=[]):
             print('')
             break
     else:
-        print("[StoSim] No plots specified")
+        print("[StoSim] No plots specified.")
 
     # Describe all options first.
     # These might be set in plot-settings (in each simulation config)
@@ -323,7 +323,7 @@ def run_ttests(simfolder):
             print('')
             break
     else:
-        print "[StoSim] No T-tests specified"
+        print "[StoSim] No T-tests specified."
 
     for c in relevant_confs:
         i = 1
@@ -419,6 +419,7 @@ def _prepare(simfolder, limit_to={}, more=False):
 
 if __name__ == "__main__":
 
+    signal.signal(signal.SIGINT, signal_handler)
     args = utils.read_args()
     utils.check_conf(args.folder)
 
@@ -426,7 +427,7 @@ if __name__ == "__main__":
     if (args.run == args.ttests == args.more\
        == args.list == args.resume == False and args.plots is None):
         args.run = args.ttests = True
-        #args.plots = []
+        args.plots = []
 
     # do these if they are given:
     fine = True
