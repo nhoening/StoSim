@@ -51,7 +51,7 @@ import signal
 import fjd
 
 from stosim.sim import utils, job_creator
-from stosim.analysis import plotter
+from stosim.analysis import plotter, tester
 
 
 def run(simfolder):
@@ -61,8 +61,7 @@ def run(simfolder):
         :returns: True if successful, False otherwise
     '''
     print('*' * 80)
-    sim_name = utils.get_simulation_name("{}/stosim.conf".format(simfolder),
-                                         fallback=utils.ensure_name(simfolder))
+    sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
     print("Running simulation {}".format(sim_name))
     print('*' * 80)
     print('')
@@ -72,35 +71,49 @@ def run(simfolder):
         utils.usage()
         return False
 
+    # prepare all jobs to be run by FJD
+    fjd_dir = fjd.utils.ensure_wdir(sim_name)
+    fjd.utils.empty_queues(sim_name)
+    for job in os.listdir("{}/jobs".format(simfolder)):
+        copy("{}/jobs/{}".format(simfolder, job),
+             "{}/jobqueue".format(fjd_dir))
+
+    # now decide if recruiting is done in a local network or on a PBS cluster
     scheduler = utils.get_scheduler(simfolder)
     if scheduler == 'fjd':
+        # let FJD handle it in local network (default: only local PC)
         fjd_is_still_there = [True]  # if user quits fjd, we should stop using it
         def signal_handler(signal, frame):
             ''' gently exiting, e.g. when CTRL-C was pressed.  '''
             fjd_is_still_there[0] = False
         signal.signal(signal.SIGINT, signal_handler)
 
-        # queue jobs in FJD scheduler (schedules local CPUs)
-        fjd_dir = fjd.utils.ensure_wdir(sim_name)
-        fjd.utils.empty_queues(sim_name)
-        for job in os.listdir("{}/jobs".format(simfolder)):
-            copy("{}/jobs/{}".format(simfolder, job),
-                 "{}/jobqueue".format(fjd_dir))
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             copy('{}/remote.conf'.format(simfolder), fjd_dir)
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
         if fjd_is_still_there[0]:
-            Popen('fjd-dispatcher --project {} --interval {}'\
+            Popen('fjd-dispatcher --project {} --end_on_empty_queue --interval {}'\
                 .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
         # when recruiter got remote.conf, clean up in fjd dir
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             os.remove('{}/remote.conf'.format(fjd_dir))
 
     elif scheduler == 'pbs':
-        # queue jobs on a PBS job scheduler (e.g. clusters running Torque or PBS Pro)
+        # queue the PBS jobs we created on a PBS job scheduler (e.g. clusters 
+        # running Torque or PBS Pro). These simply start FJD workers.
         for job in [j for j in os.listdir('{}/jobs'.format(simfolder)) if j.endswith('.pbs')]:
             Popen('qsub {}'.format('{}/jobs/{}'.format(simfolder, job)), shell=True).wait()
+        # Now we start dispatching
+        Popen('fjd-dispatcher --project {} --end_on_empty_queue --interval {}'\
+            .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
 
+    return True
+
+
+def resume(simfolder):
+    sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
+    Popen('fjd-dispatcher --project {} --interval {}'\
+          .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
     return True
 
 
@@ -109,8 +122,7 @@ def check(simfolder):
     Check status of simulation
     """
     scheduler = utils.get_scheduler(simfolder)
-    sim_name = utils.get_simulation_name("{}/stosim.conf".format(simfolder),
-                                         fallback=utils.ensure_name(simfolder))
+    sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
     if scheduler == 'fjd':
         Popen('fjd-dispatcher --project {} --interval {}'\
             .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
@@ -295,8 +307,6 @@ def run_ttests(simfolder):
 
     :param string simfolder: relative path to simfolder
     '''
-    from stosim.analysis import harvester, tester
-
     c = ConfigParser()
     c.read('{}/stosim.conf'.format((simfolder)))
     delim = utils.get_delimiter(c)
@@ -414,7 +424,7 @@ if __name__ == "__main__":
 
     # define standard program (if no options are set)
     if (args.run == args.ttests == args.more\
-       == args.list == False and args.plots is None):
+       == args.list == args.resume == False and args.plots is None):
         args.run = args.ttests = True
         #args.plots = []
 
@@ -422,6 +432,8 @@ if __name__ == "__main__":
     fine = True
     if args.check:
         fine = check(args.folder)
+    elif args.resume:
+        fine = resume(args.folder)
     elif args.more:
         fine = run_more(args.folder)
     elif args.run:

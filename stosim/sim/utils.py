@@ -13,7 +13,7 @@ utils
 #    - They should make the original ConfigParser available as conf.cp 
 #    - get_main_conf could maybe go to __init__
 # 3. Some functions in stosim.py could go in one of those subfiles, thus making
-#    that mode readable as well (not sure yet where the primary functionality
+#    that more readable as well (not sure yet where the primary functionality
 #    should go, maybe sim/__init__.py, analysis/__init__.py and so on, or
 #    classes? 
 # 4. While doing this, look out for PEP8 compatibility
@@ -43,6 +43,7 @@ def read_args():
     parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
     parser.add_argument('--run', action='store_true', help='Only run, do not analyse.')
     parser.add_argument('--check', action='store_true', help='Check status of simulations.')
+    parser.add_argument('--resume', action='store_true', help='Resume control of simulation scheduling.')
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
@@ -171,7 +172,7 @@ def get_scheduler(simfolder):
 
 
 def get_interval(simfolder):
-    """ get the interval for FJD  workers and disoatchers to check the queue,
+    """ get the interval for FJD  workers and dispatchers to check the queue,
         in seconds (fractions of seconds are allowed).
 
         :param string simfolder: relative path to simfolder
@@ -179,7 +180,7 @@ def get_interval(simfolder):
     """
     stosim_conf = get_main_conf(simfolder)
     if not stosim_conf.has_option('control', 'fjd-interval'):
-        interval = .2
+        interval = .5
     else:
         interval = stosim_conf.getfloat('control', 'fjd-interval')
     return interval
@@ -198,6 +199,19 @@ def get_jobtime(simfolder):
     else:
         jobtime = stosim_conf.get('control', 'pbs-jobtime')
     return jobtime
+
+
+def get_numcores(simfolder):
+    """ get the number of cores on PBS nodes
+
+        :param string simfolder: relative path to simfolder
+        :returns: int number of cores
+    """
+    stosim_conf = get_main_conf(simfolder)
+    if not stosim_conf.has_option('control', 'pbs-numcores'):
+        return 8  # this might be wrong, but overestimating does not much harm
+    else:
+        return stosim_conf.getint('control', 'pbs-numcores')
 
 
 def make_simdir_name(simfolder):
@@ -233,7 +247,18 @@ def get_subsimulation_names(conf):
     return sim_names
 
 
-def get_simulation_name(conf_filename, fallback='.'):
+def ensure_name(simfolder):
+    ''' make sure we have the actual name of the folder and not just '.'
+
+        :param string simfolder: relative path to simfolder
+        :returns: the full name (without the path to it)
+    '''
+    if simfolder == '.':
+        simfolder = osp.abspath(osp.curdir).split('/')[-1:][0]
+    return simfolder.strip('/')
+
+
+def get_simulation_name(simfolder, conf_filename, fallback=None):
     ''' The user can give a pretty name to the simulation under [meta], this function returns it.
 
         :param string conf_filename: name of the config file for the simulation
@@ -245,18 +270,11 @@ def get_simulation_name(conf_filename, fallback='.'):
     if conf.has_option('meta', 'name'):
         return conf.get('meta', 'name').replace(' ', '_')
     else:
-        return fallback
+        if fallback:
+            return fallback
+        else:
+            return ensure_name(simfolder)
 
-
-def ensure_name(simfolder):
-    ''' make sure we have the actual name of the folder and not just '.'
-
-        :param string simfolder: relative path to simfolder
-        :returns: the full name (without the path to it)
-    '''
-    if simfolder == '.':
-        simfolder = osp.abspath(osp.curdir).split('/')[-1:][0]
-    return simfolder.strip('/')
 
 
 def runs_in_folder(simfolder, fname):

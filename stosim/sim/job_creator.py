@@ -11,6 +11,7 @@ for each mix of parameter settings (for each job) that needs to be run.
 import sys
 import os
 from ConfigParser import ConfigParser
+from math import ceil
 
 import utils
 
@@ -125,22 +126,7 @@ def create(main_conf, simfolder, limit_to={}, more=False):
         job_conf.flush()
         job_conf.close()
 
-        scheduler=utils.get_scheduler(simfolder)
-        if scheduler == 'pbs':
-            pbs_job = '''# Shell for the job:
-#PBS -S /bin/bash
-# request 1 node, {cores} core(s)
-#PBS -lnodes=1:cores{cores}:ppn={ppn}
-# job requires at most n hours wallclock time
-#PBS -lwalltime={maxtime}
 
-cd {path2sim}
-{cmd} {jobconf}'''.format(cmd=main_conf.get('control', 'executable'), cores=8, # the PBS cluster I know only has 8,12&16 core machines
-                          path2sim=os.path.abspath(simfolder), ppn=1, # processes per node, so far we assume there is only one
-                          maxtime=utils.get_jobtime(simfolder), jobconf=job_conf_filename)
-            pbs_job_file = open('{}/jobs/{}_run{}.pbs'.format(simfolder, job_name, run), 'w')
-            pbs_job_file.write(pbs_job)
-            pbs_job_file.close()
 
     # ---------------------------------------------------------------------------------------------
     # now let's get going
@@ -166,13 +152,37 @@ cd {path2sim}
                     simulations[sim][param] = [v.strip() for v in sim_conf.get('params', param).split(',')]
 
     # now write all the conf files, once for each simulation and once for each seed
+    job_count = 0
     for sim in simulations:
         options, values = get_options_values(simulations[sim], limit_to)
-        
+
         for _ in range(len(values)):
             # get a set of unique values 
             act_values = values.pop()
             runs = main_conf.getint('control', 'runs')
             for run in xrange(1, runs+1):
                 write_job(act_values, sim=sim, run=run)
-                
+                job_count += 1
+
+    # if running on PBS, write a PBS job per node we need
+    scheduler = utils.get_scheduler(simfolder)
+    if scheduler == 'pbs':
+        num_cores = utils.get_numcores(simfolder)
+        num_nodes = int(ceil(job_count / float(num_cores)))
+        sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
+        cmd =  'fjd-recruiter --project {} hire {}'.format(sim_name, num_cores)
+        pbs_job = '''# Shell for the job:
+#PBS -S /bin/bash
+# request 1 node, {cores} core(s)
+#PBS -lnodes=1:cores{cores}:ppn={ppn}
+# job requires at most n hours wallclock time
+#PBS -lwalltime={maxtime}
+
+cd {path2sim}
+{cmd}'''.format(cmd=cmd, cores=num_cores, path2sim=os.path.abspath(simfolder),
+            ppn=num_cores, # processes per node
+            maxtime=utils.get_jobtime(simfolder))
+        for node in xrange(1, num_nodes + 1):
+            pbs_job_file = open('{}/jobs/node{}.pbs'.format(simfolder, node, run), 'w')
+            pbs_job_file.write(pbs_job)
+            pbs_job_file.close()

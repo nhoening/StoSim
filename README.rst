@@ -5,7 +5,7 @@ StoSim runs stochastic simulations.
 
 You write the actual simulation, but StoSim relieves you of:
 - Arranging runs for all combinations of your dependent variables.
-- Distributing workload across several CPUS, even on different machines. The latter works in a local environment with shared home directories or on a PBS cluster.
+- Distributing workload across several CPUs, even on different machines. The latter works in a local environment with shared home directories or on a PBS cluster.
 - Generating nice paper-ready plots and T-Tests from the results.
 
 You can find extensive documentation at
