@@ -1,0 +1,9 @@
+*.pyc
+stosim.egg-info
+dist
+doc/doctrees
+doc/html
+doc/latex
+examples/*/jobs
+examples/*/plots
+examples/*/data
