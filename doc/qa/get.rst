@@ -9,11 +9,15 @@ StoSim lives on the `Python Package index <http://www.pypi.org>`_, so you can in
 
 Then you should have the ``stosim`` command available and you are done.
 
-If you don't have the necessary privileges, you might try
+To upgrade to a new version, you would do:
+
+    ``pip install --upgrade stosim``
+
+If you don't have the necessary privileges, you might add the --user option, e.g.:
 
     ``pip install stosim --user``
 
-and add ``~/.local/bin`` to your PATH (``export PATH=~/.local/bin:$PATH``).
+For the --user option to work, ``~/.local/bin`` should be in your PATH (if it is not, do ``export PATH=~/.local/bin:$PATH``).
 
 If you don't have pip, maybe you can do
 
