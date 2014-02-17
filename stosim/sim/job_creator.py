@@ -170,18 +170,22 @@ def create(main_conf, simfolder, limit_to={}, more=False):
         num_cores = utils.get_numcores(simfolder)
         num_nodes = int(ceil(job_count / float(num_cores)))
         sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
-        cmd =  'fjd-recruiter --project {} hire {}'.format(sim_name, num_cores)
+        wall_time = utils.get_jobtime(simfolder)
         pbs_job = '''# Shell for the job:
 #PBS -S /bin/bash
 # request 1 node, {cores} core(s)
 #PBS -lnodes=1:cores{cores}:ppn={ppn}
 # job requires at most n hours wallclock time
-#PBS -lwalltime={maxtime}
+#PBS -lwalltime={wall_time}
 
 cd {path2sim}
-{cmd}'''.format(cmd=cmd, cores=num_cores, path2sim=os.path.abspath(simfolder),
+fjd-recruiter --project {sim_name} hire {cores}  # create worker screens
+python -c "import time; time.sleep({seconds})"  # keep PBS job alive
+
+'''.format(cores=num_cores, path2sim=os.path.abspath(simfolder),
             ppn=num_cores, # processes per node
-            maxtime=utils.get_jobtime(simfolder))
+            wall_time=wall_time, sim_name=sim_name,
+            seconds=(int(wall_time.split(':')[0]) + 1) * 60 * 60)
         for node in xrange(1, num_nodes + 1):
             pbs_job_file = open('{}/jobs/node{}.pbs'.format(simfolder, node, run), 'w')
             pbs_job_file.write(pbs_job)

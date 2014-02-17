@@ -39,7 +39,7 @@ setup(
     license='Apache Software License',
     author='Nicolas Höning',
     tests_require=[],
-    install_requires=['fjd>=0.1.35'],
+    install_requires=['fjd>=0.1.37'],
     author_email='iam@nicolashoening.de',
     description='Stochastic Simulations',
     long_description=long_description,

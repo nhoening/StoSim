@@ -84,6 +84,9 @@ def run(simfolder):
                 if j.endswith('.conf')]:
         copy("{}/jobs/{}".format(simfolder, job),
              "{}/jobqueue".format(fjd_dir))
+    dispatch_cmd = 'fjd-dispatcher --project {} --end_when_jobs_are_done '\
+                   ' --end_callback "stosim --kill" --interval {}'\
+                   .format(sim_name, utils.get_interval(simfolder))
 
     # now decide if recruiting is done in a local network or on a PBS cluster
     scheduler = utils.get_scheduler(simfolder)
@@ -93,8 +96,7 @@ def run(simfolder):
             copy('{}/remote.conf'.format(simfolder), fjd_dir)
         Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
         if not we_exited[0]:
-            Popen('fjd-dispatcher --project {} --end_on_empty_queue --interval {}'\
-                .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+            Popen(dispatch_cmd, shell=True).wait()
         # when recruiter got remote.conf, clean up in fjd dir
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             os.remove('{}/remote.conf'.format(fjd_dir))
@@ -105,13 +107,15 @@ def run(simfolder):
         for job in [j for j in os.listdir('{}/jobs'.format(simfolder)) if j.endswith('.pbs')]:
             Popen('qsub {}'.format('{}/jobs/{}'.format(simfolder, job)), shell=True).wait()
         # Now we start dispatching
-        Popen('fjd-dispatcher --project {} --end_on_empty_queue --interval {}'\
-            .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+        Popen(dispatch_cmd, shell=True).wait()
 
     return True
 
 
 def resume(simfolder):
+    """
+    (Re)start dispatching jobs 
+    """
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
     Popen('fjd-dispatcher --project {} --interval {}'\
           .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
@@ -120,17 +124,39 @@ def resume(simfolder):
 
 def check(simfolder):
     """
-    Check status of simulation
+    Check status of simulation. If on PBS scheduling, show status of nodes.
+    Then, ask the fjd-dispatcher about status of jobs.
+    """
+    scheduler = utils.get_scheduler(simfolder)
+    sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
+    if scheduler == 'pbs':
+        num_nodes = len([n for n in os.listdir('{}/jobs'.format(simfolder))\
+                        if n.endswith('.pbs')])
+        print("[StoSim] State of our {} PBS computing nodes:".format(num_nodes))
+        Popen('echo "Waiting: $(qselect -u $USER -s W | wc -l)"', shell=True).wait()
+        Popen('echo "Queued: $(qselect -u $USER -s Q | wc -l)"', shell=True).wait()
+        Popen('echo "Running: $(qselect -u $USER -s R | wc -l)"', shell=True).wait()
+
+    print("[StoSim] State of workers and jobs:")
+    Popen('fjd-dispatcher --project {} --status_only --interval {}'\
+        .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+    return True
+
+
+def kill(simfolder):
+    """
+    Kill simulation
     """
     scheduler = utils.get_scheduler(simfolder)
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
     if scheduler == 'fjd':
-        Popen('fjd-dispatcher --project {} --interval {}'\
-            .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+        Popen('fjd-recruiter --project {} fire'.format(sim_name),
+              shell=True).wait()
     elif scheduler == 'pbs':
-        Popen('showq -u {}'.format(), shell=True).wait()
+        Popen('qselect -u $USER | xargs qdel', shell=True).wait()
 
     return True
+
 
 
 def run_more(simfolder):
@@ -425,8 +451,8 @@ if __name__ == "__main__":
     utils.check_conf(args.folder)
 
     # define standard program (if no options are set)
-    if (args.run == args.ttests == args.more\
-       == args.list == args.resume == False and args.plots is None):
+    if (args.run == args.ttests == args.more == args.kill\
+       == args.list == args.resume == args.check == False and args.plots is None):
         args.run = args.ttests = True
         args.plots = []
 
@@ -442,6 +468,8 @@ if __name__ == "__main__":
         _assure_writable(args.folder, more=args.more)
         _prepare(args.folder)
         fine = run(args.folder)
+    elif args.kill:
+        fine = kill(args.folder)
     elif args.list:
         fine = list_data(args.folder)
 
