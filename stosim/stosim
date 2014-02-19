@@ -46,7 +46,7 @@ import os.path as osp
 import sys
 from shutil import copy, rmtree
 from ConfigParser import ConfigParser
-from subprocess import Popen
+import subprocess
 import signal
 import fjd
 
@@ -94,9 +94,9 @@ def run(simfolder):
         # let FJD handle it in local network (default: only local PC)
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             copy('{}/remote.conf'.format(simfolder), fjd_dir)
-        Popen('fjd-recruiter --project {} hire'.format(sim_name), shell=True).wait()
+        subprocess.call('fjd-recruiter --project {} hire'.format(sim_name), shell=True)
         if not we_exited[0]:
-            Popen(dispatch_cmd, shell=True).wait()
+            subprocess.call(dispatch_cmd, shell=True)
         # when recruiter got remote.conf, clean up in fjd dir
         if os.path.exists('{}/remote.conf'.format(simfolder)):
             os.remove('{}/remote.conf'.format(fjd_dir))
@@ -105,9 +105,9 @@ def run(simfolder):
         # queue the PBS jobs we created on a PBS job scheduler (e.g. clusters 
         # running Torque or PBS Pro). These simply start FJD workers.
         for job in [j for j in os.listdir('{}/jobs'.format(simfolder)) if j.endswith('.pbs')]:
-            Popen('qsub {}'.format('{}/jobs/{}'.format(simfolder, job)), shell=True).wait()
+            subprocess.call('qsub {}'.format('{}/jobs/{}'.format(simfolder, job)), shell=True)
         # Now we start dispatching
-        Popen(dispatch_cmd, shell=True).wait()
+        subprocess.call(dispatch_cmd, shell=True)
 
     return True
 
@@ -117,8 +117,8 @@ def resume(simfolder):
     (Re)start dispatching jobs 
     """
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
-    Popen('fjd-dispatcher --project {} --interval {}'\
-          .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+    subprocess.call('fjd-dispatcher --project {} --interval {}'\
+          .format(sim_name, utils.get_interval(simfolder)), shell=True)
     return True
 
 
@@ -133,13 +133,13 @@ def check(simfolder):
         num_nodes = len([n for n in os.listdir('{}/jobs'.format(simfolder))\
                         if n.endswith('.pbs')])
         print("[StoSim] State of our {} PBS computing nodes:".format(num_nodes))
-        Popen('echo "Waiting: $(qselect -u $USER -s W | wc -l)"', shell=True).wait()
-        Popen('echo "Queued: $(qselect -u $USER -s Q | wc -l)"', shell=True).wait()
-        Popen('echo "Running: $(qselect -u $USER -s R | wc -l)"', shell=True).wait()
+        subprocess.call('echo "Waiting: $(qselect -u $USER -s W | wc -l)"', shell=True)
+        subprocess.call('echo "Queued: $(qselect -u $USER -s Q | wc -l)"', shell=True)
+        subprocess.call('echo "Running: $(qselect -u $USER -s R | wc -l)"', shell=True)
 
     print("[StoSim] State of workers and jobs:")
-    Popen('fjd-dispatcher --project {} --status_only --interval {}'\
-        .format(sim_name, utils.get_interval(simfolder)), shell=True).wait()
+    subprocess.call('fjd-dispatcher --project {} --status_only --interval {}'\
+        .format(sim_name, utils.get_interval(simfolder)), shell=True)
     return True
 
 
@@ -150,10 +150,10 @@ def kill(simfolder):
     scheduler = utils.get_scheduler(simfolder)
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
     if scheduler == 'fjd':
-        Popen('fjd-recruiter --project {} fire'.format(sim_name),
-              shell=True).wait()
+        subprocess.call('fjd-recruiter --project {} fire'.format(sim_name),
+              shell=True)
     elif scheduler == 'pbs':
-        Popen('qselect -u $USER | xargs qdel', shell=True).wait()
+        subprocess.call('qselect -u $USER | xargs qdel', shell=True)
 
     return True
 
