@@ -21,6 +21,7 @@ utils
 import sys
 import os
 import os.path as osp
+from shutil import rmtree
 import re
 from ConfigParser import ConfigParser
 from ConfigParser import ParsingError
@@ -30,6 +31,7 @@ except ImportError:
     print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
     sys.exit(1)
 
+from stosim.sim import job_creator
 
 
 def read_args():
@@ -52,7 +54,48 @@ def read_args():
     parser.add_argument('-k', action='store_true', help='keep tmp analysis files.')
     parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')
 
-    return parser.parse_args()
+    # Stosim might get called from code and then we might parse totally different commands
+    # than expected. Thus, let's not break in that case and ignore unknown args.
+    return parser.parse_known_args()[0]
+
+
+def check_for_older_data(simfolder, more=False):
+    """ check if old data is lying around, ask if it can go
+
+        :param boolean more: when True, new data will simply be added
+                             to existing data
+    """
+    if osp.exists("%s/data" % simfolder):
+        data_content = os.listdir('%s/data' % simfolder)
+        if len([f for f in data_content if not f.startswith('.')]) > 0:
+            if not more:
+                if '-d' in sys.argv:
+                    rmtree('%s/data' % simfolder)
+                else:
+                    print('[StoSim] I found older log data (in {}/data).'\
+                        ' Remove? [y/N]'.format(simfolder))
+                    if raw_input().lower() == 'y':
+                        rmtree('%s/data' % simfolder)
+
+
+def prepare_folders_and_jobs(simfolder, limit_to={}, more=False):
+    """ ensure that data and job directories exist, create jobs.
+        limit_to can contain parameter settings we want
+        to limit ourselves to (this is in case we add more data)
+
+        :param string simfolder: relative path to simfolder
+        :param dict limit_to: key-value pairs that narrow down the dataset,
+                              when empty (default) all possible configs are run
+        :param boolean more: when True, new data will simply be added
+    """
+    if not osp.exists("%s/data" % simfolder):
+        os.mkdir('%s/data' % simfolder)
+    if osp.exists("%s/jobs" % simfolder):
+        rmtree('%s/jobs' % simfolder)
+    os.mkdir('%s/jobs' % simfolder)
+
+    conf = get_main_conf(simfolder)
+    job_creator.create(conf, simfolder, limit_to=limit_to, more=more)
 
 
 def check_conf(simfolder):
@@ -118,8 +161,8 @@ def get_main_conf(simfolder):
     if args.simulations:
         if not conf.has_section('simulations'):
             print "[StoSim] You cannot use the '--simulations' cmd line"\
-                  " parameter if you do not have the [simulations] section"\
-                  " in stosim.conf"
+                " parameter if you do not have the [simulations] section"\
+                " in stosim.conf"
             sys.exit(2)
         conf.set('simulations', 'configs', ','.join(args.simulations))
     if conf.has_section('simulations'):

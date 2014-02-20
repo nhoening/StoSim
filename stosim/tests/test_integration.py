@@ -1,10 +1,14 @@
 import os
 import pytest
-import subprocess
+#import subprocess
 from shutil import rmtree
+
+from stosim.sim.commands import run, make_plots, run_ttests
+from stosim.sim.utils import prepare_folders_and_jobs
 
 
 def file_lc(fname):
+    ''' count lines in a file '''
     i = -1
     with open(fname) as f:
         for i, l in enumerate(f):
@@ -27,7 +31,11 @@ class TestBasicExample(object):
         for d in ('jobs', 'data', 'plots'):
             if os.path.exists('{}/{}'.format(self.edir, d)):
                 rmtree('{}/{}'.format(self.edir, d))
-        subprocess.call('stosim --folder {}'.format(self.edir), shell=True)
+        #subprocess.call('stosim --folder {}'.format(self.edir), shell=True)
+        prepare_folders_and_jobs(self.edir)
+        run(self.edir)
+        make_plots(self.edir)
+        run_ttests(self.edir)
 
     def test_jobs(self):
         assert(os.path.exists('{}/jobs'.format(self.edir)))
