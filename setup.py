@@ -11,6 +11,7 @@ Exiting."""
 
 
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
 import codecs
 import os
 import re
@@ -32,20 +33,35 @@ def find_version(*file_paths):
 
 long_description = read('README.rst')
 
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errcode = pytest.main(self.test_args)
+        sys.exit(errcode)
+
+
 setup(
     name='stosim',
     version=find_version('stosim', '__init__.py'),
     url='http://homepages.cwi.nl/~nicolas/stosim/',
     license='Apache Software License',
     author='Nicolas Höning',
-    tests_require=[],
     install_requires=['fjd>=0.1.37'],
+    tests_require=['pytest'],
+    cmdclass={'test': PyTest},
     author_email='iam@nicolashoening.de',
     description='Stochastic Simulations',
     long_description=long_description,
     packages=['stosim', 'stosim.sim', 'stosim.analysis'],
     include_package_data=True,
     platforms='Unix',
+    test_suite='stosim.tests.test_integration',
     classifiers = [
         'Programming Language :: Python :: 2.7',
         'Development Status :: 4 - Beta',
