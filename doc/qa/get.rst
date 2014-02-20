@@ -65,5 +65,5 @@ or
 
     ``tox -e coverage``
 
-The fiorst tox command runs tests, possibly for several versions of Python. 
+The first tox command runs tests, possibly for several versions of Python. 
 The second shows you coverage of the tests on StoSim's code.
