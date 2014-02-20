@@ -1,3 +1,13 @@
+'''
+commands
+=============
+
+This module provides all commands you can use in StoSim:
+run, resume, check, kill, run_more, make_plots, run_ttests, list_data
+'''
+
+
+
 import os
 import os.path as osp
 import subprocess
@@ -67,6 +77,9 @@ def run(simfolder):
 def resume(simfolder):
     """
     (Re)start dispatching jobs 
+
+    :param string simfolder: relative path to simfolder
+    :returns: True if successful, False otherwise
     """
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
     subprocess.call('fjd-dispatcher --project {} --interval {}'\
@@ -78,6 +91,9 @@ def check(simfolder):
     """
     Check status of simulation. If on PBS scheduling, show status of nodes.
     Then, ask the fjd-dispatcher about status of jobs.
+
+    :param string simfolder: relative path to simfolder
+    :returns: True if successful, False otherwise
     """
     scheduler = utils.get_scheduler(simfolder)
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
@@ -114,10 +130,6 @@ def kill(simfolder):
 def run_more(simfolder):
     """ let the user make more runs on current config,
         in addition to the given data
-        TODO: problematic when param values are only relevant for one subconf.
-              Then, setup.create gets confused (it helps to set the --sim
-              option in this case.
-                Will get fixed anyway when we revamp the job distribution?)
 
         :param string simfolder: relative path to simfolder
         :returns: True if successful, False otherwise

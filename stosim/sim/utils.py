@@ -31,7 +31,7 @@ except ImportError:
     print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
     sys.exit(1)
 
-from stosim.sim import job_creator
+import job_creator
 
 
 def read_args():

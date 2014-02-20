@@ -19,6 +19,10 @@ If you don't have the necessary privileges, you might add the --user option, e.g
 
 For the --user option to work, ``~/.local/bin`` should be in your PATH (if it is not, do ``export PATH=~/.local/bin:$PATH``).
 
+
+Other options
+-------------
+
 If you don't have pip, maybe you can do
 
     ``easy_install pip``
@@ -45,3 +49,21 @@ to ``stosim.py`` in my ``~/.bashrc`` file (or ``~/.profile`` on Mac):
 
 so that on any command line, I can just type ``stosim`` to start it, whereever I am.
 
+
+Run tests
+-------------
+
+Go to StoSim's main directory.
+
+    ``python setup.py test``
+
+If you have tox installed (which is awesome):
+
+    ``tox``
+
+or
+
+    ``tox -e coverage``
+
+The fiorst tox command runs tests, possibly for several versions of Python. 
+The second shows you coverage of the tests on StoSim's code.

@@ -1,3 +1,5 @@
+.swp
+doc/updatedoc
 *.pyc
 stosim.egg-info
 dist
@@ -7,3 +9,5 @@ doc/latex
 examples/*/jobs
 examples/*/plots
 examples/*/data
+.coverage
+.tox

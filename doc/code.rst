@@ -10,6 +10,8 @@ sim
 ===================
 Assisting code to support other code and prepare simulations
 
+.. automodule:: stosim.sim.commands
+    :members:
 .. automodule:: stosim.sim.job_creator
     :members:
 .. automodule:: stosim.sim.utils 
