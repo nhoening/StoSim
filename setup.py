@@ -53,7 +53,7 @@ setup(
     url='http://homepages.cwi.nl/~nicolas/stosim/',
     license='Apache Software License',
     author='Nicolas Höning',
-    install_requires=['fjd>=0.1.37'],
+    install_requires=['fjd>=0.1.39'],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
     author_email='iam@nicolashoening.de',
