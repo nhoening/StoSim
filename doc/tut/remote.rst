@@ -16,7 +16,11 @@ There are two schedulers you can choose in the main configuration (``stosim.conf
 The default scheduler is `fjd <https://pypi.python.org/pypi/fjd>`_, which uses the CPUs on your local machine or the ones in 
 your local network (if they all have access to a shared home directory).
 
-The other scheduler is `pbs <https://en.wikipedia.org/wiki/Portable_Batch_System>`_ which is a major job description standard for computational clusters. If you use SoSim on such a cluster and choose this scheduler, then StoSim will write some extra configuration so the PBS system understands which jobs to run. After that, consult the PBS system on the status of your jobs (`showq -u <your-username>` should work, or consult the documentation of your cluster).
+The other scheduler is `pbs <https://en.wikipedia.org/wiki/Portable_Batch_System>`_ which is a major job description standard for computational clusters. If you use StoSim on such a cluster and choose this scheduler, then StoSim will write some extra configuration, such that the PBS system understands which jobs to run. 
+
+To check the status of your jobs and (if you use pbs scheduling) the state of computation nodes on the cluster), type
+
+    stosim --check
 
 Both schedulers have extra configuration options which you might want to use, see :ref:`main_reference` for details. If you use the fjd scheduler to not only do jobs on your local machine, but also in your LAN network, then you should read the two sections below.
 
