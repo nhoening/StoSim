@@ -55,8 +55,14 @@ def read_args():
     parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')
 
     # Stosim might get called from code and then we might parse totally different commands
-    # than expected. Thus, let's not break in that case and ignore unknown args.
-    return parser.parse_known_args()[0]
+    # than expected. Thus, we let some arguments thourhg (e.g. 'test' for unit testing)
+    parsed = parser.parse_known_args()
+    if len(parsed[1]) > 0 and not 'test' in parsed[1]: 
+        print("[StoSim] Unknown argument(s): {}".format(','.join(parsed[1])))
+        parser.print_usage()
+        sys.exit(0)
+    else:
+        return parsed[0]
 
 
 def check_for_older_data(simfolder, more=False):
