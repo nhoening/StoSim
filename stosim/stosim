@@ -81,7 +81,7 @@ if __name__ == "__main__":
     elif args.list:
         fine = commands.list_data(args.folder)
 
-    if fine:
+    if fine and not commands.we_exited[0]:
         if args.plots is not None:
             commands.make_plots(args.folder, plot_nrs=args.plots)
         if args.ttests:
