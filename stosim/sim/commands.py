@@ -3,7 +3,7 @@ commands
 =============
 
 This module provides all commands you can use in StoSim:
-run, resume, check, kill, run_more, make_plots, run_ttests, list_data
+run, resume, status, kill, run_more, make_plots, run_ttests, list_data
 '''
 
 
@@ -87,7 +87,7 @@ def resume(simfolder):
     return True
 
 
-def check(simfolder):
+def status(simfolder):
     """
     Check status of simulation. If on PBS scheduling, show status of nodes.
     Then, ask the fjd-dispatcher about status of jobs.
