@@ -65,7 +65,6 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
     :param list plots: list of plot descriptions, defaults to empty list
     '''
 
-    print '[StoSim] Preparing %s: ' % outfile_name ,
 
     # make sure tmp dir exists
     if not os.path.exists(tmp_dir):
@@ -81,9 +80,8 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
             if len(os.listdir(plot_dir)) > 0:
                 Popen('rm -r %s/*' % plot_dir, shell=True).wait()
         searches[p['_name']] = [(k, p[k]) for k in p.keys() if not k.startswith('_')]
-        print '%s ' % p['_name'],
     failed = harvester.collect_files(searches, filepath, tmp_dir)
-    print
+
     # handle errors
     init_plots_num = len(plots)
     if len(failed) > 0:
@@ -177,7 +175,6 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
     print '[StoSim] Plotting %s' % outfile_name
     Popen('cd %s; gnuplot plot.gnu; epstopdf %s.eps; cd ..' % (tmp_dir, name), shell=True).wait()
     Popen('cp %s/%s.pdf %s' % (tmp_dir, name, outfile_name), shell=True).wait()
-    print
 
     if osp.exists(tmp_dir) and not '-k' in sys.argv:
         rmtree(tmp_dir)
