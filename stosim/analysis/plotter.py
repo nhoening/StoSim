@@ -152,28 +152,26 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
         if use_y_errorbars:
             offset = 1
             offset_step = max(1, int(errorbar_every) / 5)
-            offtxt = ''
-            if int(errorbar_every) > 1:
-                offtxt = 'every %d::%d' % (int(errorbar_every), offset)
-            num = 1
             gnu += ","
-            for p in plots:
+            for num, p in enumerate(plots):
+                offtxt = ''
+                if int(errorbar_every) > 1:
+                    offtxt = 'every %d::%d' % (int(errorbar_every), offset)
                 gnu += "'%s/all.dat' %s with yerrorbars title '' lt %d" \
-                        % (p['_name'], offtxt, num)
-                if num < len(plots):
+                        % (p['_name'], offtxt, num + 1)
+                if num + 1 < len(plots):
                     gnu += ','
-                num += 1
                 #TODO: this isn't nice for everyone... can maybe be derived from xrange somehow ... ?
                 offset += offset_step
 
         # execute gunplot code
-        gnuf = open('%s/plot.gnu' % tmp_dir, 'w')
+        gnuf = open('%s/%s.gnu' % (tmp_dir, name), 'w')
         gnuf.write(gnu)
         gnuf.close()
 
     # generate PDF and maybe show it
     print '[StoSim] Plotting %s' % outfile_name
-    Popen('cd %s; gnuplot plot.gnu; epstopdf %s.eps; cd ..' % (tmp_dir, name), shell=True).wait()
+    Popen('cd %s; gnuplot %s.gnu; epstopdf %s.eps; cd ..' % (tmp_dir, name, name), shell=True).wait()
     Popen('cp %s/%s.pdf %s' % (tmp_dir, name, outfile_name), shell=True).wait()
 
     if osp.exists(tmp_dir) and not '-k' in sys.argv:
