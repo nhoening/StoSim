@@ -9,11 +9,19 @@ StoSim lives on the `Python Package index <http://www.pypi.org>`_, so you can in
 
 Then you should have the ``stosim`` command available and you are done.
 
-If you don't have the privileges, you might try
+To upgrade to a new version, you would do:
+
+    ``pip install --upgrade stosim``
+
+If you don't have the necessary privileges, you might add the --user option, e.g.:
 
     ``pip install stosim --user``
 
-and add ``~/.local/bin`` to your PATH (``export PATH=~/.local/bin:\$PATH``).
+For the --user option to work, ``~/.local/bin`` should be in your PATH (if it is not, do ``export PATH=~/.local/bin:$PATH``).
+
+
+Other options
+-------------
 
 If you don't have pip, maybe you can do
 
@@ -32,7 +40,7 @@ Do this to install the source:
 
     ``cd stosim; python setup.py develop``
 
-You do not need to install StoSim if you get the source (but take care of the :ref:`depend`).
+For completeness: You do not need to install StoSim if you get the source (but take care of the :ref:`depend`).
 All you need to use it is call ``stosim.py``, which lies in the main folder.
 However, my projects are always located somewhere else, so to make my life easier I use to make a shortcut 
 to ``stosim.py`` in my ``~/.bashrc`` file (or ``~/.profile`` on Mac): 
@@ -41,3 +49,21 @@ to ``stosim.py`` in my ``~/.bashrc`` file (or ``~/.profile`` on Mac):
 
 so that on any command line, I can just type ``stosim`` to start it, whereever I am.
 
+
+Run tests
+-------------
+
+Go to StoSim's main directory.
+
+    ``python setup.py test``
+
+If you have tox installed (which is awesome):
+
+    ``tox``
+
+or
+
+    ``tox -e coverage``
+
+The first tox command runs tests, possibly for several versions of Python. 
+The second shows you coverage of the tests on StoSim's code.

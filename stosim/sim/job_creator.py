@@ -2,7 +2,7 @@
 
 '''
 job_creator
-=====
+=============
 
 This module sets up the stage - with it, you can make a configuration file
 for each mix of parameter settings (for each job) that needs to be run.
@@ -11,13 +11,13 @@ for each mix of parameter settings (for each job) that needs to be run.
 import sys
 import os
 from ConfigParser import ConfigParser
-from shutil import rmtree
+from math import ceil
 
 import utils
 
 
 
-def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
+def create(main_conf, simfolder, limit_to={}, more=False):
     """
     Writes a conf file for each run that the parameters in conf suggest.
 
@@ -103,12 +103,11 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
         sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim))
         job_conf.write('[meta]\n')
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
-            #if main_conf.has_option('meta', opt):
             job_conf.write(mk_option(dat, sim_conf))
-        
+
         job_conf.write('\n[control]\n')
         exe = mk_option(('executable', 0, 'control'), sim_conf)
-        exe = 'executable: {}/{}\n'.format(simfolder, exe.split(':')[1].strip().strip('./'))
+        exe = 'executable: {}/{}\n'.format(os.path.abspath(simfolder), exe.split(':')[1].strip().strip('./'))
         job_conf.write(exe) 
         logfile = '{}/data/{}/log{}.dat'.format(simfolder, job_name, run)
         if not os.path.exists('{}/data/{}'.format(simfolder, job_name)):
@@ -127,20 +126,7 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
         job_conf.flush()
         job_conf.close()
 
-        if scheduler == 'pbs':
-            pbs_job = '''# Shell for the job:
-#PBS -S /bin/bash
-# request 1 node, {cores} cores
-#PBS -lnodes=1:cores{cores}
-# job requires at most n hours wallclock time
-#PBS -lwalltime={maxtime}
 
-{cmd} {logfile} {jobconf}'''.format(cmd=main_conf.get('control', 'executable'), cores=1, 
-                          maxtime='00:30:00', logfile=logfile,
-                          jobconf=job_conf_filename)
-            pbs_job_file = open('{}/jobs/{}_run{}.pbs'.format(simfolder, job_name, run), 'w')
-            pbs_job_file.write(pbs_job)
-            pbs_job_file.close()
 
     # ---------------------------------------------------------------------------------------------
     # now let's get going
@@ -166,13 +152,41 @@ def create(main_conf, simfolder, limit_to={}, scheduler='fjd', more=False):
                     simulations[sim][param] = [v.strip() for v in sim_conf.get('params', param).split(',')]
 
     # now write all the conf files, once for each simulation and once for each seed
+    job_count = 0
     for sim in simulations:
         options, values = get_options_values(simulations[sim], limit_to)
-        
+
         for _ in range(len(values)):
             # get a set of unique values 
             act_values = values.pop()
             runs = main_conf.getint('control', 'runs')
             for run in xrange(1, runs+1):
                 write_job(act_values, sim=sim, run=run)
-                
+                job_count += 1
+
+    # if running on PBS, write a PBS job per node we need
+    scheduler = utils.get_scheduler(simfolder)
+    if scheduler == 'pbs':
+        num_cores = utils.get_numcores(simfolder)
+        num_nodes = int(ceil(job_count / float(num_cores)))
+        sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
+        wall_time = utils.get_jobtime(simfolder)
+        pbs_job = '''# Shell for the job:
+#PBS -S /bin/bash
+# request 1 node, {cores} core(s)
+#PBS -lnodes=1:cores{cores}:ppn={ppn}
+# job requires at most n hours wallclock time
+#PBS -lwalltime={wall_time}
+
+cd {path2sim}
+fjd-recruiter --project {sim_name} hire {cores}  # create worker screens
+python -c "import time; time.sleep({seconds})"  # keep PBS job alive
+
+'''.format(cores=num_cores, path2sim=os.path.abspath(simfolder),
+            ppn=num_cores, # processes per node
+            wall_time=wall_time, sim_name=sim_name,
+            seconds=(int(wall_time.split(':')[0]) + 1) * 60 * 60)
+        for node in xrange(1, num_nodes + 1):
+            pbs_job_file = open('{}/jobs/node{}.pbs'.format(simfolder, node, run), 'w')
+            pbs_job_file.write(pbs_job)
+            pbs_job_file.close()

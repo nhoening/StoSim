@@ -1,22 +1,26 @@
 Welcome to StoSim's documentation!
 ====================================
 
-StoSim is a light-weight framework for parameterised simulations. The researcher provides the simulation itself (written in the language of his/her choice), 
+StoSim is a light-weight framework for parameterised simulations. The researcher provides the simulation itself (written in the programming language of his/her choice), 
 but the framework relieves him/her of many generalisable technical tasks in 
 
   * configuring the simulation
   * executing many runs
   * and analysing the results
 
-StoSim should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on several cpus in the network. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with StoSim is to read a set of parameters from a config file and write its output into a file which StoSim provides.
+StoSim should be easy to get started with: By only writing one configuration file, your simulation will be parameterised and distributed on available cpus on your computer. Then, paper-ready plots as well as T-tests are being created (see :ref:`basic_example`). All your code needs to do to work with StoSim is to read a set of parameters from a config file and write its output into a file which StoSim provides.
 
 .. image:: img/wrapping.png
     :align: center
 
-But StoSim also needs to be very customisable. For instance, you can plug in your own scripts to analyze the results which StoSim generated and selected for you. In addition, you might want to run the simulation on a computation cluster you have access to (this is high on our TODO-list).  
+But StoSim also is very customisable. You can
 
-StoSim is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). Find the `code at github <https://github.com/nhoening/stosim/>`_ (click `here <https://github.com/nhoening/stosim/zipball/master>`_ to grab the latest version as a zip-archive). It makes use of open-source industry standards like Gnuplot and Gnu R.
-While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.assembla.com/spaces/stosim/tickets>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
+  * run the simulation on many cpus in your local network (LAN)
+  * run the simulation on a PBS-based computation cluster
+  * plug in your own scripts to analyze the results which StoSim generated and selected for you.
+
+StoSim is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but the simulation can be written in any programming language). Find the `code at github <https://github.com/nhoening/stosim/>`_ It makes use of open-source industry standards like Gnuplot and Gnu R.
+While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.github.com/nhoening/stosim/issues?state=open>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
 
 Please contact `Nicolas Honing <nicolas@cwi.nl>`_ with any questions or problems.
 

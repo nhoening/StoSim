@@ -13,7 +13,7 @@ utils
 #    - They should make the original ConfigParser available as conf.cp 
 #    - get_main_conf could maybe go to __init__
 # 3. Some functions in stosim.py could go in one of those subfiles, thus making
-#    that mode readable as well (not sure yet where the primary functionality
+#    that more readable as well (not sure yet where the primary functionality
 #    should go, maybe sim/__init__.py, analysis/__init__.py and so on, or
 #    classes? 
 # 4. While doing this, look out for PEP8 compatibility
@@ -21,15 +21,17 @@ utils
 import sys
 import os
 import os.path as osp
+from shutil import rmtree
 import re
 from ConfigParser import ConfigParser
-from ConfigParser import NoOptionError, NoSectionError, ParsingError
+from ConfigParser import ParsingError
 try:
-	import argparse
+    import argparse
 except ImportError:
-	print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
-	sys.exit(1)
+    print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
+    sys.exit(1)
 
+import job_creator
 
 
 def read_args():
@@ -42,6 +44,9 @@ def read_args():
     parser.add_argument('--folder', metavar='PATH', default='.', help='Path to simulation folder (this is where you keep your stosim.conf), defaults to "."')
     parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
     parser.add_argument('--run', action='store_true', help='Only run, do not analyse.')
+    parser.add_argument('--check', action='store_true', help='Check status of simulations.')
+    parser.add_argument('--resume', action='store_true', help='Resume control of simulation scheduling.')
+    parser.add_argument('--kill', action='store_true', help='Kill simulation.')
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
@@ -49,7 +54,48 @@ def read_args():
     parser.add_argument('-k', action='store_true', help='keep tmp analysis files.')
     parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')
 
-    return parser.parse_args()
+    # Stosim might get called from code and then we might parse totally different commands
+    # than expected. Thus, let's not break in that case and ignore unknown args.
+    return parser.parse_known_args()[0]
+
+
+def check_for_older_data(simfolder, more=False):
+    """ check if old data is lying around, ask if it can go
+
+        :param boolean more: when True, new data will simply be added
+                             to existing data
+    """
+    if osp.exists("%s/data" % simfolder):
+        data_content = os.listdir('%s/data' % simfolder)
+        if len([f for f in data_content if not f.startswith('.')]) > 0:
+            if not more:
+                if '-d' in sys.argv:
+                    rmtree('%s/data' % simfolder)
+                else:
+                    print('[StoSim] I found older log data (in {}/data).'\
+                        ' Remove? [y/N]'.format(simfolder))
+                    if raw_input().lower() == 'y':
+                        rmtree('%s/data' % simfolder)
+
+
+def prepare_folders_and_jobs(simfolder, limit_to={}, more=False):
+    """ ensure that data and job directories exist, create jobs.
+        limit_to can contain parameter settings we want
+        to limit ourselves to (this is in case we add more data)
+
+        :param string simfolder: relative path to simfolder
+        :param dict limit_to: key-value pairs that narrow down the dataset,
+                              when empty (default) all possible configs are run
+        :param boolean more: when True, new data will simply be added
+    """
+    if not osp.exists("%s/data" % simfolder):
+        os.mkdir('%s/data' % simfolder)
+    if osp.exists("%s/jobs" % simfolder):
+        rmtree('%s/jobs' % simfolder)
+    os.mkdir('%s/jobs' % simfolder)
+
+    conf = get_main_conf(simfolder)
+    job_creator.create(conf, simfolder, limit_to=limit_to, more=more)
 
 
 def check_conf(simfolder):
@@ -65,7 +111,7 @@ def check_conf(simfolder):
         sys.exit(2)
 
     if not osp.exists("%s/stosim.conf" % simfolder):
-        print "[StoSim] Cannot find stosim.conf in the folder '%s' - Exiting..." % simfolder
+        print "[StoSim] I can not find stosim.conf in the folder '%s' - Exiting..." % simfolder
         sys.exit(2)
 
     if not conf.has_section('meta') or not conf.has_option('meta', 'name'):
@@ -115,8 +161,8 @@ def get_main_conf(simfolder):
     if args.simulations:
         if not conf.has_section('simulations'):
             print "[StoSim] You cannot use the '--simulations' cmd line"\
-                  " parameter if you do not have the [simulations] section"\
-                  " in stosim.conf"
+                " parameter if you do not have the [simulations] section"\
+                " in stosim.conf"
             sys.exit(2)
         conf.set('simulations', 'configs', ','.join(args.simulations))
     if conf.has_section('simulations'):
@@ -170,7 +216,7 @@ def get_scheduler(simfolder):
 
 
 def get_interval(simfolder):
-    """ get the interval for FJD  workers and disoatchers to check the queue,
+    """ get the interval for FJD  workers and dispatchers to check the queue,
         in seconds (fractions of seconds are allowed).
 
         :param string simfolder: relative path to simfolder
@@ -178,7 +224,7 @@ def get_interval(simfolder):
     """
     stosim_conf = get_main_conf(simfolder)
     if not stosim_conf.has_option('control', 'fjd-interval'):
-        interval = .2
+        interval = .5
     else:
         interval = stosim_conf.getfloat('control', 'fjd-interval')
     return interval
@@ -195,8 +241,21 @@ def get_jobtime(simfolder):
     if not stosim_conf.has_option('control', 'pbs-jobtime'):
         jobtime = '00:05:00'
     else:
-        jobtime = stosim_conf.getfloat('control', 'pbs-jobtime')
+        jobtime = stosim_conf.get('control', 'pbs-jobtime')
     return jobtime
+
+
+def get_numcores(simfolder):
+    """ get the number of cores on PBS nodes
+
+        :param string simfolder: relative path to simfolder
+        :returns: int number of cores
+    """
+    stosim_conf = get_main_conf(simfolder)
+    if not stosim_conf.has_option('control', 'pbs-numcores'):
+        return 8  # this might be wrong, but overestimating does not much harm
+    else:
+        return stosim_conf.getint('control', 'pbs-numcores')
 
 
 def make_simdir_name(simfolder):
@@ -232,7 +291,18 @@ def get_subsimulation_names(conf):
     return sim_names
 
 
-def get_simulation_name(conf_filename, fallback):
+def ensure_name(simfolder):
+    ''' make sure we have the actual name of the folder and not just '.'
+
+        :param string simfolder: relative path to simfolder
+        :returns: the full name (without the path to it)
+    '''
+    if simfolder == '.':
+        simfolder = osp.abspath(osp.curdir).split('/')[-1:][0]
+    return simfolder.strip('/')
+
+
+def get_simulation_name(simfolder, conf_filename, fallback=None):
     ''' The user can give a pretty name to the simulation under [meta], this function returns it.
 
         :param string conf_filename: name of the config file for the simulation
@@ -244,18 +314,11 @@ def get_simulation_name(conf_filename, fallback):
     if conf.has_option('meta', 'name'):
         return conf.get('meta', 'name').replace(' ', '_')
     else:
-        return fallback
+        if fallback:
+            return fallback
+        else:
+            return ensure_name(simfolder)
 
-
-def ensure_name(simfolder):
-    ''' make sure we have the actual name of the folder and not just '.'
-
-        :param string simfolder: relative path to simfolder
-        :returns: the full name (without the path to it)
-    '''
-    if simfolder == '.':
-        simfolder = osp.abspath(osp.curdir).split('/')[-1:][0]
-    return simfolder.strip('/')
 
 
 def runs_in_folder(simfolder, fname):

@@ -99,10 +99,10 @@ Below is the Python file from the basic example - it uses a lot of comments to e
 
 .. _using_plotting:
 
-Using the data - Making Plots
+Using the data: Making Plots
 ------------------------------
 
-So we have now an simulation and it gets run by stosim and it writes to log files. What do we do with them? Let's make
+So we have now an simulation and it gets run by StoSim and it writes to log files. What do we do with them? Let's make
 nice graphs! StoSim organizes all its log files in the ``data`` folder. For each configuration, log files are put into a subfolder whose name
 contains all parameter settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
 ``_steps500``, containing five log files (Why five? We told StoSim to run each setting five times in the configuration).
