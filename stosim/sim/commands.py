@@ -13,6 +13,7 @@ import os.path as osp
 import subprocess
 from ConfigParser import ConfigParser
 from shutil import copy
+import datetime
 
 import fjd
 
@@ -111,6 +112,28 @@ def status(simfolder):
     print("[StoSim] State of workers and jobs:")
     subprocess.call('fjd-dispatcher --project {} --status_only --interval {}'\
         .format(sim_name, utils.get_interval(simfolder)), shell=True)
+    return True
+
+
+def snapshot(simfolder):
+    """
+    Make a snapshot of the current state.
+    Using rsync with an example from https://en.wikipedia.org/wiki/Rsync#Examples 
+
+    :param string simfolder: relative path to simfolder
+    :returns: True if successful, False otherwise
+    """
+    snapfolder = '.stosim-snapshots'
+    if not os.path.exists("{}/{}".format(simfolder, snapfolder)):
+        os.mkdir("{}/{}".format(simfolder, snapfolder))
+    now = str(datetime.datetime.now()).replace(' ', '_')
+    print('[StoSim] If wanted, enter a custom identifier:')
+    ci = raw_input().replace(' ', '_')  # TODO: replace other characters?
+    subprocess.call('rsync -aPq --link-dest={sf}/{ss}/current --exclude {ss} --exclude \.svn --exclude \.git --exclude \.hg {sf} {sf}/{ss}/s-{now}_{ident}'\
+                     .format(sf=simfolder, ss=snapfolder, now=now, ident=ci), shell=True)
+    subprocess.call('ln -nfs {sf}/{ss}/s-{now}_{ident} {sf}/{ss}/current'\
+                     .format(sf=simfolder, ss=snapfolder, now=now, ident=ci), shell=True)
+    print('[StoSim] Made a new snapshot in {}/{}.'.format(simfolder, snapfolder))
     return True
 
 

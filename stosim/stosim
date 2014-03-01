@@ -59,7 +59,7 @@ if __name__ == "__main__":
     utils.check_conf(args.folder)
 
     # define standard program (if no options are set)
-    if (args.run == args.ttests == args.more == args.kill\
+    if (args.run == args.ttests == args.more == args.snapshot == args.kill\
        == args.list == args.resume == args.status == False and args.plots is None):
         args.run = args.ttests = True
         args.plots = []
@@ -76,6 +76,8 @@ if __name__ == "__main__":
         utils.check_for_older_data(args.folder, more=args.more)
         utils.prepare_folders_and_jobs(args.folder)
         fine = commands.run(args.folder)
+    elif args.snapshot:
+        fine = commands.snapshot(args.folder)
     elif args.kill:
         fine = commands.kill(args.folder)
     elif args.list:
