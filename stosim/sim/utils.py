@@ -42,11 +42,11 @@ def read_args():
     parser = argparse.ArgumentParser(description='StoSim is an open-source toolkit for running parameterised stochastic simulations and analysing them.\
                                                   Please visit http://homepages.cwi.nl/~nicolas/stosim')
     parser.add_argument('--folder', metavar='PATH', default='.', help='Path to simulation folder (this is where you keep your stosim.conf), defaults to "."')
-    parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files without the ".conf" ending).')
+    parser.add_argument('--simulations', metavar='NAME', nargs='*', help='names of subsimulations (the filenames of their configuration files, with or without the ".conf" ending).')
     parser.add_argument('--run', action='store_true', help='Only run, do not analyse.')
-    parser.add_argument('--check', action='store_true', help='Check status of simulations.')
+    parser.add_argument('--status', action='store_true', help='Check status of simulations.')
     parser.add_argument('--resume', action='store_true', help='Resume control of simulation scheduling.')
-    parser.add_argument('--kill', action='store_true', help='Kill simulation.')
+    parser.add_argument('--kill', action='store_true', help='Kill simulations.')
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
@@ -55,8 +55,14 @@ def read_args():
     parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')
 
     # Stosim might get called from code and then we might parse totally different commands
-    # than expected. Thus, let's not break in that case and ignore unknown args.
-    return parser.parse_known_args()[0]
+    # than expected. Thus, we let some arguments thourhg (e.g. 'test' for unit testing)
+    parsed = parser.parse_known_args()
+    if len(parsed[1]) > 0 and not 'test' in parsed[1]: 
+        print("[StoSim] Unknown argument(s): {}".format(','.join(parsed[1])))
+        parser.print_usage()
+        sys.exit(0)
+    else:
+        return parsed[0]
 
 
 def check_for_older_data(simfolder, more=False):
@@ -139,7 +145,7 @@ def get_main_conf(simfolder):
     try:
         assert(osp.exists('%s/stosim.conf' % simfolder))
     except AssertionError:
-        print "[StoSim] Cannot find stosim.conf in the folder '%s' - Exiting ..." % simfolder
+        print("[StoSim] Cannot find stosim.conf in the folder '%s' - Exiting ..." % simfolder)
         sys.exit(2)
     conf.read("%s/stosim.conf" % simfolder)
 
@@ -160,24 +166,27 @@ def get_main_conf(simfolder):
     args = read_args()
     if args.simulations:
         if not conf.has_section('simulations'):
-            print "[StoSim] You cannot use the '--simulations' cmd line"\
-                " parameter if you do not have the [simulations] section"\
-                " in stosim.conf"
+            print("[StoSim] You cannot use the '--simulations' cmd line"\
+                  " parameter if you do not have the [simulations] section"\
+                  " in stosim.conf")
             sys.exit(2)
         conf.set('simulations', 'configs', ','.join(args.simulations))
     if conf.has_section('simulations'):
         for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
-            if not osp.exists("%s/%s.conf" % (simfolder, c)):
-                print "[StoSim] Warning: The file %s.conf does not exist!" % c
+            if not c.endswith('.conf'):
+                c = '{}.conf'.format(c)
+            if not osp.exists("{}/{}".format(simfolder, c)):
+                print("[StoSim] Warning: The file {} does not exist!".format(c))
 
     return conf
+
 
 def get_combined_conf(simfolder):
     ''' 
         Make a configuration with all used params and their values - this 
-        means we gathe all param values from eventual subconfs,
+        means we gather all param values from eventual subconfs,
         next to stosim.conf
-        
+
         :param string simfolder: relative path to simfolder
         :returns: ConfigParser combined conf
 
@@ -187,7 +196,7 @@ def get_combined_conf(simfolder):
         configs = conf.get('simulations', 'configs').split(',')
         for c in [cf.strip() for cf in configs]:
             subconf = ConfigParser()
-            subconf.read('{}/{}.conf'.format(simfolder, c))
+            subconf.read('{}/{}'.format(simfolder, c))
             for p in subconf.options('params'):
                 if conf.has_option('params', p):
                     both = conf.get('params', p).split(',')
@@ -320,7 +329,6 @@ def get_simulation_name(simfolder, conf_filename, fallback=None):
             return ensure_name(simfolder)
 
 
-
 def runs_in_folder(simfolder, fname):
     ''' :returns: number of runs that have been made in this data folder
         :param string simfolder: relative path to simfolder
@@ -345,7 +353,7 @@ def get_relevant_confs(simfolder):
         for subsim in conf.get('simulations', 'configs').split(','):
             c = ConfigParser()
             filename = subsim.strip()
-            c.read("%s/%s.conf" % (simfolder, filename))
+            c.read("%s/%s" % (simfolder, filename))
             c.set('meta', '_subconf-filename_', filename)
             relevant_confs.append(c)
     return relevant_confs

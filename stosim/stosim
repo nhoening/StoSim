@@ -60,14 +60,14 @@ if __name__ == "__main__":
 
     # define standard program (if no options are set)
     if (args.run == args.ttests == args.more == args.kill\
-       == args.list == args.resume == args.check == False and args.plots is None):
+       == args.list == args.resume == args.status == False and args.plots is None):
         args.run = args.ttests = True
         args.plots = []
 
     # do these if they are given:
     fine = True
-    if args.check:
-        fine = commands.check(args.folder)
+    if args.status:
+        fine = commands.status(args.folder)
     elif args.resume:
         fine = commands.resume(args.folder)
     elif args.more:
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     elif args.list:
         fine = commands.list_data(args.folder)
 
-    if fine:
+    if fine and not commands.we_exited[0]:
         if args.plots is not None:
             commands.make_plots(args.folder, plot_nrs=args.plots)
         if args.ttests:

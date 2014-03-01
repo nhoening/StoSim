@@ -142,7 +142,7 @@ def create(main_conf, simfolder, limit_to={}, more=False):
             sim = sim.strip()
             simulations[sim] = default_params.copy()
             sim_conf = ConfigParser()
-            sim_job_name = "%s/%s.conf" % (simfolder, sim)
+            sim_job_name = "%s/%s" % (simfolder, sim)
             if not os.path.exists(sim_job_name):
                 print "[StoSim] Error: Can't find %s !" % sim_job_name
                 sys.exit()

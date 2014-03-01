@@ -3,7 +3,7 @@ commands
 =============
 
 This module provides all commands you can use in StoSim:
-run, resume, check, kill, run_more, make_plots, run_ttests, list_data
+run, resume, status, kill, run_more, make_plots, run_ttests, list_data
 '''
 
 
@@ -87,7 +87,7 @@ def resume(simfolder):
     return True
 
 
-def check(simfolder):
+def status(simfolder):
     """
     Check status of simulation. If on PBS scheduling, show status of nodes.
     Then, ask the fjd-dispatcher about status of jobs.
@@ -100,10 +100,13 @@ def check(simfolder):
     if scheduler == 'pbs':
         num_nodes = len([n for n in os.listdir('{}/jobs'.format(simfolder))\
                         if n.endswith('.pbs')])
-        print("[StoSim] State of our {} PBS computing nodes:".format(num_nodes))
-        subprocess.call('echo "Waiting: $(qselect -u $USER -s W | wc -l)"', shell=True)
-        subprocess.call('echo "Queued: $(qselect -u $USER -s Q | wc -l)"', shell=True)
-        subprocess.call('echo "Running: $(qselect -u $USER -s R | wc -l)"', shell=True)
+        if num_nodes > 0:
+            print("[StoSim] State of our {} PBS computing nodes:".format(num_nodes))
+            subprocess.call('echo "Waiting: $(qselect -u $USER -s W | wc -l)"', shell=True)
+            subprocess.call('echo "Queued: $(qselect -u $USER -s Q | wc -l)"', shell=True)
+            subprocess.call('echo "Running: $(qselect -u $USER -s R | wc -l)"', shell=True)
+        else:
+            print("[StoSim] No PBS computing nodes seem to be configured...")
 
     print("[StoSim] State of workers and jobs:")
     subprocess.call('fjd-dispatcher --project {} --status_only --interval {}'\
