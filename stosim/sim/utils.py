@@ -164,6 +164,7 @@ def get_main_conf(simfolder):
         if not conf.has_option(sec, opt):
             conf.set(sec, opt, default)
 
+    # get simulations from arguments, if given
     args = read_args()
     if args.simulations:
         if not conf.has_section('simulations'):
@@ -172,12 +173,16 @@ def get_main_conf(simfolder):
                   " in stosim.conf")
             sys.exit(2)
         conf.set('simulations', 'configs', ','.join(args.simulations))
+    # make sure all simulations end in .conf and do actually exist
     if conf.has_section('simulations'):
+        checked = []
         for c in [cf.strip() for cf in conf.get('simulations', 'configs').split(',')]:
             if not c.endswith('.conf'):
                 c = '{}.conf'.format(c)
             if not osp.exists("{}/{}".format(simfolder, c)):
                 print("[StoSim] Warning: The file {} does not exist!".format(c))
+            checked.append(c)
+        conf.set('simulations', 'configs', ','.join(checked))
 
     return conf
 
