@@ -3,7 +3,7 @@ commands
 =============
 
 This module provides all commands you can use in StoSim:
-run, resume, status, kill, run_more, make_plots, run_ttests, list_data
+run, resume, status, kill, snapshot, run_more, make_plots, run_ttests, list_data
 '''
 
 
@@ -117,22 +117,31 @@ def status(simfolder):
 
 def snapshot(simfolder):
     """
-    Make a snapshot of the current state.
-    Using rsync with an example from https://en.wikipedia.org/wiki/Rsync#Examples 
+    Make a snapshot of the current state, using rsync with an example from
+    http://schlutech.com/2011/11/rsync-full-incremental-differential-snapshots/
 
     :param string simfolder: relative path to simfolder
     :returns: True if successful, False otherwise
     """
-    snapfolder = '.stosim-snapshots'
-    if not os.path.exists("{}/{}".format(simfolder, snapfolder)):
-        os.mkdir("{}/{}".format(simfolder, snapfolder))
-    now = str(datetime.datetime.now()).replace(' ', '_')
+    snapfolder = 'stosim-snapshots'
+    date_format = "+%Y.%m.%d_%H:%M:%S"
+    
     print('[StoSim] If wanted, enter a custom identifier:')
     ci = raw_input().replace(' ', '_')  # TODO: replace other characters?
-    subprocess.call('rsync -aPq --link-dest={sf}/{ss}/current --exclude {ss} --exclude \.svn --exclude \.git --exclude \.hg {sf} {sf}/{ss}/s-{now}_{ident}'\
-                     .format(sf=simfolder, ss=snapfolder, now=now, ident=ci), shell=True)
-    subprocess.call('ln -nfs {sf}/{ss}/s-{now}_{ident} {sf}/{ss}/current'\
-                     .format(sf=simfolder, ss=snapfolder, now=now, ident=ci), shell=True)
+
+    if not os.path.exists("{}/{}".format(simfolder, snapfolder)):
+        os.mkdir("{}/{}".format(simfolder, snapfolder))
+        rsync = 'rsync'
+    else:
+        rsync = 'link_dest=`find {abs_sf}/{ss} -maxdepth 1 -type d | sort | tail -n 1`;'\
+                ' rsync --link-dest=${{link_dest}}'\
+                .format(abs_sf=os.path.abspath(simfolder), ss=snapfolder)
+    
+    subprocess.call('{rsync} -ai --exclude {ss} --exclude \.svn --exclude \.git --exclude \.hg'\
+                    ' {sf} {sf}/{ss}/`date {df}`_{ident}'\
+                    .format(rsync=rsync, sf=simfolder, ss=snapfolder,
+                            df=date_format, ident=ci), shell=True)
+    
     print('[StoSim] Made a new snapshot in {}/{}.'.format(simfolder, snapfolder))
     return True
 
