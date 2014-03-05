@@ -115,19 +115,21 @@ def status(simfolder):
     return True
 
 
-def snapshot(simfolder):
+def snapshot(simfolder, identifier=None):
     """
     Make a snapshot of the current state, using rsync with an example from
     http://schlutech.com/2011/11/rsync-full-incremental-differential-snapshots/
 
     :param string simfolder: relative path to simfolder
+    :param string identifier: custom identifier for this snapshot
     :returns: True if successful, False otherwise
     """
     snapfolder = 'stosim-snapshots'
     date_format = "+%Y.%m.%d_%H:%M:%S"
     
-    print('[StoSim] If wanted, enter a custom identifier:')
-    ci = raw_input().replace(' ', '_')  # TODO: replace other characters?
+    if not identifier:
+        print('[StoSim] If wanted, enter a custom identifier:')
+        identifier = raw_input().replace(' ', '_')  # TODO: replace other characters?
 
     if not os.path.exists("{}/{}".format(simfolder, snapfolder)):
         os.mkdir("{}/{}".format(simfolder, snapfolder))
@@ -136,12 +138,13 @@ def snapshot(simfolder):
         rsync = 'link_dest=`find {abs_sf}/{ss} -maxdepth 1 -type d | sort | tail -n 1`;'\
                 ' rsync --link-dest=${{link_dest}}'\
                 .format(abs_sf=os.path.abspath(simfolder), ss=snapfolder)
-    
-    subprocess.call('{rsync} -ai --exclude {ss} --exclude \.svn --exclude \.git --exclude \.hg'\
-                    ' {sf} {sf}/{ss}/`date {df}`_{ident}'\
+   
+    subprocess.call('cd {sf}; {rsync} -a --exclude {ss} --exclude \.svn --exclude \.git --exclude \.hg'\
+                    ' . {ss}/`date {df}`_{ident}; cd {curdir}'\
                     .format(rsync=rsync, sf=simfolder, ss=snapfolder,
-                            df=date_format, ident=ci), shell=True)
-    
+                            df=date_format, ident=identifier,
+                            curdir=os.path.abspath(os.curdir)), shell=True)
+
     print('[StoSim] Made a new snapshot in {}/{}.'.format(simfolder, snapfolder))
     return True
 

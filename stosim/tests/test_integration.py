@@ -1,6 +1,5 @@
-import os
 import pytest
-#import subprocess
+import os
 from shutil import rmtree
 
 from stosim.sim.commands import run, make_plots, run_ttests
@@ -31,7 +30,6 @@ class TestBasicExample(object):
         for d in ('jobs', 'data', 'plots'):
             if os.path.exists('{}/{}'.format(self.edir, d)):
                 rmtree('{}/{}'.format(self.edir, d))
-        #subprocess.call('stosim --folder {}'.format(self.edir), shell=True)
         prepare_folders_and_jobs(self.edir)
         run(self.edir)
         make_plots(self.edir)
