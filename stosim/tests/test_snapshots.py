@@ -1,4 +1,3 @@
-import pytest
 import os
 from shutil import rmtree
 from subprocess import call
@@ -22,7 +21,9 @@ def test_snapshots():
     sdir_list.sort()
     s2 = '{}/{}/{}'.format(edir, snapdir, sdir_list[1])
     assert(s1 != s2)
-    for f1, f2 in zip(os.listdir(s1), os.listdir(s2)):
+    l1 = os.listdir(s1); l1.sort()
+    l2 = os.listdir(s2); l2.sort()
+    for f1, f2 in zip(l1, l2):
         assert(f1 == f2)  # same content
         call('touch {}/stosim.conf'.format(s1), shell=True)
         assert(os.path.getmtime('{}/stosim.conf'.format(s1)) !=\
