@@ -33,14 +33,16 @@ This is a more detailled overview over the possible optional arguments::
 
     -h, --help            show this help message and exit
     --folder PATH         Path to simulation folder (this is where you keep your
-                            stosim.conf), defaults to "."
+                          stosim.conf), defaults to "."
     --simulations [NAME [NAME ...]]
-                            names of subsimulations (the filenames of their
-                            configuration files without the ".conf" ending).
+                          names of subsimulations (the filenames of their
+                          configuration files, with or without the ".conf"
+                          ending).
     --run                 Only run, do not analyse.
-    --check               Check status of simulations.
+    --status              Check status of simulations.
     --resume              Resume control of simulation scheduling.
-    --kill                Kill simulation.
+    --snapshot            Make a snapshot of current state (in the stosim-snapshots directory)
+    --kill                Kill simulations.
     --list                List number of runs made so far, per configuration.
     --more                Add more runs to current state of config and data.
     --plots [FIGURE [FIGURE ...]]
@@ -50,8 +52,6 @@ This is a more detailled overview over the possible optional arguments::
     --ttests              Run T-tests (needs Gnu R installed).
     -k                    keep tmp analysis files.
     -d                    delete old data without confirmation.
-
-
 
 .. note:: Each command line option can be shortened, as long as it's
           recognisable from other short forms. So ``--p`` instead of ``--plots``

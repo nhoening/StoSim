@@ -46,7 +46,7 @@ def read_args():
     parser.add_argument('--run', action='store_true', help='Only run, do not analyse.')
     parser.add_argument('--status', action='store_true', help='Check status of simulations.')
     parser.add_argument('--resume', action='store_true', help='Resume control of simulation scheduling.')
-    parser.add_argument('--snapshot', action='store_true', help='Make a snapshot of current state.')
+    parser.add_argument('--snapshot', action='store_true', help='Make a snapshot of current state (in the stosim-snapshots directory).')
     parser.add_argument('--kill', action='store_true', help='Kill simulations.')
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
