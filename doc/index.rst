@@ -1,7 +1,7 @@
 Welcome to StoSim's documentation!
 ====================================
 
-StoSim is a light-weight framework for parameterised simulations. The researcher provides the simulation code (written in the programming language of his/her choice), 
+StoSim is a light-weight framework for parameterised stochastic simulations. The researcher provides the simulation code (written in the programming language of his/her choice), 
 but StoSim takes over a lot of tedious work from there on. StoSim can
 
   * create all necessary computation jobs (from lists of parameter settings)
