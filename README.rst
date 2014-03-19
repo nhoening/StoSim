@@ -5,19 +5,20 @@ What is this?
 StoSim is a light-weight framework for parameterised stochastic simulations. The researcher provides the simulation code (written in the programming language of his/her choice), 
 but StoSim takes over a lot of tedious work from there on. StoSim can
 
-  * create all necessary computation jobs (from lists of parameter settings)
-  * execute these jobs on available CPUs (only your computer, the local network or PBS computation cluster)
-  * handle stochastic repetition of settings and seeding of randomness (for repeatable experiments) 
-  * analyse the results with graphical plots and T-tests (it is easy to analyse results made with specific parameter settings)
-  * back up code and results (to be able to go back to important milestones)
+* create all necessary computation jobs (from lists of parameter settings)
+* execute these jobs on available CPUs (only your computer, the local network or PBS computation cluster)
+* handle stochastic repetition of settings and seeding of randomness (for repeatable experiments) 
+* analyse the results with graphical plots and T-tests (it is easy to analyse results made with specific parameter settings)
+* back up code and results (to be able to go back to important milestones)
 
 You can find extensive documentation at http://homepages.cwi.nl/~nicolas/stosim/ and example simulations in the "example" folder.
 
 
 Installation/Dependencies
 ---------------------------
-Short answer::
-    ``pip install stosim``
+the short answer::
+
+    pip install stosim
 
 More details and help are in the documentation.
 
