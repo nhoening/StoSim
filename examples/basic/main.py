@@ -33,8 +33,8 @@ if __name__ == '__main__':
     # open the conf file for this run with the standard Python way
     conf = ConfigParser()
     conf.read(sys.argv[1])
-    # just open the log to be able to write
-    log = open(conf.get('control', 'logfile'), 'w')
+    # open the log StoSim says we should write to when we run this job
+    log = open(conf.get('stosim', 'logfile'), 'w')
 
     # The parameters from the conf for this run can be accessed like this
     max_step = conf.getint('params', 'steps')

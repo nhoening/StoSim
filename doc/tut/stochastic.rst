@@ -7,9 +7,9 @@ Summary
 -------
 In this example, we revisit the example from :ref:`sub_example`, only now we look
 at all the features StoSim offers for stochastic simulations.
-We now set the number of runs to 5. Then, we will look at error-bars in line
-plots, fixing a seed for each run for repeatability, performing T-Tests
-and adding more runs to the database (as well as checking the database).
+We look at error-bars in line plots, fixing a seed for each run for repeatability, 
+performing T-Tests and adding more runs to the database (as well as checking 
+what is in the database).
 
 
 Error-bars
@@ -47,7 +47,7 @@ In this example, we do five runs, so we provide a distinct
 seed for every one. Here are the first five:
 
 .. literalinclude:: ../../examples/stochastic/stosim.conf
-    :lines: 25-30
+    :lines: 25-31
 
 The seed is written into the job configuration which is passed to your executable. Have a look in 
 `the executable for this simulation

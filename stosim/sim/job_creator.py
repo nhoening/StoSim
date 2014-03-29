@@ -105,10 +105,13 @@ def create(main_conf, simfolder, limit_to={}, more=False):
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
             job_conf.write(mk_option(dat, sim_conf))
 
-        job_conf.write('\n[control]\n')
+        job_conf.write('\n[fjd]\n')
         exe = mk_option(('executable', 0, 'control'), sim_conf)
         exe = 'executable: {}/{}\n'.format(os.path.abspath(simfolder), exe.split(':')[1].strip().strip('./'))
-        job_conf.write(exe) 
+        job_conf.write(exe)
+
+        # logfile, seed
+        job_conf.write('\n[stosim]\n')
         logfile = '{}/data/{}/log{}.dat'.format(simfolder, job_name, run)
         if not os.path.exists('{}/data/{}'.format(simfolder, job_name)):
             os.mkdir('{}/data/{}'.format(simfolder, job_name))

@@ -107,8 +107,7 @@ nice graphs! StoSim organizes all its log files in the ``data`` folder. For each
 contains all parameter settings. We have only one possible setting now, so in ``examples/basic/data`` we now find the folder 
 ``_steps500``, containing five log files (Why five? We told StoSim to run each setting five times in the configuration).
 
-.. note:: Note that currently, StoSim overwrites the data directory when it runs. You should backup big chunks of data when rerunning would be expensive.
-          You can also use the ``--more`` command to add to your current data collection (see the example :ref:`stochastic_example`).
+.. note:: You could add further runs to your data. Use the ``--more`` command to add to your current data collection (see the example :ref:`stochastic_example`).
 
 
 

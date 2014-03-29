@@ -13,7 +13,6 @@ import os.path as osp
 import subprocess
 from ConfigParser import ConfigParser
 from shutil import copy
-import datetime
 
 import fjd
 
@@ -48,7 +47,7 @@ def run(simfolder):
         copy("{}/jobs/{}".format(simfolder, job),
              "{}/jobqueue".format(fjd_dir))
     dispatch_cmd = 'fjd-dispatcher --project {} --end_when_jobs_are_done '\
-                   ' --end_callback "stosim --kill" --interval {}'\
+                   ' --callback "stosim --kill" --interval {}'\
                    .format(sim_name, utils.get_interval(simfolder))
 
     # now decide if recruiting is done in a local network or on a PBS cluster
