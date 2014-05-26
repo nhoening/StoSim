@@ -100,7 +100,7 @@ def create(main_conf, simfolder, limit_to={}, more=False):
 
         # these meta sections settings are tricky - they might be overwritten 
         # per simulation and we might want to start where we left off
-        sim_conf = ConfigParser(); sim_conf.read("%s/%s.conf" % (simfolder, sim))
+        sim_conf = ConfigParser(); sim_conf.read("%s/%s" % (simfolder, sim))
         job_conf.write('[meta]\n')
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
             job_conf.write(mk_option(dat, sim_conf))
