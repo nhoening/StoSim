@@ -10,14 +10,17 @@ for each mix of parameter settings (for each job) that needs to be run.
 
 import sys
 import os
-from ConfigParser import ConfigParser
 from math import ceil
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser  # for py2
 
-import utils
+from . import utils
 
 
 
-def create(main_conf, simfolder, limit_to={}, more=False):
+def create_jobs(main_conf, simfolder, limit_to={}, more=False):
     """
     Writes a conf file for each run that the parameters in conf suggest.
 
@@ -59,17 +62,17 @@ def create(main_conf, simfolder, limit_to={}, more=False):
         comb_options = [] # a list of param names
         comb_values = []  # a list of lists with param values - one per job
 
-        for k, v in sim_params.iteritems():
+        for k, v in sim_params.items():
             comb_options.append(k)
             comb_values.append(v)
         comb_values = combiner(comb_values)
 
         # if we filter the todo-list, remove some configs
         num = len(comb_values)
-        for i in xrange(num-1, -1, -1):
+        for i in range(num-1, -1, -1):
             tmpcv = comb_values[i]
             matches = True
-            for k, vals in limit_to.iteritems():
+            for k, vals in limit_to.items():
                 if not str(tmpcv[comb_options.index(k)]) in vals:
                     matches = False
             if not matches:
@@ -77,8 +80,9 @@ def create(main_conf, simfolder, limit_to={}, more=False):
 
         return comb_options, comb_values
 
-    def mk_option((opt, isint, sec), sim_conf):
+    def mk_option(opt_spec, sim_conf):
         ''' helper function to copy values in conf file from meta and control section '''
+        (opt, isint, sec) = opt_spec
         from_conf = sim_conf.has_option(sec, opt) and sim_conf or main_conf
         getter = isint and getattr(from_conf, 'getint') or getattr(from_conf, 'get')
         return '{}:{}\n'.format(opt, getter(sec, opt))
@@ -100,7 +104,7 @@ def create(main_conf, simfolder, limit_to={}, more=False):
 
         # these meta sections settings are tricky - they might be overwritten 
         # per simulation and we might want to start where we left off
-        sim_conf = ConfigParser(); sim_conf.read("%s/%s" % (simfolder, sim))
+        sim_conf = configparser.ConfigParser(); sim_conf.read("%s/%s" % (simfolder, sim))
         job_conf.write('[meta]\n')
         for dat in [(opt, isint, 'meta') for (opt, isint) in [('name', 0), ('maintainer', 0)]]:
             job_conf.write(mk_option(dat, sim_conf))
@@ -144,10 +148,10 @@ def create(main_conf, simfolder, limit_to={}, more=False):
         for sim in main_conf.get('simulations', 'configs').split(','):
             sim = sim.strip()
             simulations[sim] = default_params.copy()
-            sim_conf = ConfigParser()
+            sim_conf = configparser.ConfigParser()
             sim_job_name = "%s/%s" % (simfolder, sim)
             if not os.path.exists(sim_job_name):
-                print "[StoSim] Error: Can't find %s !" % sim_job_name
+                print("[StoSim] Error: Can't find %s !" % sim_job_name)
                 sys.exit()
             sim_conf.read(sim_job_name)
             if sim_conf.has_section('params'):
@@ -163,7 +167,7 @@ def create(main_conf, simfolder, limit_to={}, more=False):
             # get a set of unique values 
             act_values = values.pop()
             runs = main_conf.getint('control', 'runs')
-            for run in xrange(1, runs+1):
+            for run in range(1, runs+1):
                 write_job(act_values, sim=sim, run=run)
                 job_count += 1
 
@@ -183,13 +187,14 @@ def create(main_conf, simfolder, limit_to={}, more=False):
 
 cd {path2sim}
 fjd-recruiter --project {sim_name} hire {cores}  # create worker screens
-python -c "import time; time.sleep({seconds})"  # keep PBS job alive
+python -c "import time; time.sleep({seconds})"   # keep PBS job alive
+fjd-recruiter --project {sim_name} fire          # stop worker screens
 
 '''.format(cores=num_cores, path2sim=os.path.abspath(simfolder),
             ppn=num_cores, # processes per node
             wall_time=wall_time, sim_name=sim_name,
             seconds=(int(wall_time.split(':')[0]) + 1) * 60 * 60)
-        for node in xrange(1, num_nodes + 1):
+        for node in range(1, num_nodes + 1):
             pbs_job_file = open('{}/jobs/node{}.pbs'.format(simfolder, node, run), 'w')
             pbs_job_file.write(pbs_job)
             pbs_job_file.close()

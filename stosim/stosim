@@ -1,24 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:iso-8859-1
 
-"""
-This module contains the utility functions for the main use cases:
-  * run simulations (locally or on some remote hosts via ssh access),
-  * get data from hosts
-  * generate plots
-  * run T-tests
-  * list runs made so far
-
-The functions all expect the name of the simulation folder which should
-have a file called stosim.conf in it.
-A simulation folder will in the end contain the following dirs:
-
-  * jobs (configurations files for all needed jobs)
-  * data (all log files)
-  * plots (generated PDFs)
-
-"""
-
 '''
 Copyright (c) 2014 Nicolas Höning
 
@@ -74,7 +56,7 @@ if __name__ == "__main__":
         fine = commands.run_more(args.folder)
     elif args.run:
         utils.check_for_older_data(args.folder, more=args.more)
-        utils.prepare_folders_and_jobs(args.folder)
+        commands.prepare_folders_and_jobs(args.folder)
         fine = commands.run(args.folder)
     elif args.snapshot:
         fine = commands.snapshot(args.folder)

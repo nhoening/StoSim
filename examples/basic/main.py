@@ -15,8 +15,10 @@ All it should do is read a config file and write to a log file.
 
 * which you would need to precompile, of course
 """
-
-from ConfigParser import ConfigParser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser  # for py2
 import random
 import sys
 
@@ -31,7 +33,7 @@ if __name__ == '__main__':
     '''
 
     # open the conf file for this run with the standard Python way
-    conf = ConfigParser()
+    conf = configparser.ConfigParser()
     conf.read(sys.argv[1])
     # open the log StoSim says we should write to when we run this job
     log = open(conf.get('stosim', 'logfile'), 'w')

@@ -6,8 +6,10 @@ This example uses two subsimulations.
 
 See the basic example if you have no idea what this file is for.
 """
-
-from ConfigParser import ConfigParser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser  # for py2
 import random
 import sys
 
@@ -94,7 +96,7 @@ class World(object):
         self.log.write('avg cooperation probability of learners\n')
 
         # for every epoch  starting from 1
-        for e in xrange(1, self.epochs + 1):
+        for e in range(1, self.epochs + 1):
 
             self.act_epoch = e
 
@@ -129,7 +131,7 @@ class World(object):
 
 
 if __name__ == '__main__':
-    conf = ConfigParser()
+    conf = configparser.ConfigParser()
     conf.read(sys.argv[1])
     w = World(open(conf.get('stosim', 'logfile'), 'w'), conf)
     w.run()

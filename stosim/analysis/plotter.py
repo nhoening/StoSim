@@ -79,20 +79,20 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
         if os.path.exists(plot_dir):
             if len(os.listdir(plot_dir)) > 0:
                 Popen('rm -r %s/*' % plot_dir, shell=True).wait()
-        searches[p['_name']] = [(k, p[k]) for k in p.keys() if not k.startswith('_')]
+        searches[p['_name']] = [(k, p[k]) for k in list(p.keys()) if not k.startswith('_')]
     failed = harvester.collect_files(searches, filepath, tmp_dir)
 
     # handle errors
     init_plots_num = len(plots)
     if len(failed) > 0:
-        print "[StoSim] WARNING: Selectors %s didn't match any folders!" % ','.join(failed)
+        print("[StoSim] WARNING: Selectors %s didn't match any folders!" % ','.join(failed))
         for fail in failed:
             for p in plots:
                 if p['_name'] == fail:
                     plots.remove(p)
     if len(failed) == init_plots_num:
-        print "[StoSim] In fact, no selectors of this figure matched anything. Aborting ..."
-        print
+        print("[StoSim] In fact, no selectors of this figure matched anything. Aborting ...")
+        print("")
         return
 
     # ---- prepare data  ----
@@ -102,7 +102,7 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
                       fileSuffix='.dat', filePath='%s/%s' % (tmp_dir, p['_name']),
                       delim=delim, outName='%s/%s/all.dat' % (tmp_dir, p['_name']))
         else: # scatter
-            if not p.has_key('_select'):
+            if '_select' not in p:
                 p['_select'] = 'all'
             harvester.collect_values('%s/%s' % (tmp_dir, p['_name']), delim, '%s/%s/all.dat' \
                            % (tmp_dir, p['_name']), cols=[xcol, int(p['_ycol'])],
@@ -111,10 +111,10 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
     # ---- plot the results ----
     if custom_script != "":
         if not osp.exists(custom_script):
-            print "[StoSim] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
-            print
+            print("[StoSim] Cannot find custom script at [%s]. Aborting ..." % (custom_script))
+            print("")
             return
-        print '[StoSim] Using custom script at %s' % custom_script
+        print('[StoSim] Using custom script at %s' % custom_script)
         Popen('cp %s %s/plot.gnu' % (custom_script, tmp_dir), shell=True).wait()
     else:
         e = ''
@@ -170,7 +170,7 @@ def plot(filepath='', delim=',', outfile_name='', name='My simulation',\
         gnuf.close()
 
     # generate PDF and maybe show it
-    print '[StoSim] Plotting %s' % outfile_name
+    print('[StoSim] Plotting %s' % outfile_name)
     Popen('cd %s; gnuplot %s.gnu; epstopdf %s.eps; cd ..' % (tmp_dir, name, name), shell=True).wait()
     Popen('cp %s/%s.pdf %s' % (tmp_dir, name, outfile_name), shell=True).wait()
 
