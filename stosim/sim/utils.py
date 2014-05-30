@@ -252,7 +252,7 @@ def get_numcores(simfolder):
     """
     stosim_conf = get_main_conf(simfolder)
     if not stosim_conf.has_option('control', 'pbs-numcores'):
-        return 8  # this might be wrong, but overestimating does not much harm
+        return 12  # this might be wrong, but overestimating does not much harm
     else:
         return stosim_conf.getint('control', 'pbs-numcores')
 
