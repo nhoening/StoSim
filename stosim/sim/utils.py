@@ -51,6 +51,7 @@ def read_args():
     parser.add_argument('--list', action='store_true', help='List number of runs made so far, per configuration.')
     parser.add_argument('--more', action='store_true', help='Add more runs to current state of config and data.')
     parser.add_argument('--plots', metavar='FIGURE', nargs='*', type=int, help='Make plots (needs gnuplot and eps2pdf installed). Add indices of figures as arguments if you only want to generate specific ones.')
+    parser.add_argument('--version', action='store_true', help='Output version number.')
     parser.add_argument('--ttests', action='store_true', help='Run T-tests (needs Gnu R installed).')
     parser.add_argument('-k', action='store_true', help='keep tmp analysis files.')
     parser.add_argument('-d', action='store_true', help='delete old data without confirmation.')

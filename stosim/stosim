@@ -41,8 +41,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
 
+import sys
 import signal
 
+from stosim import __version__
 from stosim.sim import commands, utils
 
 
@@ -56,7 +58,8 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, signal_handler)
     args = utils.read_args()
-    utils.check_conf(args.folder)
+    if not args.version:
+        utils.check_conf(args.folder)
 
     # define standard program (if no options are set)
     if (args.run == args.ttests == args.more == args.snapshot == args.kill\
@@ -66,7 +69,10 @@ if __name__ == "__main__":
 
     # do these if they are given:
     fine = True
-    if args.status:
+    if args.version:
+        print "[StoSim] Version: {}".format(__version__)
+        sys.exit(0)
+    elif args.status:
         fine = commands.status(args.folder)
     elif args.resume:
         fine = commands.resume(args.folder)
