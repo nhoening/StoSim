@@ -151,6 +151,7 @@ def snapshot(simfolder, identifier=None):
 def kill(simfolder):
     """
     Kill simulation
+    Warning: On pbs, kills all your jobs (ignores --project)!
     """
     scheduler = utils.get_scheduler(simfolder)
     sim_name = utils.get_simulation_name(simfolder, "{}/stosim.conf".format(simfolder))
