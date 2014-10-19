@@ -40,7 +40,7 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
 
     # ---- First,  we'll collect all y values from all files
     d = {} # this will store a list of y values for each x
-    for i in xrange(1, numFiles+1, 1):
+    for i in range(1, numFiles+1, 1):
         f = open(filePath + filePrefix + str(i) + fileSuffix, 'r')
         hasMoreRows = True
         while hasMoreRows:
@@ -52,21 +52,21 @@ def avg_stats(xCol, yCol, numFiles, filePrefix='', fileSuffix='', filePath='.', 
                 if s[0].startswith('#') or len(s) < xCol or len(s) < yCol:
                     continue
                 x = s[xCol-1].strip()
-                if not x == '' and not d.has_key(x):
+                if not x == '' and x not in d:
                     d[x] = []
                 try:
                     # we assume that y values are numeric! Also,other
                     # errors might happen here when file is corrupted
                     d[x].append(float(s[int(yCol)-1]))
-                except Exception, e:
-                    print "ERROR"
+                except Exception as e:
+                    print("ERROR")
         f.close()
 
     # ---- Then, we compute mean and standard deviation for the v values for
     #      each x and write them to target file
     if outName is None: outName = '%s%s%s%s.out' % (filePath, filePrefix, str(yCol), fileSuffix)
     out = open(outName, 'w')
-    keys = d.keys()
+    keys = list(d.keys())
     keys.sort()
     for x in keys:
         # -- mean

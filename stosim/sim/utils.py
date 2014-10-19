@@ -23,15 +23,19 @@ import os
 import os.path as osp
 from shutil import rmtree
 import re
-from ConfigParser import ConfigParser
-from ConfigParser import ParsingError
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser  # for py2
 try:
     import argparse
 except ImportError:
     print("[StoSim] Import error: You need Python 2.7+ (you can, however, copy the argparse module inside your local directory.")
     sys.exit(1)
 
-import job_creator
+
+if sys.version_info[0] < 3:
+    input = raw_input
 
 
 def read_args():
@@ -82,28 +86,8 @@ def check_for_older_data(simfolder, more=False):
                 else:
                     print('[StoSim] I found older log data (in {}/data).'\
                         ' Remove? [y/N]'.format(simfolder))
-                    if raw_input().lower() == 'y':
+                    if input().lower() == 'y':
                         rmtree('%s/data' % simfolder)
-
-
-def prepare_folders_and_jobs(simfolder, limit_to={}, more=False):
-    """ ensure that data and job directories exist, create jobs.
-        limit_to can contain parameter settings we want
-        to limit ourselves to (this is in case we add more data)
-
-        :param string simfolder: relative path to simfolder
-        :param dict limit_to: key-value pairs that narrow down the dataset,
-                              when empty (default) all possible configs are run
-        :param boolean more: when True, new data will simply be added
-    """
-    if not osp.exists("%s/data" % simfolder):
-        os.mkdir('%s/data' % simfolder)
-    if osp.exists("%s/jobs" % simfolder):
-        rmtree('%s/jobs' % simfolder)
-    os.mkdir('%s/jobs' % simfolder)
-
-    conf = get_main_conf(simfolder)
-    job_creator.create(conf, simfolder, limit_to=limit_to, more=more)
 
 
 def check_conf(simfolder):
@@ -111,29 +95,29 @@ def check_conf(simfolder):
     check if stosim.conf contains all necessary sections and options
     :param string simfolder: relative path to simfolder
     """
-    conf = ConfigParser()
+    conf = configparser.ConfigParser()
     try:
         conf.read("%s/stosim.conf" % simfolder)
-    except ParsingError, e:
-        print "[StoSim] %s" % e
+    except configparser.ParsingError as e:
+        print("[StoSim] %s" % e)
         sys.exit(2)
 
     if not osp.exists("%s/stosim.conf" % simfolder):
-        print "[StoSim] I can not find stosim.conf in the folder '%s' - Exiting..." % simfolder
+        print("[StoSim] I can not find stosim.conf in the folder '%s' - Exiting..." % simfolder)
         sys.exit(2)
 
     if not conf.has_section('meta') or not conf.has_option('meta', 'name'):
-        print "[StoSim] You need to tell me a name for this simulation. \
-            Please define an option called 'name' in a section called 'meta'."
+        print("[StoSim] You need to tell me a name for this simulation. \
+            Please define an option called 'name' in a section called 'meta'.")
         sys.exit(2)
 
     if not conf.has_section('control') or not conf.has_option('control', 'executable'):
-        print "[StoSim] You need to tell me what script to execute. \
-            Please define an option called 'executable' in a section called 'control'."
+        print("[StoSim] You need to tell me what script to execute. \
+            Please define an option called 'executable' in a section called 'control'.")
         sys.exit(2)
 
     if not conf.has_section('params'):
-        print "[StoSim] Warning: You have not defined a 'params' - section."
+        print("[StoSim] Warning: You have not defined a 'params' - section.")
 
 
 def get_main_conf(simfolder):
@@ -143,7 +127,7 @@ def get_main_conf(simfolder):
         :param string simfolder: relative path to simfolder
         :returns: ConfigParser object
     """
-    conf = ConfigParser()
+    conf = configparser.ConfigParser()
     try:
         assert(osp.exists('%s/stosim.conf' % simfolder))
     except AssertionError:
@@ -155,7 +139,7 @@ def get_main_conf(simfolder):
         conf.add_section('meta')
     try:
         def_user = os.getlogin()
-    except OSError, e:
+    except OSError as e:
         def_user = os.getenv('USER')
     for (sec, opt, default) in\
             [('meta', 'name', 'A simulation run by StoSim'),\
@@ -202,7 +186,7 @@ def get_combined_conf(simfolder):
     if conf.has_section('simulations'):
         configs = conf.get('simulations', 'configs').split(',')
         for c in [cf.strip() for cf in configs]:
-            subconf = ConfigParser()
+            subconf = configparser.ConfigParser()
             subconf.read('{}/{}'.format(simfolder, c))
             for p in subconf.options('params'):
                 if conf.has_option('params', p):
@@ -269,7 +253,7 @@ def get_numcores(simfolder):
     """
     stosim_conf = get_main_conf(simfolder)
     if not stosim_conf.has_option('control', 'pbs-numcores'):
-        return 8  # this might be wrong, but overestimating does not much harm
+        return 12  # this might be wrong, but overestimating does not much harm
     else:
         return stosim_conf.getint('control', 'pbs-numcores')
 
@@ -325,7 +309,7 @@ def get_simulation_name(simfolder, conf_filename, fallback=None):
         :param string fallback: return this if the user didn't specify any
         :returns: string pretty name
     '''
-    conf = ConfigParser()
+    conf = configparser.ConfigParser()
     conf.read(conf_filename)
     if conf.has_option('meta', 'name'):
         return conf.get('meta', 'name').replace(' ', '_')
@@ -358,7 +342,7 @@ def get_relevant_confs(simfolder):
     relevant_confs = [conf]
     if conf.has_section('simulations'):
         for subsim in conf.get('simulations', 'configs').split(','):
-            c = ConfigParser()
+            c = configparser.ConfigParser()
             filename = subsim.strip()
             c.read("%s/%s" % (simfolder, filename))
             c.set('meta', '_subconf-filename_', filename)
@@ -402,7 +386,7 @@ def decode_search_from_confstr(s, sim=""):
             v = v.replace("#COMMA#", ',')
             v = v.replace("#COLON#", ':')
         except:
-            print '[StoSim] Misconfiguration in Experiment %s while parsing "%s". This is the plot configuration, please check: "%s" ... ' % (sim, item, s)
+            print('[StoSim] Misconfiguration in Experiment %s while parsing "%s". This is the plot configuration, please check: "%s" ... ' % (sim, item, s))
             continue
         d[k.strip()] = v.strip()
     return d

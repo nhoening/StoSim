@@ -29,12 +29,12 @@ def ttest(simfolder, c, i, delim):
     sets = []
     for dset in [1,2]:
         d = utils.decode_search_from_confstr(c.get('ttest%i' % i, 'set%i' % dset), sim = c.get('meta', 'name'))
-        if d.has_key('_name') and d.has_key('_col') and d['_col'].isdigit():
+        if '_name' in d and '_col' in d and d['_col'].isdigit():
             sets.append(d['_name'])
-            searches = {d['_name'] : [(k, d[k]) for k in d.keys() if not k in ['_name', '_col']]}
+            searches = {d['_name'] : [(k, d[k]) for k in list(d.keys()) if not k in ['_name', '_col']]}
             harvester.collect_files(searches, "%s/data" % simfolder, tmp_dir)
             #TODO: custom selectors?
-            if not d.has_key('_select'):
+            if '_select' not in d:
                 d['_select'] = 'all'
             harvester.collect_values("%s/%s" % (tmp_dir, d['_name']),
                                      delim,
@@ -43,18 +43,18 @@ def ttest(simfolder, c, i, delim):
                                      selector=d['_select']
                                     )
         else:
-            print '[StoSim] Warning: Incomplete T-test specification for test %i in Experiment %s, dataset number %i. '\
-                  'Specify at least _name and _col.' % (i, c.get('meta', 'name'), dset)
+            print('[StoSim] Warning: Incomplete T-test specification for test %i in Experiment %s, dataset number %i. '\
+                  'Specify at least _name and _col.' % (i, c.get('meta', 'name'), dset))
 
     # -- run test --
     if osp.exists('%s/%s.dat' % (tmp_dir, sets[0])) and osp.exists('%s/%s.dat' % (tmp_dir, sets[1])):
         if c.has_option('ttest%i' %i, 'custom-script'):
             custom_script = c.get('ttest%i' % i, 'custom-script')
             if not osp.exists(custom_script):
-                print "[StoSim] Cannot find custom script at [%s]. Aborting ..." % (custom_script)
-                print
+                print("[StoSim] Cannot find custom script at [%s]. Aborting ..." % (custom_script))
+                print("")
                 return
-            print '[StoSim] Using custom script at %s' % custom_script
+            print('[StoSim] Using custom script at %s' % custom_script)
             Popen('cp %s %s/ttest.r' % (custom_script, tmp_dir), shell=True).wait()
         else:
             rscript = open('%s/ttest.r' % tmp_dir, 'w')

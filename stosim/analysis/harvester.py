@@ -27,7 +27,7 @@ def collect_files(searches, filepath, target_dir):
    '''
     failed = []
 
-    for s in searches.keys():
+    for s in list(searches.keys()):
         if not os.path.exists('%s/%s' % (target_dir, s)):
             os.makedirs('%s/%s' % (target_dir, s))
 
@@ -60,7 +60,7 @@ def collect_values(filepath, delim, outfile_name, cols=[], selector='all'):
                      one of ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y']
     '''
     assert(selector in ['all', 'last', 'max_x', 'max_y', 'min_x', 'min_y'])
-    import harvester
+    from . import harvester
     selector = harvester.__getattribute__('select_%s' % selector)
     vals = []
     files = [f for f in os.listdir(filepath) if f.endswith('.dat')]

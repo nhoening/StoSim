@@ -7,17 +7,28 @@ run, resume, status, kill, snapshot, run_more, make_plots, run_ttests, list_data
 '''
 
 
-
+import sys
 import os
 import os.path as osp
 import subprocess
-from ConfigParser import ConfigParser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser  # for py2
+from shutil import rmtree
+
+
 from shutil import copy
 
 import fjd
 
 from stosim.sim import utils
 from stosim.analysis import plotter, tester
+from stosim.sim.job_creator import create_jobs
+
+
+if sys.version < '3':
+    input = raw_input
 
 
 we_exited = [False]  # this helps us to stop using FJD if the user quit
@@ -35,7 +46,7 @@ def run(simfolder):
     print('')
 
     if not osp.exists("%s/stosim.conf" % simfolder):
-        print "[StoSim] %s/stosim.conf does not exist!" % simfolder
+        print("[StoSim] %s/stosim.conf does not exist!" % simfolder)
         utils.usage()
         return False
 
@@ -128,7 +139,7 @@ def snapshot(simfolder, identifier=None):
     
     if not identifier:
         print('[StoSim] If wanted, enter a custom identifier:')
-        identifier = raw_input().replace(' ', '_')  # TODO: replace other characters?
+        identifier = input().replace(' ', '_')  # TODO: replace other characters?
 
     if not os.path.exists("{}/{}".format(simfolder, snapfolder)):
         os.mkdir("{}/{}".format(simfolder, snapfolder))
@@ -190,7 +201,7 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
         while not selected:
             choice = []
             print("<{}> ? (out of [{}])".format(o, conf.get('params', o)))
-            for selection in raw_input().split(','):
+            for selection in input().split(','):
                 selected = True
                 if selection == "":
                     pass
@@ -206,8 +217,8 @@ Enter any parameter values you want to narrow down to, nothing otherwise."
     print("You selected: {}. Do this? [Y|n]\n"\
           "(Remember that configuration and code should still be the same!)"\
                 .format(str(sel_params)))
-    if raw_input().lower() in ["", "y"]:
-        utils.prepare_folders_and_jobs(simfolder, limit_to=sel_params, more=True)
+    if input().lower() in ["", "y"]:
+        prepare_folders_and_jobs(simfolder, limit_to=sel_params, more=True)
         return run(simfolder)
     return False
 
@@ -266,10 +277,10 @@ def make_plots(simfolder, plot_nrs=[]):
             d[option.replace('-', '_')] = val
 
     general_settings = {}
-    c = ConfigParser()
+    c = configparser.ConfigParser()
     c.read('{}/stosim.conf'.format((simfolder)))
     delim = utils.get_delimiter(c)
-    for o, t in general_options.iteritems():
+    for o, t in general_options.items():
         get_opt_val(c, general_settings, 'plot-settings', o, t)
     general_params = []
     if c.has_option('plot-settings', 'params'):
@@ -279,7 +290,7 @@ def make_plots(simfolder, plot_nrs=[]):
         i = 1
         settings = general_settings.copy()
         # overwrite with plot-settings for this subsimulation
-        for o, t in general_options.iteritems():
+        for o, t in general_options.items():
             get_opt_val(c, settings, 'plot-settings', o, t)
         if c.has_option('plot-settings', 'params'):
             general_params.extend(c.get('plot-settings', 'params').split(','))
@@ -287,7 +298,7 @@ def make_plots(simfolder, plot_nrs=[]):
         while c.has_section("figure%i" % i):
             if i in plot_nrs or len(plot_nrs) == 0:
                 fig_settings = settings.copy()
-                for o, t in figure_specific_options.iteritems():
+                for o, t in figure_specific_options.items():
                     get_opt_val(c, fig_settings, 'figure%i' % i, o, t)
 
                 plot_confs = []
@@ -304,7 +315,7 @@ def make_plots(simfolder, plot_nrs=[]):
                         if ":" in param:
                             param = param.split(':')
                             key = param[0].strip()
-                            if not key in d.keys():
+                            if not key in list(d.keys()):
                                 d[key] = param[1].strip()
                     # add simulation file name, then we can select accordingly
                     if c.has_option('meta', '_subconf-filename_'):
@@ -312,8 +323,8 @@ def make_plots(simfolder, plot_nrs=[]):
                         if scfn != '' and not 'sim' in d:
                             d['sim'] = scfn
                     # making sure all necessary plot attributes are there
-                    if ('_name' in d.keys()and '_ycol' in d.keys() and
-                        '_type' in d.keys()):
+                    if ('_name' in list(d.keys())and '_ycol' in list(d.keys()) and
+                        '_type' in list(d.keys())):
                         plot_confs.append(d)
                     else:
                         print('''
@@ -336,7 +347,7 @@ def run_ttests(simfolder):
 
     :param string simfolder: relative path to simfolder
     '''
-    c = ConfigParser()
+    c = configparser.ConfigParser()
     c.read('{}/stosim.conf'.format((simfolder)))
     delim = utils.get_delimiter(c)
 
@@ -352,7 +363,7 @@ def run_ttests(simfolder):
             print('')
             break
     else:
-        print "[StoSim] No T-tests specified."
+        print("[StoSim] No T-tests specified.")
 
     for c in relevant_confs:
         i = 1
@@ -405,3 +416,21 @@ def list_data(simfolder):
     return True
 
 
+def prepare_folders_and_jobs(simfolder, limit_to={}, more=False):
+    """ ensure that data and job directories exist, create jobs.
+        limit_to can contain parameter settings we want
+        to limit ourselves to (this is in case we add more data)
+
+        :param string simfolder: relative path to simfolder
+        :param dict limit_to: key-value pairs that narrow down the dataset,
+                              when empty (default) all possible configs are run
+        :param boolean more: when True, new data will simply be added
+    """
+    if not osp.exists("%s/data" % simfolder):
+        os.mkdir('%s/data' % simfolder)
+    if osp.exists("%s/jobs" % simfolder):
+        rmtree('%s/jobs' % simfolder)
+    os.mkdir('%s/jobs' % simfolder)
+
+    conf = utils.get_main_conf(simfolder)
+    create_jobs(conf, simfolder, limit_to=limit_to, more=more)

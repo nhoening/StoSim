@@ -2,8 +2,7 @@ import pytest
 import os
 from shutil import rmtree
 
-from stosim.sim.commands import run, make_plots, run_ttests
-from stosim.sim.utils import prepare_folders_and_jobs
+from stosim.sim.commands import run, make_plots, run_ttests, prepare_folders_and_jobs
 
 
 def file_lc(fname):
@@ -47,7 +46,7 @@ class TestBasicExample(object):
             data = os.listdir('{}/data/{}'.format(self.edir, dd))
             data.sort()
             exp_data = ['log' + str(i) + '.dat'\
-                            for i in xrange(1, self.num_runs + 1)]
+                            for i in range(1, self.num_runs + 1)]
             data.sort()
             exp_data.sort()
             assert(data == exp_data)
