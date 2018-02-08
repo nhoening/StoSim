@@ -17,7 +17,7 @@ from stosim.analysis import harvester
 
 with_names = False # if to have title in PDF
 show_pdfs = False  # if to show PDF right after creation
-pdf_viewer = 'okular'
+pdf_viewer = 'evince'
 tmp_dir = 'tmp_plotter'
 
 

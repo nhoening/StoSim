@@ -18,9 +18,8 @@ StoSim is easy to get started with: By only writing one configuration file, your
 StoSim is developed under an open-source MIT license at the CWI Amsterdam and written in Python (but, I repeat, the simulation code can be written in any programming language). Find the `code at github <https://github.com/nhoening/stosim/>`_ It makes use of open-source industry standards like Unix screens, PBS job schduling, rsync, Gnuplot and Gnu R.
 While it proves very useful for its current small userbase, there is still lots of things to do even better (see `the Ticket tracker <http://www.github.com/nhoening/stosim/issues?state=open>`_) and a lot of great ideas to go from here. Let me know if you have ideas or want to contribute.
 
-Please contact `Nicolas Höning <nicolas@cwi.nl>`_ with any questions or problems.
+Please contact `Nicolas Höning <iam@nicolashoening.de>`_ with any questions or problems.
 
-There also is a `PDF version <StoSim.pdf>`_ of this documentation
 
 ******************
 Narrative contents

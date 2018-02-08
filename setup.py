@@ -65,6 +65,7 @@ setup(
     test_suite='stosim.tests.test_integration',
     classifiers = [
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
         'Development Status :: 4 - Beta',
         'Natural Language :: English',
         'Environment :: Console',
