@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # do these if they are given:
     fine = True
     if args.version:
-        print "[StoSim] Version: {}".format(__version__)
+        print("[StoSim] Version: {}".format(__version__))
         sys.exit(0)
     elif args.status:
         fine = commands.status(args.folder)
