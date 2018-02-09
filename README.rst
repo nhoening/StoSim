@@ -27,10 +27,11 @@ Dependencies
 ---------------
 * You need Python 3.3+, 2.7, or 2.6 if you install the argparse module locally.
 * Distributing jobs needs Unix Screens, so if the `screen` command is not available on your system, you need to install it, e.g. on Debian::
-      sudo apt-get install screen
+    sudo apt-get install screen
 * To use the in-built plotting, you need gnuplot and epstopdf, e.g. on Debian::
-      sudo apt-get install gnuplot texlive-extra-utils
-* For T-Tests, you need Gnu R installed.
+    sudo apt-get install gnuplot texlive-extra-utils
+* To run T-Tests within StoSim, you need Gnu R installed. E.g. on Debian::
+    sudo apt-get install r-base
 
 More details and help are in the documentation.
 
