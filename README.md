@@ -1,3 +1,8 @@
+StoSim handles your simulations
+----------------------------------
+
+    stosim --folder <path-to-your-experiment-folder> --run --ttests --plots
+
 
 What is this?
 --------------------
@@ -16,7 +21,6 @@ You can find tutorials and extensive documentation at http://stosim.nicolashoeni
 
 Installation/Dependencies
 ---------------------------
-the short answer::
 
     pip install stosim
 
@@ -25,13 +29,13 @@ More details and help are in the documentation.
 
 Dependencies
 ---------------
-* You need Python 3.3+, 2.7, or 2.6 if you install the argparse module locally.
-* Distributing jobs needs Unix Screens, so if the `screen` command is not available on your system, you need to install it, e.g. on Debian::
-    sudo apt-get install screen
-* To use the in-built plotting, you need gnuplot and epstopdf, e.g. on Debian::
-    sudo apt-get install gnuplot texlive-extra-utils
-* To run T-Tests within StoSim, you need Gnu R installed. E.g. on Debian::
-    sudo apt-get install r-base
+* You need Python 3.3+, 2.7, or 2.6 if you install the `argparse` module locally.
+* Distributing jobs needs Unix Screens, so if the `screen` command is not available on your system, you need to install it, e.g. on Debian:
+    `sudo apt-get install screen`
+* To use the in-built plotting, you need gnuplot and epstopdf, e.g. on Debian:
+    `sudo apt-get install gnuplot texlive-extra-utils`
+* To run T-Tests within StoSim, you need Gnu R installed. E.g. on Debian:
+    `sudo apt-get install r-base`
 
 More details and help are in the documentation.
 
@@ -39,19 +43,20 @@ More details and help are in the documentation.
 Running a simulation: A quick overview
 ---------------------------------------
 Place an experiment configuration (stosim.conf) and your simulation code in a folder of your choice (see basic example in the examples folder).
-Call::
+Call:
 
     stosim
     
 This assumes that you placed a configuration file describing your jobs (called `stosim.conf`) in the current folder.
-It also assumes you want to run the jobs, and in addition perform T-Tests and make plots (if stosim.conf says how). So the above command is synonymous to::
+It also assumes you want to run the jobs, and in addition perform T-Tests and make plots (if stosim.conf says how).
+So the above command is synonymous to:
 
     stosim --folder . --run --ttests --plots
 
-The results will be put in the "data" directory, in your folder 
+The results will be put in the `data` directory, in your folder 
 (but if you like the plotting/analysis capabilities of StoSim you might never have to look there).
 
-One more example, where you know your stosim.conf is in a different folder and you only want to run::
+One more example, where you know your stosim.conf is in a different folder and you only want to run:
 
     stosim --folder <path-to-your-experiment-folder> --run
 
