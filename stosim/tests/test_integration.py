@@ -57,7 +57,11 @@ class TestBasicExample(object):
 
     def test_plots(self):
         assert(os.path.exists('{}/plots'.format(self.edir)))
-        assert(os.listdir('{}/plots'.format(self.edir)) == self.plots)
+        plots_made = os.listdir('{}/plots'.format(self.edir))
+        plots_expected = self.plots
+        plots_made.sort()
+        plots_expected.sort()
+        assert(plots_made == plots_expected)
 
 
 class TestSubsimExample(TestBasicExample):

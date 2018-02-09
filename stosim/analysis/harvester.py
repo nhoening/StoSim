@@ -65,13 +65,11 @@ def collect_values(filepath, delim, outfile_name, cols=[], selector='all'):
     vals = []
     files = [f for f in os.listdir(filepath) if f.endswith('.dat')]
     for f in files:
-        tmp = open('%s/%s' % (filepath, f), 'r')
-        vals.extend(selector(tmp, cols, delim))
-    out = open(outfile_name, 'w')
-    for v in vals:
-        out.write('%s' % str(v))
-    out.close()
-
+        with open('%s/%s' % (filepath, f), 'r') as tmp:
+            vals.extend(selector(tmp, cols, delim))
+    with open(outfile_name, 'w') as out:
+        for v in vals:
+            out.write('%s' % str(v))
 
 
 # ---- selectors ----

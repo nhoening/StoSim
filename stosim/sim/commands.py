@@ -58,8 +58,8 @@ def run(simfolder):
         copy("{}/jobs/{}".format(simfolder, job),
              "{}/jobqueue".format(fjd_dir))
     dispatch_cmd = 'fjd-dispatcher --project {} --end_when_jobs_are_done '\
-                   ' --callback "stosim --kill" --interval {}'\
-                   .format(sim_name, utils.get_interval(simfolder))
+                   ' --callback "stosim --folder {} --kill" --interval {}'\
+                   .format(sim_name, simfolder, utils.get_interval(simfolder))
 
     # now decide if recruiting is done in a local network or on a PBS cluster
     scheduler = utils.get_scheduler(simfolder)
